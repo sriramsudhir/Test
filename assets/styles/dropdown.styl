@@ -1,0 +1,122 @@
+@import "variables.styl"
+
+.rtl .custom-dropdown .dropdown-inner
+  right 0
+  left auto
+
+.lang-dropdown.custom-dropdown > span span
+  min-width 0
+
+.custom-dropdown.right .dropdown-inner
+  left auto
+  right 0
+
+.custom-dropdown
+  position relative
+  display inline-block
+  line-height 0
+
+  .layer
+    z-index 1
+
+  & > span
+    display flex
+    align-items center
+    justify-content space-between
+    cursor pointer
+    user-select none
+    padding 0 15px 0 20px
+    height btn-height
+    line-height btn-height
+    background linear-gradient(to bottom, #f7f8fa, #e7e9ec)
+    border 1px solid #bbb
+    border-radius border-radius
+    transition all .1s
+
+    span
+      min-width 60px
+      max-width 160px
+      white-space nowrap
+      overflow hidden
+      text-overflow ellipsis
+
+    &:hover
+      background #f6f4f4 !important
+
+    &:active
+      box-shadow 0 0 2px 1px primary-color
+
+  .dropdown-inner
+    position absolute
+    top 100%
+    left 0
+    min-width 160px
+    background #fff
+    padding 7.5px 5px
+    border-radius border-radius
+    box-shadow 0 2px 10px rgba(0, 0, 0, .1)
+    z-index 2
+    max-height 400px
+    overflow auto
+
+    & > input
+      padding 0 10px
+      border 1px solid #ccc
+      margin-bottom 5px
+
+    ul
+      max-height 90vh
+
+      li
+        user-select none
+        cursor pointer
+        display block
+        padding 7.5px 20px
+        transition all .1s
+        margin 0
+        border-radius border-radius
+
+        &:hover
+          background #eee
+
+      .active
+        background #f6f6f7
+
+.open
+  & > span
+    box-shadow 0 0 1px 1px primary-color
+
+//RESPONSIVE
+@media only screen and (max-width: 992px)
+  .custom-dropdown
+    .dropdown-wrapper
+      left auto
+      right 0
+
+@media only screen and (max-width: 768px)
+  .rtl .custom-dropdown  .dropdown-wrapper .dropdown-inner
+    left 50%
+
+
+  .custom-dropdown
+    .dropdown-wrapper
+      position fixed
+      top 0
+      left 0
+      right  0
+      bottom  0
+      z-index 100
+
+      .layer
+        top 0
+        display block
+
+      .dropdown-inner
+        top 50%
+        left 50%
+        transform translate(-50%, -50%)
+
+      ul
+        max-height 60vh
+        li
+          padding 7.5px 15px

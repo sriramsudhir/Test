@@ -1,0 +1,148 @@
+@import "variables.styl"
+
+.layer
+  position fixed
+  top 0
+  bottom 0
+  left 0
+  right 0
+  z-index 1
+  background rgba(0, 0, 0, .4)
+  display none
+
+.user-addresses
+  .pop-over-content
+    padding-bottom 0!important
+
+.pop-over.has-layer
+  position fixed
+  top 0
+  bottom 0
+  left 0
+  right 0
+  display flex
+  align-items center
+  justify-content center
+
+.pop-over
+  z-index 1000
+
+  .pop-over-inner
+    left 50%
+    transform translateX(-50%)
+    min-width 400px
+    border-radius border-radius
+    box-shadow 0 1px 3px 0 rgba(0, 0, 0, .2)
+    border 1px solid #ccc
+    background #FFF
+    position absolute
+    z-index 1
+
+    .pop-over-content
+      overflow auto
+      max-height 500px
+
+    .right-btn
+      .close-icon
+        margin 0
+        height 14px
+        width 14px
+        min-width 14px
+        background-position 1.5% 1.5%
+
+    .pop-heading
+      .close-btn
+        background primary-lite-color
+
+    &:before
+    &:after
+      content ''
+      position absolute
+      left 50%
+      margin-left -10px
+      top -10px
+      width 0
+      height 0
+      border-left 10px solid transparent
+      border-right 10px solid transparent
+      border-bottom 10px solid #fff
+
+    &:before
+      top -11px
+      border-bottom 10px solid #aaa
+
+.has-layer
+  .pop-over-inner
+    border none
+
+  .layer
+    display block
+
+    & + .pop-over-inner
+      max-height 85vh
+      overflow auto
+
+      &:after
+      &:before
+        display none
+
+//RESPONSIVE
+@media only screen and (max-width: 992px)
+  .pop-over
+    position fixed
+    left 0
+    right 0
+    bottom 0
+    top 0
+
+    .pop-over-inner
+      border none
+      position absolute
+      left 50%
+      top 50%
+      margin-left 0
+      transform translate(-50%, -50%) !important
+
+      &:before
+      &:after
+        display none
+
+@media only screen and (max-width: 768px)
+  .layer-responsive
+    .layer
+      display block
+
+  .popup-top-auto.has-layer
+    .layer
+      & + .pop-over-inner
+        top auto
+        transform translate(0, 0) !important
+        min-width 0
+        border-radius 0
+        left 0
+        right 0
+        bottom 0
+        width 100%
+        max-width 100vw
+
+@media only screen and (max-width: 576px)
+  .pop-over
+    .pop-over-inner
+      min-width 0
+      border-radius border-radius border-radius 0 0
+
+  .has-layer
+    .layer
+      & + .pop-over-inner
+        top auto
+        bottom 0
+        left 0
+        right 0
+        max-height 100%
+        transform none!important
+
+@media only screen and (max-width: 320px)
+  .pop-over
+    .pop-over-content
+      &>div>.flex
+        flex-wrap wrap

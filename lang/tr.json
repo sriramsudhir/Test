@@ -1,0 +1,507 @@
+{
+  "accountLayout": {
+    "myProfile": "Profilim",
+    "myAddressBook": "Adres defterim",
+    "vouchers": "Kuponlar",
+    "myOrders": "Siparişlerim",
+    "myWishlist": "İstek listem",
+    "comparedList": "Karşılaştırılan liste"
+  },
+  "trackOrder": {
+    "estimatedDelivery": "Tahmini teslimat",
+    "estimated": "Tahmini",
+    "enterCode": "Siparişinizin parça kodunu girin",
+    "trackOrder": "Siparişinizi Takip Edin",
+    "orderStatus": "Siparişin Durumu",
+    "haveAnOrder": "Siparişiniz mi var? Siparişinizin şu an nerede olduğunu öğrenmek ister misiniz?",
+    "knowProgress": "Ürün teslimatınızın ilerleme durumunu öğrenin."
+  },
+  "addressPopup": {
+    "country": "Ülke",
+    "order": "Sipariş",
+    "state": "Devlet",
+    "email": "E-posta",
+    "name": "İsim",
+    "address": "Adres",
+    "city": "Şehir",
+    "zipCode": "Posta kodu",
+    "isRequired": "{type} gereklidir",
+    "phone": "Telefon",
+    "cancel": "İptal",
+    "update": "Güncelleme",
+    "thisAddress": "{type} bu adres",
+    "saving": "Kaydediliyor",
+    "save": "Kaydet",
+    "message": "Mesaj",
+    "addressPlaceholder": "Sokak adresi veya Posta Kutusu",
+    "address2Placeholder": "Apt, süit, birim, bina, kat vb.",
+    "subject": "Konu"
+  },
+  "ajaxButton": {
+    "gettingResponse": "Yanıt alınıyor",
+    "submit": "Gönder"
+  },
+  "cartProductTile": {
+    "bundleOffer": "Paket teklifi",
+    "fromPickupPlace": "Alım yerinden",
+    "noShipMessage": "Bu ürün {state} {country} adresine gönderilemez. Lütfen önce ürünün işaretini kaldırın veya gönderim adresini değiştirin",
+    "deleteAlert": "Gerçekten silmek istiyor musun?",
+    "fromLocation": "Konumdan"
+  },
+  "categoryListingLayout": {
+    "noItemFound": "Öğe bulunamadı."
+  },
+  "checkoutRight": {
+    "subtotalItems": "Ara toplam ({itemCount} öğe)",
+    "shipping": "Nakliye",
+    "total": "Toplam",
+    "proceedToCheckout": "Ödeme işlemine devam et",
+    "voucher": "kupon",
+    "submitting": "Gönderiliyor"
+  },
+  "contact": {
+    "errorOccurred": "Aşağıdaki hata oluştu",
+    "email": "e-posta",
+    "name": "ad",
+    "your": "Senin {type}",
+    "invalidEmail": "Geçersiz e-posta",
+    "success": "Başarılı",
+    "successMessage": "Mesajınızı aldık. En kısa sürede sizinle iletişime geçeceğiz.",
+    "goToHome": "Eve git",
+    "now": "şimdi",
+    "contactUs": "Seni duymaktan zevk alıyorum",
+    "feelFree": "Bizimle iletişime geçmekten çekinmeyin. Mümkün olan en kısa sürede geri döneceğiz."
+  },
+  "detailRight": {
+    "details": "Ayrıntılar",
+    "shippingFeeDetails": "Nakliye ve ücret detayları",
+    "transactionIsSecured": "İşlem güvenlidir",
+    "price": "Fiyat",
+    "shippingFee": "Kargo Ücreti",
+    "quantity": "Miktar",
+    "adding": "Ekleniyor",
+    "addToCart": "Sepete Ekle",
+    "secureTransaction": "Güvenli işlem",
+    "secureTransactionMsg": "Güvenliğinizi ve gizliliğinizi korumak için çok çalışıyoruz. Ödeme güvenlik sistemimiz, aktarım sırasında bilgilerinizi şifreler. Kredi kartı bilgilerinizi üçüncü taraf satıcılarla paylaşmayız.",
+    "arrives": "Gelir",
+    "addingToWishlist": "İstek listesine ekleniyor",
+    "removingFromWishlist": "Dilek listesinden kaldırılıyor",
+    "addToWishlist": "İstek listesine ekle",
+    "removeFromWishlist": "Dilek listesinden kaldır",
+    "outOfStock": "Bu ürün stoklarımızda tükenmiştir.",
+    "requiredAttributes": "Lütfen gerekli tüm özellikleri seçin.",
+    "exceedsInventory": "Ürün miktarı envanteri aşıyor.",
+    "buyNow": "Şimdi satın al",
+    "off": "{amount} kapalı",
+    "noReview": "Henüz inceleme yok."
+  },
+  "discover": {
+    "dailyDiscover": "Günlük keşif",
+    "showMore": "Daha fazlasını göster"
+  },
+  "dropdown": {
+    "choose": "Seç"
+  },
+  "featured": {
+    "featured": "Öne Çıkan",
+    "sold": "satıldı",
+    "showAll": "Tümünü göster"
+  },
+  "listingLayout": {
+    "sortBy": "Sırala",
+    "for": "için",
+    "close": "Kapat",
+    "paginationResult": "{total} sonuçtan {from} - {to} arası gösteriliyor",
+    "allProducts": "Tüm ürünler",
+    "price": "Fiyat",
+    "anyPrice": "Herhangi bir fiyat",
+    "go": "Git",
+    "priceLowToHigh": "Düşükten yükseğe fiyat",
+    "priceHighToLow": "Fiyat yüksekten düşüğe",
+    "avgCustomerReview": "Ort. müşteri yorumu",
+    "clear": "Temizle",
+    "up": "yukarı",
+    "max": "Maks",
+    "min": "Dakika",
+    "collections": "Koleksiyonlar",
+    "shippingOptions": "Gönderim Seçenekleri",
+    "brands": "Markalar",
+    "noProductFound": "Ürün bulunamadı.",
+    "showingResult": "Sonuç gösteriliyor",
+    "customerReviews": "Müşteri yorumları",
+    "loading": "Yükleniyor",
+    "filter": "Filtre"
+  },
+  "orderCancelPopup": {
+    "cancelOrder": "Siparişi iptal et",
+    "title": "Başlık",
+    "titleSmall": "başlık",
+    "SendMessage": "Mesaj gönder"
+  },
+  "orderTabbing": {
+    "cancelled": "İptal edildi",
+    "cardPayment": "Kartla ödeme",
+    "paid": "Ücretli",
+    "unPaid": "Ödenmemiş",
+    "cod": "Kapıda ödeme"
+  },
+  "payButton": {
+    "placedSuccess": "Siparişiniz başarıyla verilmiştir."
+  },
+  "productImage": {
+    "rollOver": "Yakınlaştırmak için resmin üzerine gelin",
+    "extendedView": "Genişletilmiş görünüm için resme tıklayın"
+  },
+  "productReview": {
+    "customerReviews": "Müşteri yorumları",
+    "reviews": "{count} İnceleme",
+    "outOf": "5 üzerinden",
+    "star": "{count} yıldız",
+    "peopleReviewed": "{count} kişiler bu ürünü inceledi"
+  },
+  "productDynamic": {
+    "pageOf": "Sayfa {current} / {total}",
+    "extendedView": "Genişletilmiş görünüm için resme tıklayın"
+  },
+  "quantityNav": {
+    "maximumExceeds": "Maksimum miktar aşılıyor.",
+    "min": "En az 1 adet olmalıdır."
+  },
+  "ratePopup": {
+    "addImage": "Resim Ekle",
+    "rateNow": "Şimdi Değerlendir",
+    "uploadingError": "Görsellerden bazıları yüklenirken bir hata oluştu.",
+    "supportedImage": "Desteklenen görseller: jpg, png(Maksimum boyut: {max}kb)"
+  },
+  "searchPopup": {
+    "suggestedSearch": "Önerilen Arama Anahtar Kelimeleri",
+    "products": "Ürünler",
+    "nothingFound": "Hiçbir şey bulunamadı",
+    "categories": "Kategoriler"
+  },
+  "socialShare": {
+    "share": "Paylaş",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "pinterest": "Pinterest"
+  },
+  "stripePayment": {
+    "bestDeal": "En iyi teklifi al",
+    "creditDebit": "Kredi veya banka kartı",
+    "creditExpiry": "Kredi vadesi",
+    "creditCvc": "CVC",
+    "placing": "Yerleştirme",
+    "pay": "{amount} öde"
+  },
+  "suggestedProducts": {
+    "recommendedForYou": "Sizin için önerilir",
+    "alsoViewed": "Bu öğeyi görüntüleyenler bunları da inceledi"
+  },
+  "toastMessage": {
+    "error": "Hata"
+  },
+  "userAddress": {
+    "noAddress": "Adres bulunamadı.",
+    "deleting": "Siliniyor",
+    "delete": "Sil",
+    "edit": "Düzenle"
+  },
+  "vouchers": {
+    "noVoucher": "Kupon bulunamadı.",
+    "minSpend": "Min. harcama",
+    "valid": "Geçerli"
+  },
+  "footer": {
+    "siteLogo": "Site Logosu",
+    "services": "Hizmetler",
+    "about": "Hakkında",
+    "social": "Sosyal",
+    "allRights": "Tüm hakları saklıdır",
+    "payment": "Ödeme"
+  },
+  "store": {
+    "avgRating": "Bu satıcının ürünlerinin ortalama puanı",
+    "noData": "Mağaza bulunamadı.",
+    "memberSince": "Üye olma tarihi",
+    "visitStore": "Mağazayı Ziyaret Et",
+    "follow": "Takip et",
+    "following": "Takip ediliyor",
+    "unFollowing": "Takip etmeyi bırak",
+    "followingStores": "Takip Edilen Mağazalar"
+  },
+  "header": {
+    "searchHere": "Burada Ara",
+    "trackOrder": "Siparişi Takip Et",
+    "account": "Hesabım",
+    "login": "Giriş",
+    "register": "Kayıt Ol",
+    "profile": "Profil",
+    "orders": "Siparişler",
+    "vouchers": "Kuponlar",
+    "logout": "Çıkış",
+    "cart": "Sepet",
+    "wishList": "Dilek Listesi",
+    "comparedList": "Karşılaştırılan Liste"
+  },
+  "empty": {
+    "welcome": "Hoş geldiniz {name}",
+    "or": "VEYA",
+    "loginFacebook": "Facebook ile giriş yap",
+    "loginGoogle": "Google ile giriş yap",
+    "agreement": "Devam ederek şunları kabul etmiş olursunuz",
+    "privacyPolicy": "Gizlilik politikası"
+  },
+  "error": {
+    "sorry": "ÜZGÜNÜZ",
+    "try": "Dene",
+    "reload": "Yeniden Yükle",
+    "or": "veya",
+    "goHome": "Ana sayfaya git"
+  },
+  "ratingStar": {
+    "outOf": "|5 üzerinden{rating}"
+  },
+  "product": {
+    "home": "Ev",
+    "rating": "Derecelendirme",
+    "endsIn": "Bitiyor",
+    "bundleDeal": "Paket anlaşma",
+    "brand": "Marka",
+    "readLess": "Daha az oku",
+    "readMore": "Devamını oku",
+    "authentic": "%100 orijinal",
+    "refundWarranty": "Geri ödeme ve garanti",
+    "compare": "Karşılaştır",
+    "removeCompare": "Karşılaştırmayı kaldır",
+    "shocking": "ŞOK SATIŞ"
+  },
+  "order": {
+    "orderCancelled": "Bu sipariş iptal edildi",
+    "orderRefunded": "Bu siparişin geri ödemesi yapıldı",
+    "order": "Sipariş",
+    "orderMethod": "Sipariş yöntemi",
+    "orderDate": "Sipariş tarihi",
+    "orderAmount": "Sipariş miktarı",
+    "paymentStatus": "Ödeme durumu",
+    "image": "Resim",
+    "cancellationMessage": "İptal mesajını görüntüle",
+    "cancelOrder": "Bu siparişi iptal et",
+    "subtotal": "Ara toplam",
+    "shippingCost": "Nakliye maliyeti",
+    "shipTo": "Gönderim",
+    "deliveryFee": "Kargo Ücreti",
+    "deliveryStatus": "Teslimat durumu"
+  },
+  "addresses": {
+    "addAddress": "Yeni adres ekle",
+    "try": "Aramayı deneyin veya",
+    "goHome": "Ana sayfaya git"
+  },
+  "orders": {
+    "noOrderYet": "Henüz sipariş yok.",
+    "manageOrder": "Siparişi yönet",
+    "shippingStatus": "Gönderim durumu",
+    "loggedWith": "Şununla oturum açıldı",
+    "updateProfile": "Profili Güncelle",
+    "qty": "Adet"
+  },
+  "profile": {
+    "password": "Şifre",
+    "updatePassword": "Şifreyi güncelle",
+    "retypePassword": "Parolayı yeniden yazın",
+    "currentPassword": "Geçerli şifre",
+    "confirmPassword": "Şifreyi onayla",
+    "yourCurrentPassword": "Geçerli şifreniz",
+    "newPassword": "Yeni şifre",
+    "invalidLength": "Geçersiz Şifre Uzunluğu",
+    "noMatch": "Parola eşleşmedi",
+    "google": "Google",
+    "facebook": "Facebook",
+    "updatingPassword": "Şifre Güncelleniyor"
+  },
+  "wishlist": {
+    "noWishlist": "İstek listesine eklenmiş ürün bulunamadı."
+  },
+  "compared": {
+    "noData": "Karşılaştırılan ürün bulunamadı."
+  },
+  "cart": {
+    "shoppingCart": "Alışveriş sepeti",
+    "selectItems": "Tüm öğeleri seç",
+    "deselectItems": "Tüm öğelerin seçimini kaldır",
+    "subtotal": "Ara toplam ({items} öğe)",
+    "noSelected": "Öğe Seçilmedi",
+    "tax": "Vergi",
+    "productAdded": "Ürün başarıyla sepete eklendi"
+  },
+  "checkout": {
+    "selectPayment": "Ödeme yöntemini seçin",
+    "apply": "Uygula",
+    "applying": "Uygulanıyor",
+    "payNow": "Şimdi öde",
+    "voucherCode": "Kod",
+    "confirmOrderAnd": "Siparişi onayla ve şimdi öde ({amount})",
+    "confirmOrder": "Siparişi onayla",
+    "noPayment": "Şu anda herhangi bir ödeme yöntemi mevcut değil"
+  },
+  "forgotPassword": {
+    "errorOccurred": "Aşağıdaki hata oluştu",
+    "sentEmail": "Size bir kod içeren bir e-posta gönderdik. Parolanızı güncellemek için lütfen kodu kod alanına yapıştırın.",
+    "code": "Kod",
+    "signIn": "Giriş Yap",
+    "youCan": "Yapabilirsin",
+    "verified": "Hesabınızı başarıyla doğruladınız.",
+    "congratulations": "Tebrikler",
+    "createAccount": "Hesap oluştur",
+    "noAccount": "Hesabınız yok mu?",
+    "registering": "Kayıt",
+    "codeFrom": "Postadan gelen kod"
+  },
+  "login": {
+    "password": "şifre",
+    "loggingIn": "Giriş yapılıyor",
+    "forgotPassword": "Şifremi unuttum"
+  },
+  "razorpayCallback": {
+    "wait": "Lütfen bekleyin"
+  },
+  "register": {
+    "haveAccount": "Zaten bir hesabınız var mı?",
+    "sentEmail": "Size bir kod içeren bir e-posta gönderdik. Lütfen hesabınızı doğrulamak için aşağıdaki kodu yapıştırın."
+  },
+  "shipping": {
+    "instruction": "Teslimat talimatı",
+    "ordered": "Sipariş Edilen Ürünler",
+    "addAddress": "Lütfen önce bir adres ekleyin.",
+    "unableShipped": "Ürün sevkiyatı yapılamamaktadır.",
+    "noProductSelected": "Seçtiğiniz ürün bulunmamaktadır. Lütfen önce bir ürün seçiniz.",
+    "proceed": "Ödeme işlemine devam et",
+    "shippingOption": "Gönderim seçeneğini ayarla"
+  },
+  "productHelper": {
+    "refundable": "İade edilebilir",
+    "notRefundable": "İade edilmez",
+    "mindChange": "Fikir değişikliği geçerli değildir",
+    "available": "Garanti mevcut",
+    "notAvailable": "Garanti mevcut değil"
+  },
+  "util": {
+    "location": "Konum",
+    "pickup": "Alım",
+    "pending": "Beklemede",
+    "confirmed": "Onaylandı",
+    "pickedUp": "Alındı",
+    "onWay": "Yolda",
+    "delivered": "Teslim edildi",
+    "creditDebit": "Kredi/Banka kartı",
+    "paypal": "Paypal",
+    "stripe": "Şerit",
+    "flutterwave": "Çarpıntı dalgası",
+    "razorpay": "Razorpay"
+  },
+  "home": {
+    "mail": "Posta",
+    "helpline": "Yardım hattı",
+    "shortPeriod": "Kısa bir süre ile",
+
+    "subscribeNewsletter": "Bültenimize Abone Olun",
+    "getLatestEmail": "En son güncellememizi e-postanıza alın",
+    "subscribe": "Abone Ol",
+    "subscribeSuccessMsg": "Bültenimize başarıyla abone oldunuz.",
+    "secureTransaction": "Güvenli işlem",
+    "off": "{percent}% indirim"
+  },
+  "detail": {
+    "inStock": "Stokta",
+    "outOfStock": "Tükendi"
+  },
+  "sitemap": {
+    "find": "Size uygun ürünü bulun",
+    "stock": "Sonsuz stoktan yüzlerce ürün al"
+  },
+  "payment": {
+    "paypal": "Paypal ile Öde",
+    "flutterwave": "Flutterwave ile Öde",
+    "stripe": "Stripe ile Öde",
+    "razorpay": "Razorpay ile Öde",
+    "bestDeal": "En iyi teklifi al"
+  },
+  "filter": {
+    "hideAll": "Hepsini sakla",
+    "shop": "Alışveriş Kuponları",
+    "rating": "Derecelendirme ve İnceleme",
+    "copied": "kopyalandı",
+    "copy": "kopyala",
+    "ckout": "Çıkış yapmak",
+    "address": "Kullanıcı Adresi",
+    "iyzicoPayment": "Iyzico payment",
+    "payIyzico": "Pay with Iyzico",
+    "placed": "Yer almak {date}",
+    "featured": "Öne Çıkan {title}",
+    "success": "Başarı",
+    "addSucc": "{msg} adresinin adresi başarıyla!!!"
+  },
+  "date": {
+    "sat": "Cumartesi",
+    "sun": "Pazar",
+    "mon": "Pazartesi",
+    "tue": "Salı",
+    "wed": "Çarşamba",
+    "thu": "Perşembe",
+    "fri": "Cuma",
+    "jan": "Oca",
+    "feb": "Şubat",
+    "mar": "Mar",
+    "apr": "Nisan",
+    "may": "mayıs",
+    "jun": "haz",
+    "jul": "Temmuz",
+    "aug": "Ağustos",
+    "sep": "Eylül",
+    "oct": "eki",
+    "nov": "kas",
+    "dec": "Ara",
+    "ddddMMMD": "{day}, {mon} {date}",
+    "MMMDDYYYY": "{mon} {date}, {year}",
+    "da": "Hesabı sil",
+    "addr": "adresler",
+    "gb": "Geri gitmek",
+    "bav": "Satıcı olun",
+    "nf": "Bu sayfa bulunamadı",
+    "sn": "Mağaza adı",
+    "bt": "Banka havalesi",
+    "pv": "Ödeme doğrulama",
+    "vp": "Ödemeyi doğrula",
+    "ti": "Trans Kimliği",
+    "bn": "Banka adı",
+    "ahn": "Hesap Sahibi Adı",
+    "an": "Hesap Numarası",
+    "brn": "Şube Adı",
+    "kr": "Ödemenizi lütfen doğrudan sağladığınız banka bilgilerine gönderin. İşlem kimliğini eklediğinizden ve ödeme doğrulaması için gönderdiğinizden emin olun.",
+    "pds": "Ödeme verileri başarıyla gönderildi",
+    "cb": "Web sitesi, web sitemizde en iyi deneyimi yaşamanızı sağlamak için çerezleri kullanır.",
+    "gi": "Anladım",
+    "fi": "Özellik Resmi",
+    "dad": "Teslimat Adresi",
+    "os": "Sipariş Özeti",
+    "ptp": "Ödemeye Devam Et",
+    "ttl": "Bu siparişteki toplam tasarruf tutarınız",
+    "pa": "Adresi almak",
+    "tl": "Arama",
+    "reg": "Birkaç kolay adımla hemen kaydolun!",
+    "sr": "Satıcı Kaydı",
+    "pm": "Lütfen formu gerçek bilgilerinizle doldurduğunuzdan emin olun, aksi takdirde hesabınız yasaklanabilir veya askıya alınabilir.",
+    "yw": "Hesabınız onaylandıktan sonra bir e-posta alacaksınız.",
+    "gh": "Eve Git",
+    "offer": "{amount}% Teklif"
+  },
+  "invent": {
+    "fs": "Ücretsiz kargo",
+    "fre": "Özgür",
+
+    "pf": "Payfast",
+    "pc": "Ödeme iptal edildi",
+    "pv": "Ödeme doğrulanamadı",
+    "in": "Geçersiz numara"
+  }
+}

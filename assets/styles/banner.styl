@@ -1,0 +1,37 @@
+.banner-wrapper
+  position relative
+
+  .btn-banner-close
+    position absolute
+    top 10px
+    right 10px
+    line-height 1
+    height auto !important
+    display flex
+    align-items center
+    background rgba(255, 255, 255, .7)
+    padding 3px
+    border-radius 100px
+
+    i
+      height 18px
+      width 18px
+      min-width 18px
+      margin 0
+
+@media only screen and (max-width: 992px)
+  .banner-wrapper
+    .btn-banner-close
+      i
+        height 16px
+        width 16px
+        min-width 16px
+
+
+@media only screen and (max-width: 576px)
+  .banner-wrapper
+    .btn-banner-close
+      i
+        height 12px
+        width 12px
+        min-width 12px

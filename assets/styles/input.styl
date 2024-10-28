@@ -1,0 +1,39 @@
+.rtl .icon-input i
+  left auto
+  right 10px
+
+.rtl .icon-input i.right-icon input
+  padding-left 0 !important
+  padding-right 40px !important
+
+.rtl .icon-input.right-icon i:last-child
+  left 10px
+  right auto
+
+.rtl .icon-input input
+  padding-right 40px !important
+  padding-left 0 !important
+
+
+.icon-input
+  position relative
+
+  i
+    opacity .6
+    text-align center
+    position absolute
+    left 10px
+    top 50%
+    transform translateY(-50%)
+
+  &.right-icon
+    input
+      padding-right 40px !important
+
+    i:last-child
+      cursor pointer
+      left auto
+      right 10px
+
+  input
+    padding-left 40px !important

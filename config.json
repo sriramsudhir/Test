@@ -1,0 +1,81 @@
+{
+  "api": {
+    "url": "api/v1/",
+    "common": "common",
+    "home": "home",
+    "all": "all",
+    "products": "products",
+    "categories": "categories",
+    "brands": "brands",
+    "flashProducts": "flash-sale",
+    "flashSales": "flash-sale",
+    "product": "product",
+    "page": "page",
+    "store": "store",
+    "search": "search",
+    "contact": "contact",
+    "reviews": "reviews",
+    "trackOder": "track-order",
+    "suggested_products": "suggested-products",
+    "login": "user/signin",
+
+    "register": "user/signup",
+    "sellerRegister": "seller/signup",
+
+
+    "logout": "user/logout",
+    "profile": "user/profile",
+    "userAddressAll": "user/address/all",
+    "userAddressAction": "user/address/action",
+    "userAddressDelete": "user/address/delete",
+
+    "localization": "localization",
+    "countriesPhones": "countries-phones",
+
+    "userWishlistAll": "user/wishlist/all",
+    "userWishlistAction": "user/wishlist/action",
+
+    "compareListAll": "user/compare-list/all",
+    "compareListAction": "user/compare-list/action",
+
+    "followStore": "user/store/follow",
+    "followingListAll": "user/store/following-list",
+
+    "deleteAccount": "user/delete",
+
+    "paymentGateway": "payment-gateway",
+    "userVouchers": "user/user-vouchers",
+    "updateProfile": "user/update-profile",
+
+    "updateUserPassword": "user/update-user-password",
+    "verify": "user/verify",
+    "sellerVerify": "seller/verify",
+
+    "forgotPassword": "user/forgot-password",
+    "updatePassword": "user/update-password",
+    "socialLogin": "user/social-login/redirect",
+    "cartByUser": "cart/by-user",
+    "cartAction": "cart/action",
+    "buyNow": "cart/buy-now",
+    "cartDelete": "cart/delete",
+    "cartChanged": "cart/change",
+    "updateCartShipping": "cart/update-shipping",
+    "orderAction": "order/action",
+    "paymentDone": "order/payment-done",
+    "setTransaction": "order/transaction",
+
+
+
+    "cancelOrder": "cancellation/cancel-order",
+    "cancellationFind": "cancellation/find",
+    "orderByUser": "order/by-user",
+    "voucherValidity": "voucher/validity",
+    "ratingReviewAction": "rating-review/action",
+    "ratingReviewFind": "rating-review/find",
+    "sendOrderEmail": "order/send-order-email",
+    "emailSubscription": "email-subscription",
+    "configured": "install/configured",
+    "setDatabase": "install/set-database",
+    "setPermission": "install/set-permission"
+  }
+}

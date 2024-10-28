@@ -1,0 +1,508 @@
+{
+  "accountLayout": {
+    "myProfile": "ملفي الشخصي",
+    "myAddressBook": "دفتر عناويني",
+    "vouchers": "قسائم",
+    "myOrders": "أوامري",
+    "myWishlist": "قائمة أمنياتي",
+    "comparedList": "قائمة مقارنة"
+  },
+  "trackOrder": {
+    "estimatedDelivery": "التسليم المقدّر",
+    "estimated": "مقدر",
+    "enterCode": "أدخل رمز المسار الخاص بطلبك",
+    "trackOrder": "تتبع طلبك",
+    "orderStatus": "حالة الأمر",
+    "haveAnOrder": "هل لديك طلب؟ هل تريد معرفة مكان طلبك الآن؟",
+    "knowProgress": "اعرف التقدم المحرز في تسليم المنتج الخاص بك."
+  },
+  "addressPopup": {
+    "country": "البلد",
+    "order": "طلب",
+    "state": "الولاية",
+    "email": "البريد الإلكتروني",
+    "name": "الاسم",
+    "address": "العنوان",
+    "city": "المدينة",
+    "zipCode": "الرمز البريدي",
+    "isRequired": "{type} مطلوب",
+    "phone": "الهاتف",
+    "cancel": "إلغاء",
+    "update": "تحديث",
+    "thisAddress": "{type} هذا العنوان",
+    "saving": "حفظ",
+    "save": "حفظ",
+    "message": "رسالة",
+    "addressPlaceholder": "عنوان الشارع أو صندوق البريد",
+    "address2Placeholder": "شقة , جناح , وحدة , مبنى , طابق , إلخ.",
+    "subject": "الموضوع"
+  },
+  "ajaxButton": {
+    "gettingResponse": "الحصول على رد",
+    "submit": "إرسال"
+  },
+  "cartProductTile": {
+    "bundleOffer": "عرض الحزمة",
+    "fromPickupPlace": "من مكان الاستلام",
+    "noShipMessage": "لا يمكن شحن هذا المنتج إلى {state} {country}. الرجاء إلغاء تحديد المنتج أولاً أو تغيير عنوان الشحن",
+    "deleteAlert": "هل تريد حقًا الحذف؟",
+    "fromLocation": "من الموقع"
+  },
+  "categoryListingLayout": {
+    "noItemFound": "لم يتم العثور على عنصر."
+  },
+  "checkoutRight": {
+    "subtotalItems": "المجموع الفرعي ({itemCount} عناصر)",
+    "shipping": "الشحن",
+    "total": "المجموع",
+    "proceedToCheckout": "تابع الدفع",
+    "voucher": "قسيمة",
+    "submitting": "تقديم"
+  },
+  "contact": {
+    "errorOccurred": "حدث الخطأ التالي",
+    "email": "البريد الإلكتروني",
+    "name": "الاسم",
+    "your": "لك {type}",
+    "invalidEmail": "بريد إلكتروني غير صالح",
+    "success": "نجاح",
+    "successMessage": "لقد تلقينا رسالتك. سوف نتصل بك في أقرب وقت ممكن.",
+    "goToHome": "اذهب الى المنزل",
+    "now": "الآن",
+    "contactUs": "أحب أن أسمع منك",
+    "feelFree": "لا تتردد في الاتصال بنا. وسنعاود الاتصال بأسرع ما يمكن."
+  },
+  "detailRight": {
+    "details": "التفاصيل",
+    "shippingFeeDetails": "تفاصيل الشحن والرسوم",
+    "transactionIsSecured": "المعاملة مؤمنة",
+    "price": "السعر",
+    "shippingFee": "رسوم الشحن",
+    "quantity": "الكمية",
+    "adding": "الإضافة",
+    "addToCart": "أضف إلى عربة التسوق",
+    "secureTransaction": "معاملة آمنة",
+    "secureTransactionMsg": "نحن نعمل بجد لحماية أمنك وخصوصيتك. يقوم نظام أمان الدفع لدينا بتشفير معلوماتك أثناء الإرسال. ولا نشارك تفاصيل بطاقة الائتمان الخاصة بك مع البائعين الخارجيين.",
+    "arrives": "يصل",
+    "addingToWishlist": "إضافة إلى قائمة الرغبات",
+    "removingFromWishlist": "إزالة من قائمة الرغبات",
+    "addToWishlist": "أضف إلى قائمة الامنيات",
+    "removeFromWishlist": "إزالة من قائمة الرغبات",
+    "outOfStock": "هذا المنتج غير متوفر في المخزون.",
+    "requiredAttributes": "الرجاء تحديد كافة السمات المطلوبة.",
+    "exceedsInventory": "كمية المنتج تتجاوز المخزون",
+    "buyNow": "اشترِ الآن",
+    "off": "{amount} عن",
+    "noReview": "لا يوجد مراجعة حتى الآن"
+  },
+  "discover": {
+    "dailyDiscover": "اكتشف يوميًا",
+    "showMore": "إظهار المزيد"
+  },
+  "dropdown": {
+    "choose": "اختر"
+  },
+  "featured": {
+    "featured": "مميزة",
+    "sold": "تباع",
+    "showAll": "إظهار الكل"
+  },
+  "listingLayout": {
+    "sortBy": "فرز حسب",
+    "for": "for",
+    "close": "إغلاق",
+    "paginationResult": "عرض {from} إلى {to} من {total} نتيجة",
+    "allProducts": "كل المنتجات",
+    "price": "السعر",
+    "anyPrice": "أي سعر",
+    "go": "يذهب",
+    "priceLowToHigh": "السعر الأدنى للأعلى",
+    "priceHighToLow": "السعر من الأعلى إلى الأقل",
+    "avgCustomerReview": "متوسط آراء العملاء",
+    "clear": "مسح",
+    "up": "أعلى",
+    "max": "ماكس",
+    "min": "دقيقة",
+    "collections": "المجموعات",
+    "shippingOptions": "خيارات الشحن",
+    "brands": "العلامات التجارية",
+    "noProductFound": "لم يتم العثور على منتج.",
+    "showingResult": "إظهار النتيجة",
+    "customerReviews": "مراجعات العملاء",
+    "loading": "تحميل",
+    "filter": "تصفية"
+  },
+  "orderCancelPopup": {
+    "cancelOrder": "إلغاء الطلب",
+    "title": "عنوان",
+    "titleSmall": "العنوان",
+    "SendMessage": "إرسال رسالة"
+  },
+  "orderTabbing": {
+    "cancelled": "ملغاة",
+    "cardPayment": "دفع بالبطاقة",
+    "paid": "مدفوعة",
+    "unPaid": "غير مدفوعة",
+    "cod": "الدفع عند الاستلام"
+  },
+  "payButton": {
+    "placedSuccess": "تم تقديم طلبك بنجاح."
+  },
+  "productImage": {
+    "rollOver": "مرر فوق الصورة للتكبير",
+    "extendedView": "انقر على الصورة لعرض موسع"
+  },
+  "productReview": {
+    "customerReviews": "مراجعات العملاء",
+    "reviews": "مراجعة {count}",
+    "outOf": "من 5",
+    "star": "نجمة {count}",
+    "peopleReviewed": "{count} الأشخاص راجعوا هذا المنتج"
+  },
+  "productDynamic": {
+    "pageOf": "الصفحة {current} من {total}",
+    "extendedView": "انقر على الصورة لعرض موسع"
+  },
+  "quantityNav": {
+    "maximumExceeds": "الكمية القصوى تتجاوز",
+    "min": "يجب أن يكون لديك عنصر واحد على الأقل."
+  },
+  "ratePopup": {
+    "addImage": "إضافة صورة",
+    "rateNow": "التقييم الآن",
+    "uploadingError": "حدث خطأ أثناء تحميل بعض الصور.",
+    "supportedImage": "الصور المدعومة: jpg , png (الحجم الأقصى: {max} kb)"
+  },
+  "searchPopup": {
+    "suggestedSearch": "الكلمات الرئيسية للبحث المقترحة",
+    "products": "المنتجات",
+    "nothingFound": "لم يتم العثور على شيء لـ",
+    "categories": "الفئات"
+  },
+  "socialShare": {
+    "share": "مشاركة",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "pinterest": "Pinterest"
+  },
+  "stripePayment": {
+    "bestDeal": "احصل على أفضل صفقة",
+    "creditDebit": "بطاقة الائتمان أو الخصم",
+    "creditExpiry": "انتهاء صلاحية الائتمان",
+    "creditCvc": "CVC",
+    "placing": "وضع",
+    "pay": "ادفع {amount}"
+  },
+  "suggestedProducts": {
+    "recommendedForYou": "موصى به لك",
+    "alsoViewed": "الأشخاص الذين شاهدوا هذا العنصر شاهدوا أيضًا"
+  },
+  "toastMessage": {
+    "error": "خطأ"
+  },
+  "userAddress": {
+    "noAddress": "لم يتم العثور على عنوان.",
+    "deleting": "حذف",
+    "delete": "حذف",
+    "edit": "تحرير"
+  },
+  "vouchers": {
+    "noVoucher": "لم يتم العثور على قسيمة.",
+    "minSpend": "الحد الأدنى للإنفاق",
+    "valid": "صالح"
+  },
+  "footer": {
+    "siteLogo": "شعار الموقع",
+    "services": "الخدمات",
+    "about": "حول",
+    "social": "اجتماعي",
+    "allRights": "جميع الحقوق محفوظة",
+    "payment": "الدفع"
+  },
+  "store": {
+    "avgRating": "متوسط تقييم منتجات البائع هو",
+    "noData": "لم يتم العثور على متجر.",
+    "memberSince": "عضو منذ",
+    "visitStore": "زيارة المتجر",
+    "follow": "متابعة",
+    "following": "متابعة",
+    "unFollowing": "إلغاء المتابعة",
+    "followingStores": "المتاجر التالية"
+  },
+  "header": {
+    "searchHere": "ابحث هنا",
+    "trackOrder": "تتبع الطلب",
+    "account": "حسابي",
+    "login": "تسجيل الدخول",
+    "register": "تسجيل",
+    "profile": "الملف الشخصي",
+    "orders": "الطلبات",
+    "vouchers": "قسائم",
+    "logout": "تسجيل الخروج",
+    "cart": "عربة التسوق",
+    "wishList": "قائمة الرغبات",
+    "comparedList": "قائمة مقارنة"
+  },
+  "empty": {
+    "welcome": "{name} مرحبًا بك في",
+    "or": "أو",
+    "loginFacebook": "تسجيل الدخول بالفيسبوك",
+    "loginGoogle": "تسجيل الدخول باستخدام google",
+    "agreement": "من خلال المتابعة , فإنك توافق على",
+    "privacyPolicy": "سياسة الخصوصية"
+  },
+  "error": {
+    "sorry": "آسف",
+    "try": "جرب",
+    "reload": "إعادة تحميل",
+    "or": "أو",
+    "goHome": "اذهب إلى الصفحة الرئيسية"
+  },
+  "ratingStar": {
+    "outOf": "{rating} من 5"
+  },
+  "product": {
+    "home": "الصفحة الرئيسية",
+    "rating": "التصنيف",
+    "endsIn": "ينتهي بـ",
+    "bundleDeal": "صفقة الحزمة",
+    "brand": "العلامة التجارية",
+    "readLess": "قراءة أقل",
+    "readMore": "قراءة المزيد",
+    "authentic": "أصلية 100٪",
+    "refundWarranty": "رد الأموال والضمان",
+    "compare": "قارن",
+    "removeCompare": "إزالة المقارنة",
+    "shocking": "بيع صادم"
+  },
+  "order": {
+    "orderCancelled": "تم إلغاء هذا الطلب",
+    "orderRefunded": "تم رد أموال هذا الطلب",
+    "order": "طلب",
+    "orderMethod": "طريقة الطلب",
+    "orderDate": "تاريخ الطلب",
+    "orderAmount": "مبلغ الطلب",
+    "paymentStatus": "حالة الدفع",
+    "image": "صورة",
+    "cancellationMessage": "عرض رسالة الإلغاء",
+    "cancelOrder": "إلغاء هذا الطلب",
+    "subtotal": "المجموع الفرعي",
+    "shippingCost": "تكلفة الشحن",
+    "shipTo": "شحن إلى",
+    "deliveryFee": "رسوم التوصيل",
+    "deliveryStatus": "حالة التسليم"
+  },
+  "addresses": {
+    "addAddress": "إضافة عنوان جديد",
+    "try": "جرب البحث أو",
+    "goHome": "اذهب إلى الصفحة الرئيسية"
+  },
+  "orders": {
+    "noOrderYet": "لا يوجد طلب حتى الآن",
+    "manageOrder": "إدارة الطلب",
+    "shippingStatus": "حالة الشحن",
+    "loggedWith": "تسجيل الدخول باستخدام",
+    "updateProfile": "تحديث الملف الشخصي",
+    "qty": "الكمية"
+  },
+  "profile": {
+    "password": "كلمة المرور",
+    "updatePassword": "تحديث كلمة المرور",
+    "retypePassword": "إعادة كتابة كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "yourCurrentPassword": "كلمة مرورك الحالية",
+    "newPassword": "كلمة مرور جديدة",
+    "invalidLength": "طول كلمة المرور غير صالح",
+    "noMatch": "كلمة المرور غير متطابقة",
+    "google": "Google",
+    "facebook": "Facebook",
+    "updatingPassword": "تحديث كلمة المرور"
+  },
+  "wishlist": {
+    "noWishlist": "لم يتم العثور على منتج في قائمة الرغبات."
+  },
+  "compared": {
+    "noData": "لم يتم العثور على منتج مقارنة."
+  },
+  "cart": {
+    "shoppingCart": "عربة التسوق",
+    "selectItems": "حدد كافة العناصر",
+    "deselectItems": "إلغاء تحديد كافة العناصر",
+    "subtotal": "المجموع الفرعي ({items} عناصر)",
+    "noSelected": "لم يتم تحديد أي عنصر",
+    "tax": "الضرائب",
+    "productAdded": "تمت إضافة المنتج إلى سلة التسوق بنجاح"
+  },
+  "checkout": {
+    "selectPayment": "حدد طريقة الدفع",
+    "apply": "تطبيق",
+    "applying": "تطبيق",
+    "payNow": "ادفع الآن",
+    "voucherCode": "كود",
+    "confirmOrderAnd": "تأكيد الطلب والدفع الآن ({amount})",
+    "confirmOrder": "تأكيد الطلب",
+    "noPayment": "لا توجد طريقة دفع متاحة حاليًا"
+  },
+  "forgotPassword": {
+    "errorOccurred": "حدث الخطأ التالي",
+    "sentEmail": "لقد أرسلنا إليك بريدًا إلكترونيًا يحتوي على رمز. يرجى لصق الرمز في حقل الرمز لتحديث كلمة المرور الخاصة بك.",
+    "code": "كود",
+    "signIn": "تسجيل الدخول",
+    "youCan": "يمكنك",
+    "verified": "لقد نجحت في التحقق من حسابك.",
+    "congratulations": "مبروك",
+    "createAccount": "إنشاء حساب",
+    "noAccount": "ليس لديك حساب؟",
+    "registering": "تسجيل",
+    "codeFrom": "رمز من البريد"
+  },
+  "login": {
+    "password": "كلمة المرور",
+    "loggingIn": "تسجيل الدخول",
+    "forgotPassword": "نسيت كلمة المرور"
+  },
+  "razorpayCallback": {
+    "wait": "من فضلك انتظر"
+  },
+  "register": {
+    "haveAccount": "هل لديك حساب بالفعل؟",
+    "sentEmail": "لقد أرسلنا إليك بريدًا إلكترونيًا يحتوي على رمز. يرجى لصق الرمز أدناه للتحقق من حسابك."
+  },
+  "shipping": {
+    "instruction": "تعليمات التسليم",
+    "ordered": "المنتجات المطلوبة",
+    "addAddress": "الرجاء إضافة عنوان أولاً.",
+    "unableShipped": "المنتج غير قادر على الشحن.",
+    "noProductSelected": "ليس لديك أي منتج محدد. الرجاء تحديد منتج أولاً.",
+    "proceed": "تابع الدفع",
+    "shippingOption": "تعيين خيار الشحن"
+  },
+  "productHelper": {
+    "refundable": "مستردة",
+    "notRefundable": "غير قابلة للاسترداد",
+    "mindChange": "تغيير العقل لا ينطبق",
+    "available": "الضمان متاح",
+    "notAvailable": "الضمان غير متوفر"
+  },
+  "util": {
+    "location": "الموقع",
+    "pickup": "بيك أب",
+    "pending": "معلق",
+    "confirmed": "مؤكد",
+    "pickedUp": "التقطت",
+    "onWay": "على الطريق",
+    "delivered": "تم التسليم",
+    "creditDebit": "بطاقة الائتمان / الخصم",
+    "paypal": "Paypal",
+    "stripe": "شريط",
+    "flutterwave": "Flutterwave",
+    "razorpay": "Razorpay"
+  },
+  "home": {
+    "mail": "بريد",
+    "helpline": "خط المساعدة",
+    "shortPeriod": "بفترة زمنية قصيرة",
+
+    "subscribeNewsletter": "اشترك في النشرة الإخبارية لدينا",
+    "getLatestEmail": "احصل على آخر تحديث في بريدك الإلكتروني",
+    "subscribe": "اشتراك",
+    "subscribeSuccessMsg": "لقد اشتركت بنجاح في النشرة الإخبارية لدينا.",
+    "secureTransaction": "معاملة آمنة",
+    "off": "{percent}٪ خصم"
+  },
+  "detail": {
+    "inStock": "متوفر",
+    "outOfStock": "غير متوفر"
+  },
+  "sitemap": {
+    "find": "ابحث عن منتج مناسب لك",
+    "stock": "شراء مئات المنتجات من المخزون اللانهائي"
+  },
+  "payment": {
+    "paypal": "ادفع عن طريق Paypal",
+    "flutterwave": "الدفع باستخدام Flutterwave",
+    "stripe": "الدفع باستخدام Stripe",
+    "razorpay": "الدفع باستخدام Razorpay",
+    "bestDeal": "احصل على أفضل صفقة"
+  },
+  "filter": {
+    "hideAll": "أخف كل شيء",
+    "shop": "قسائم التسوق",
+    "rating": "التقييم والمراجعة",
+    "copied": "نسخ",
+    "copy": "ينسخ",
+    "ckout": "الدفع",
+    "address": "عنوان المستخدم",
+    "iyzicoPayment": "Iyzico payment",
+    "payIyzico": "Pay with Iyzico",
+    "placed": "{date} موضوع على",
+    "featured": "مميزة {title}",
+    "success": "نجاح",
+    "addSucc": "العنوان {msg} بنجاح !!!"
+  },
+  "date": {
+    "sat": "السبت",
+    "sun": "الأحد",
+    "mon": "الاثنين",
+    "tue": "يوم الثلاثاء",
+    "wed": "الأربعاء",
+    "thu": "يوم الخميس",
+    "fri": "جمعة",
+    "jan": "يناير",
+    "feb": "شهر فبراير",
+    "mar": "يمشي",
+    "apr": "أبريل",
+    "may": "يمكن",
+    "jun": "يونيو",
+    "jul": "يوليو",
+    "aug": "أغسطس",
+    "sep": "سبتمبر",
+    "oct": "اكتوبر",
+    "nov": "شهر نوفمبر",
+    "dec": "ديسمبر",
+    "ddddMMMD": "{day}, {mon} {date}",
+    "MMMDDYYYY": "{mon} {date}, {year}",
+    "da": "حذف الحساب",
+    "addr": "عناوين",
+    "gb": "عُد",
+
+    "bav": "كن بائعًا",
+    "nf": "تعذر العثور على هذه الصفحة",
+    "sn": "اسم المتجر",
+    "bt": "تحويل مصرفي",
+    "pv": "التحقق من الدفع",
+    "vp": "التحقق من الدفع",
+    "ti": "معرف التحويل",
+    "bn": "اسم البنك",
+    "ahn": "اسم صاحب الحساب",
+    "an": "رقم الحساب",
+    "brn": "اسم الفرع",
+    "kr": "يُرجى تحويل دفعتك مباشرةً إلى تفاصيل البنك المقدمة. تأكد من تضمين معرف المعاملة وإرساله للتحقق من الدفع.",
+    "pds": "تم إرسال بيانات الدفع بنجاح",
+    "cb": "يستخدم الموقع ملفات تعريف الارتباط لضمان حصولك على أفضل تجربة على موقعنا.",
+    "gi": "فهمت",
+    "fi": "صورة مميزة",
+    "dad": "عنوان التسليم",
+    "os": "ملخص الطلب",
+    "ptp": "متابعة الدفع",
+    "ttl": "إجمالي مبلغ التوفير الخاص بك في هذا الطلب",
+    "pa": "عنوان الاستلام",
+    "tl": "يتصل",
+    "reg": "سجل الآن بخطوات سهلة!",
+    "sr": "تسجيل البائع",
+    "pm": "يُرجى التأكد من ملء النموذج بمعلوماتك الفعلية وإلا فقد يتم حظر حسابك أو تعليقه.",
+    "yw": "ستصلك رسالة عبر البريد الإلكتروني بعد الموافقة على حسابك.",
+    "gh": "الذهاب إلى المنزل",
+    "offer": "عرض {amount}%"
+  },
+  "invent": {
+    "fs": "ًالشحن مجانا",
+    "fre": "حر",
+
+    "pf": "Payfast",
+    "pc": "تم إلغاء الدفع",
+    "pv": "تعذر التحقق من الدفع",
+    "in": "رقم غير صالح"
+  }
+}

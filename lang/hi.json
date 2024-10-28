@@ -1,0 +1,508 @@
+{
+  "accountLayout": {
+    "myProfile": "मेरी प्रोफ़ाइल",
+    "myAddressBook": "मेरी पता पुस्तिका",
+    "vouchers": "वाउचर",
+    "myOrders": "मेरे आदेश",
+    "myWishlist": "मेरी इच्छा सूची",
+    "comparedList": "तुलना सूची"
+  },
+  "trackOrder": {
+    "estimatedDelivery": "अनुमानित डिलीवरी",
+    "estimated": "अनुमानित",
+    "enterCode": "अपने ऑर्डर का ट्रैक कोड दर्ज करें",
+    "trackOrder": "अपना ऑर्डर ट्रैक करें",
+    "orderStatus": "आदेश की स्थिति",
+    "haveAnOrder": "क्या कोई ऑर्डर है? जानना चाहते हैं कि आपका ऑर्डर अब कहां है?",
+    "knowProgress": "अपने उत्पाद वितरण की प्रगति जानें।"
+  },
+  "addressPopup": {
+    "country": "देश",
+    "order": "आदेश",
+    "state": "राज्य",
+    "email": "ईमेल",
+    "name": "नाम",
+    "address": "पता",
+    "city": "शहर",
+    "zipCode": "ज़िप कोड",
+    "isRequired": "{type} आवश्यक है",
+    "phone": "फोन",
+    "cancel": "रद्द करें",
+    "update": "अपडेट",
+    "thisAddress": "{type} यह पता",
+    "saving": "सेविंग",
+    "save": "सहेजें",
+    "message": "संदेश",
+    "addressPlaceholder": "सड़क का पता या पीओ बॉक्स",
+    "address2Placeholder": "अपार्टमेंट, सूट, यूनिट, बिल्डिंग, फ्लोर आदि।",
+    "subject": "विषय"
+  },
+  "ajaxButton": {
+    "gettingResponse": "प्रतिक्रिया प्राप्त करना",
+    "submit": "जमा करें"
+  },
+  "cartProductTile": {
+    "bundleOffer": "बंडल ऑफर",
+    "fromPickupPlace": "पिकअप की जगह से",
+    "noShipMessage": "इस उत्पाद को {state} {country} पर शिप नहीं किया जा सकता है। कृपया पहले उत्पाद को अनचेक करें या शिपिंग पता बदलें",
+    "deleteAlert": "क्या आप वाकई हटाना चाहते हैं?",
+    "fromLocation": "स्थान से"
+  },
+  "categoryListingLayout": {
+    "noItemFound": "कोई आइटम नहीं मिला।"
+  },
+  "checkoutRight": {
+    "subtotalItems": "सबटोटल ({itemCount} आइटम)",
+    "shipping": "शिपिंग",
+    "total": "कुल",
+    "proceedToCheckout": "चेकआउट के लिए आगे बढ़ें",
+    "voucher": "वाउचर",
+    "submitting": "सबमिट"
+  },
+  "contact": {
+    "errorOccurred": "निम्नलिखित त्रुटि हुई",
+    "email": "ईमेल",
+    "name": "नाम",
+    "your": "आपका {type}",
+    "invalidEmail": "अमान्य ईमेल",
+    "success": "सफलता",
+    "successMessage": "हमें आपका संदेश मिल गया है। हम आपसे जल्द से जल्द संपर्क करने जा रहे हैं।",
+    "goToHome": "घर जाओ",
+    "now": "अब",
+    "contactUs": "आपसे सुनना अच्छा लगा",
+    "feelFree": "बेझिझक हमसे संपर्क करें। हम यथाशीघ्र वापस आएंगे।"
+  },
+  "detailRight": {
+    "details": "विवरण",
+    "shippingFeeDetails": "शिपिंग और शुल्क विवरण",
+    "transactionIsSecured": "लेन-देन सुरक्षित है",
+    "price": "कीमत",
+    "shippingFee": "शिपिंग शुल्क",
+    "quantity": "मात्रा",
+    "adding": "जोड़ना",
+    "addToCart": "कार्ट में डालें",
+    "secureTransaction": "सुरक्षित लेनदेन",
+    "secureTransactionMsg": "हम आपकी सुरक्षा और गोपनीयता की रक्षा के लिए कड़ी मेहनत करते हैं। हमारी भुगतान सुरक्षा प्रणाली प्रसारण के दौरान आपकी जानकारी को एन्क्रिप्ट करती है। हम तीसरे पक्ष के विक्रेताओं के साथ आपके क्रेडिट कार्ड विवरण साझा नहीं करते हैं।",
+    "arrives": "आता है",
+    "addingToWishlist": "इच्छा सूची में जोड़ा जा रहा है",
+    "removingFromWishlist": "इच्छा सूची से हटाया जा रहा है",
+    "addToWishlist": "इच्छा सूची में जोड़ें",
+    "removeFromWishlist": "इच्छा सूची से निकालें",
+    "outOfStock": "यह उत्पाद स्टॉक में नहीं है।",
+    "requiredAttributes": "कृपया सभी आवश्यक विशेषताओं का चयन करें।",
+    "exceedsInventory": "उत्पाद की मात्रा वस्तु-सूची से अधिक है।",
+    "buyNow": "अभी खरीदें",
+    "off": "{amount} बंद",
+    "noReview": "अभी तक कोई समीक्षा नहीं।"
+  },
+  "discover": {
+    "dailyDiscover": "दैनिक खोज",
+    "showMore": "और दिखाएं"
+  },
+  "dropdown": {
+    "choose": "चुनें"
+  },
+  "featured": {
+    "featured": "फीचर्ड",
+    "sold": "बेचा",
+    "showAll": "सभी दिखाएं"
+  },
+  "listingLayout": {
+    "sortBy": "इसके अनुसार क्रमबद्ध करें",
+    "for": "के लिए",
+    "close": "बंद करें",
+    "paginationResult": "{from} से {to} का {total} परिणाम दिखा रहा है",
+    "allProducts": "सभी उत्पाद",
+    "price": "कीमत",
+    "anyPrice": "कोई भी कीमत",
+    "go": "जाओ",
+    "priceLowToHigh": "कीमत कम से ज्यादा",
+    "priceHighToLow": "कीमत उच्च से निम्न",
+    "avgCustomerReview": "औसत ग्राहक समीक्षा",
+    "clear": "साफ़ करें",
+    "up": "ऊपर",
+    "max": "अधिकतम",
+    "min": "न्यूनतम",
+    "collections": "संग्रह",
+    "shippingOptions": "शिपिंग विकल्प",
+    "brands": "ब्रांड्स",
+    "noProductFound": "कोई उत्पाद नहीं मिला।",
+    "showingResult": "परिणाम दिखा रहा है",
+    "customerReviews": "ग्राहक समीक्षाएं",
+    "loading": "लोड हो रहा है",
+    "filter": "फ़िल्टर"
+  },
+  "orderCancelPopup": {
+    "cancelOrder": "आदेश रद्द करें",
+    "title": "शीर्षक",
+    "titleSmall": "शीर्षक",
+    "SendMessage": "संदेश भेजें"
+  },
+  "orderTabbing": {
+    "cancelled": "रद्द",
+    "cardPayment": "कार्ड भुगतान",
+    "paid": "भुगतान किया गया",
+    "unPaid": "अवैतनिक",
+    "cod": "कैश ऑन डिलीवरी"
+  },
+  "payButton": {
+    "placedSuccess": "आपका आदेश सफलतापूर्वक रखा गया है।"
+  },
+  "productImage": {
+    "rollOver": "ज़ूम इन करने के लिए छवि पर रोल करें",
+    "extendedView": "विस्तृत दृश्य के लिए छवि पर क्लिक करें"
+  },
+  "productReview": {
+    "customerReviews": "ग्राहक समीक्षाएं",
+    "reviews": "{count} समीक्षा करें",
+    "outOf": "5 में से",
+    "star": "{count} स्टार",
+    "peopleReviewed": "{count} लोगों ने इस उत्पाद की समीक्षा की"
+  },
+  "productDynamic": {
+    "pageOf": "पृष्ठ {current} का {total}",
+    "extendedView": "विस्तृत दृश्य के लिए छवि पर क्लिक करें"
+  },
+  "quantityNav": {
+    "maximumExceeds": "अधिकतम मात्रा इससे अधिक है।",
+    "min": "न्यूनतम 1 आइटम होना चाहिए।"
+  },
+  "ratePopup": {
+    "addImage": "छवि जोड़ें",
+    "rateNow": "अभी मूल्यांकन करें",
+    "uploadingError": "कुछ छवियों को अपलोड करते समय एक त्रुटि है।",
+    "supportedImage": "समर्थित चित्र: jpg, png(अधिकतम आकार: {max}kb)"
+  },
+  "searchPopup": {
+    "suggestedSearch": "सुझाए गए खोज कीवर्ड",
+    "products": "उत्पाद",
+    "nothingFound": "के लिए कुछ नहीं मिला",
+    "categories": "श्रेणियां"
+  },
+  "socialShare": {
+    "share": "साझा करें",
+    "facebook": "फेसबुक",
+    "twitter": "ट्विटर",
+    "pinterest": "पिंटरेस्ट"
+  },
+  "stripePayment": {
+    "bestDeal": "सबसे अच्छा सौदा प्राप्त करें",
+    "creditDebit": "क्रेडिट या डेबिट कार्ड",
+    "creditExpiry": "क्रेडिट समाप्ति",
+    "creditCvc": "सीवीसी",
+    "placing": "रखना",
+    "pay": "भुगतान {amount}"
+  },
+  "suggestedProducts": {
+    "recommendedForYou": "आपके लिए अनुशंसित",
+    "alsoViewed": "इस आइटम को देखने वाले लोगों ने भी देखा"
+  },
+  "toastMessage": {
+    "error": "त्रुटि"
+  },
+  "userAddress": {
+    "noAddress": "कोई पता नहीं मिला।",
+    "deleting": "हटाया जा रहा है",
+    "delete": "हटाएं",
+    "edit": "संपादित करें"
+  },
+  "vouchers": {
+    "noVoucher": "कोई वाउचर नहीं मिला।",
+    "minSpend": "न्यूनतम खर्च",
+    "valid": "वैध"
+  },
+  "footer": {
+    "siteLogo": "साइट लोगो",
+    "services": "सेवाएं",
+    "about": "के बारे में",
+    "social": "सामाजिक",
+    "allRights": "सर्वाधिकार सुरक्षित",
+    "payment": "भुगतान"
+  },
+  "store": {
+    "avgRating": "इस विक्रेता के उत्पादों की औसत रेटिंग है",
+    "noData": "कोई स्टोर नहीं मिला।",
+    "memberSince": "तब से सदस्य",
+    "visitStore": "स्टोर पर जाएं",
+    "follow": "अनुसरण करें",
+    "following": "निम्नलिखित",
+    "unFollowing": "अनफॉलो करना",
+    "followingStores": "निम्नलिखित स्टोर"
+  },
+  "header": {
+    "searchHere": "यहां खोजें",
+    "trackOrder": "ट्रैक ऑर्डर",
+    "account": "मेरा खाता",
+    "login": "लॉगिन",
+    "register": "रजिस्टर करें",
+    "profile": "प्रोफाइल",
+    "orders": "आदेश",
+    "vouchers": "वाउचर",
+    "logout": "लॉगआउट",
+    "cart": "कार्ट",
+    "wishList": "इच्छा सूची",
+    "comparedList": "तुलना सूची"
+  },
+  "empty": {
+    "welcome": "आपका स्वागत है {name}",
+    "or": "या",
+    "loginFacebook": "फेसबुक के साथ लॉगिन करें",
+    "loginGoogle": "गूगल के साथ लॉगिन करें",
+    "agreement": "जारी रखकर, आप सहमत हैं ",
+    "privacyPolicy": "गोपनीयता नीति"
+  },
+  "error": {
+    "sorry": "क्षमा करें",
+    "try": "कोशिश करें",
+    "reload": "पुनः लोड करें",
+    "or": "या",
+    "goHome": "होमपेज पर जाएं"
+  },
+  "ratingStar": {
+    "outOf": "{rating} 5 में से"
+  },
+  "product": {
+    "home": "होम",
+    "rating": "रेटिंग",
+    "endsIn": "समाप्त होता है",
+    "bundleDeal": "बंडल डील",
+    "brand": "ब्रांड",
+    "readLess": "कम पढ़ें",
+    "readMore": "और पढ़ें",
+    "authentic": "100% प्रामाणिक",
+    "refundWarranty": "धनवापसी और वारंटी",
+    "compare": "तुलना करें",
+    "removeCompare": "तुलना हटाएं",
+    "shocking": "चौंकाने वाली बिक्री"
+  },
+  "order": {
+    "orderCancelled": "यह आदेश रद्द कर दिया गया है",
+    "orderRefunded": "यह आदेश वापस कर दिया गया है",
+    "order": "आदेश",
+    "orderMethod": "आदेश विधि",
+    "orderDate": "आदेश दिनांक",
+    "orderAmount": "आदेश राशि",
+    "paymentStatus": "भुगतान की स्थिति",
+    "image": "छवि",
+    "cancellationMessage": "रद्दीकरण संदेश देखें",
+    "cancelOrder": "इस आदेश को रद्द करें",
+    "subtotal": "सबटोटल",
+    "shippingCost": "शिपिंग लागत",
+    "shipTo": "यहां शिप करें",
+    "deliveryFee": "वितरण शुल्क",
+    "deliveryStatus": "डिलीवरी की स्थिति"
+  },
+  "addresses": {
+    "addAddress": "नया पता जोड़ें",
+    "try": "खोजने का प्रयास करें या",
+    "goHome": "होमपेज पर जाएं"
+  },
+  "orders": {
+    "noOrderYet": "अभी तक कोई आदेश नहीं।",
+    "manageOrder": "आदेश प्रबंधित करें",
+    "shippingStatus": "शिपिंग स्थिति",
+    "loggedWith": "इससे लॉग इन किया",
+    "updateProfile": "प्रोफ़ाइल अपडेट करें",
+    "qty": "मात्रा"
+  },
+  "profile": {
+    "password": "पासवर्ड",
+    "updatePassword": "अपडेट पासवर्ड",
+    "retypePassword": "पासवर्ड फिर से टाइप करें",
+    "currentPassword": "मौजूदा पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "yourCurrentPassword": "आपका वर्तमान पासवर्ड",
+    "newPassword": "नया पासवर्ड",
+    "invalidLength": "अमान्य पासवर्ड लंबाई",
+    "noMatch": "पासवर्ड मेल नहीं खाता",
+    "google": "गूगल",
+    "facebook": "फेसबुक",
+    "updatingPassword": "पासवर्ड अपडेट कर रहा है"
+  },
+  "wishlist": {
+    "noWishlist": "कोई विशलिस्ट वाला उत्पाद नहीं मिला।"
+  },
+  "compared": {
+    "noData": "कोई तुलना उत्पाद नहीं मिला।"
+  },
+  "cart": {
+    "shoppingCart": "शॉपिंग कार्ट",
+    "selectItems": "सभी वस्तुओं का चयन करें",
+    "deselectItems": "सभी वस्तुओं का चयन रद्द करें",
+    "subtotal": "सबटोटल ({items} आइटम)",
+    "noSelected": "कोई आइटम नहीं चुना गया",
+    "tax": "कर",
+    "productAdded": "उत्पाद कार्ट में सफलतापूर्वक जोड़ा गया"
+  },
+  "checkout": {
+    "selectPayment": "भुगतान विधि चुनें",
+    "apply": "लागू करें",
+    "applying": "लागू करना",
+    "payNow": "अभी भुगतान करें",
+    "voucherCode": "कोड",
+    "confirmOrderAnd": "आदेश की पुष्टि करें और अभी भुगतान करें ({amount})",
+    "confirmOrder": "आदेश की पुष्टि करें",
+    "noPayment": "वर्तमान में कोई भुगतान विधि उपलब्ध नहीं है"
+  },
+  "forgotPassword": {
+    "errorOccurred": "निम्नलिखित त्रुटि हुई",
+    "sentEmail": "हमने आपको एक कोड के साथ ईमेल भेजा है। कृपया अपना पासवर्ड अपडेट करने के लिए कोड फ़ील्ड में कोड पेस्ट करें।",
+    "code": "कोड",
+    "signIn": "साइन इन करें",
+    "youCan": "आप कर सकते हैं",
+    "verified": "आपने अपना खाता सफलतापूर्वक सत्यापित कर लिया है।",
+    "congratulations": "बधाई हो",
+    "createAccount": "एक खाता बनाएं",
+    "noAccount": "क्या आपके पास खाता नहीं है?",
+    "registering": "पंजीकरण",
+    "codeFrom": "मेल से कोड"
+  },
+  "login": {
+    "password": "पासवर्ड",
+    "loggingIn": "लॉगिंग इन",
+    "forgotPassword": "पासवर्ड भूल गए"
+  },
+  "razorpayCallback": {
+    "wait": "कृपया प्रतीक्षा करें"
+  },
+  "register": {
+    "haveAccount": "पहले से ही एक खाता है?",
+    "sentEmail": "हमने आपको एक कोड के साथ ईमेल भेजा है। कृपया अपना खाता सत्यापित करने के लिए नीचे कोड पेस्ट करें।"
+  },
+  "shipping": {
+    "instruction": "डिलीवरी निर्देश",
+    "ordered": "आदेशित उत्पाद",
+    "addAddress": "कृपया पहले एक पता जोड़ें।",
+    "unableShipped": "उत्पाद भेजने में असमर्थ है।",
+    "noProductSelected": "आपने कोई उत्पाद नहीं चुना है। कृपया पहले एक उत्पाद चुनें।",
+    "proceed": "चेकआउट के लिए आगे बढ़ें",
+    "shippingOption": "शिपिंग विकल्प सेट करें"
+  },
+  "productHelper": {
+    "refundable": "वापसी योग्य",
+    "notRefundable": "वापसी योग्य नहीं",
+    "mindChange": "मन परिवर्तन लागू नहीं है",
+    "available": "वारंटी उपलब्ध",
+    "notAvailable": "वारंटी उपलब्ध नहीं है"
+  },
+  "util": {
+    "location": "स्थान",
+    "pickup": "पिकअप",
+    "pending": "लंबित",
+    "confirmed": "पुष्टि की गई",
+    "pickedUp": "उठाया गया",
+    "onWay": "रास्ते में",
+    "delivered": "वितरित",
+    "creditDebit": "क्रेडिट/डेबिट कार्ड",
+    "paypal": "पेपैल",
+    "stripe": "स्ट्राइप",
+    "flutterwave": "फ्लटरवेव",
+    "razorpay": "रेजरपे"
+  },
+  "home": {
+    "mail": "मेल",
+    "helpline": "हेल्पलाइन",
+    "shortPeriod": "कम समय के साथ",
+
+    "subscribeNewsletter": "हमारे न्यूज़लेटर की सदस्यता लें",
+    "getLatestEmail": "हमारा नवीनतम अपडेट अपने ईमेल में प्राप्त करें",
+    "subscribe": "सदस्यता लें",
+    "subscribeSuccessMsg": "आप हमारे न्यूज़लेटर की सदस्यता सफलतापूर्वक ले चुके हैं।",
+    "secureTransaction": "सुरक्षित लेनदेन",
+    "off": "{percent}% की छूट"
+  },
+  "detail": {
+    "inStock": "स्टॉक में है",
+    "outOfStock": "स्टॉक में नहीं"
+  },
+  "sitemap": {
+    "find": "आपके लिए उपयुक्त उत्पाद ढूंढें",
+    "stock": "इन्फिनिटी स्टॉक से सैकड़ों उत्पाद खरीदें"
+  },
+  "payment": {
+    "paypal": "पेपैल के साथ भुगतान करें",
+    "flutterwave": "फ्लटरवेव के साथ भुगतान करें",
+    "stripe": "स्ट्राइप के साथ भुगतान करें",
+    "razorpay": "Razorpay के साथ भुगतान करें",
+    "bestDeal": "सबसे अच्छा सौदा प्राप्त करें"
+  },
+  "filter": {
+    "hideAll": "सभी को छिपाएं",
+    "shop": "दुकान वाउचर",
+    "rating": "रेटिंग और समीक्षा",
+    "copied": "कॉपी किया गया",
+    "copy": "प्रतिलिपि",
+    "ckout": "चेक आउट",
+    "address": "उपयोगकर्ता पता",
+    "iyzicoPayment": "इज़िको भुगतान",
+    "payIyzico": "इज़िको के साथ भुगतान करें",
+    "placed": "पर रखा {date}",
+    "featured": "फीचर्ड {title}",
+    "success": "सफलता",
+    "addSucc": "पता {msg} सफलतापूर्वक!!!"
+  },
+  "date": {
+    "sat": "शनिवार",
+    "sun": "रविवार",
+    "mon": "सोमवार",
+    "tue": "मंगलवार",
+    "wed": "बुधवार",
+    "thu": "गुरुवार",
+    "fri": "शुक्रवार",
+    "jan": "जन",
+    "feb": "फ़रवरी",
+    "mar": "मार्च",
+    "apr": "अप्रैल",
+    "may": "मई",
+    "jun": "जून",
+    "jul": "जुलाई",
+    "aug": "अगस्त",
+    "sep": "सितंबर",
+    "oct": "अक्टूबर",
+    "nov": "नवंबर",
+    "dec": "दिसम्बर",
+    "ddddMMMD": "{day}, {mon} {date}",
+    "MMMDDYYYY": "{mon} {date}, {year}",
+    "da": "खाता हटा दो",
+    "addr": "पतों",
+    "gb": "वापस जाओ",
+
+    "bav": "विक्रेता बनें",
+    "nf": "यह पृष्ठ नहीं मिल सका",
+    "sn": "स्टोर का नाम",
+    "bt": "बैंक हस्तांतरण",
+    "pv": "भुगतान सत्यापन",
+    "vp": "भुगतान सत्यापित करें",
+    "ti": "ट्रांस आईडी",
+    "bn": "बैंक का नाम",
+    "ahn": "खाता धारक का नाम",
+    "an": "खाता संख्या",
+    "brn": "शाखा का नाम",
+    "kr": "कृपया अपना भुगतान सीधे दिए गए बैंक विवरण पर भेजें। लेनदेन आईडी शामिल करना सुनिश्चित करें और इसे भुगतान सत्यापन के लिए सबमिट करें।",
+    "pds": "भुगतान डेटा सफलतापूर्वक सबमिट किया गया",
+    "cb": "आपको हमारी वेबसाइट पर सर्वोत्तम अनुभव मिले यह सुनिश्चित करने के लिए वेबसाइट कुकीज़ का उपयोग करती है।",
+    "gi": "समझ गया",
+    "fi": "फ़ीचर छवि",
+    "dad": "डिलीवरी पता",
+    "os": "ऑर्डर सारांश",
+    "ptp": "भुगतान के लिए आगे बढ़ें",
+    "ttl": "इस ऑर्डर पर आपकी कुल बचत राशि",
+    "pa": "पता चुनें",
+    "tl": "पुकारना",
+    "reg": "कुछ आसान चरणों के साथ अभी पंजीकरण करें!",
+    "sr": "विक्रेता पंजीकरण",
+    "pm": "कृपया फॉर्म में अपनी वास्तविक जानकारी भरना सुनिश्चित करें अन्यथा आपका खाता प्रतिबंधित या निलंबित किया जा सकता है।",
+    "yw": "आपका खाता स्वीकृत होने के बाद आपको एक ईमेल प्राप्त होगा।",
+    "gh": "घर जाओ",
+    "offer": "{amount}% ऑफर"
+  },
+  "invent": {
+    "fs": "मुफ़्त शिपिंग",
+    "fre": "मुक्त",
+
+    "pf": "पेफ़ास्ट",
+    "pc": "भुगतान रद्द कर दिया गया है",
+    "pv": "भुगतान सत्यापित करने में असमर्थ",
+    "in": "अमान्य संख्या"
+  }
+}

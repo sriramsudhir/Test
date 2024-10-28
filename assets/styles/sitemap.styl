@@ -1,0 +1,60 @@
+.site-map
+  display flex
+  gap 20px
+  flex-wrap wrap
+
+  a
+    margin 5px 0
+
+  a:hover
+    text-decoration underline
+
+  .item
+    width calc(50% - 10px)
+    min-width calc(50% - 10px)
+
+    .category
+      margin-top 20px
+      border-radius 10px
+      background #fff
+
+      & > .title
+        padding 10px 20px
+        border-bottom 2px solid #F2F3F5
+        font-weight 600
+
+      & > .content
+        padding 0 20px 20px
+
+      .sub-category
+        margin-top 20px
+        padding-left 0
+
+        & h4 > a
+          font-weight 600
+
+
+        .product
+          padding-left 0
+
+//RESPONSIVE
+@media only screen and (max-width: 778px)
+
+  .site-map
+    gap 10px
+
+    .item
+      width 100%
+      min-width 100%
+
+      .category
+        margin-top 15px
+
+        & > .title
+          padding 10px 15px
+
+        & > .content
+          padding 0 15px 15px
+
+        .sub-category
+          margin-top 15px

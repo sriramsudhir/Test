@@ -1,0 +1,126 @@
+@import "variables.styl"
+
+.brands-wrapper.full-screen
+  .brands-inner
+    padding-right 0
+    max-width 100%
+    min-width 100%
+
+
+.brands-wrapper
+  display flex
+
+  .brand-banner
+    padding-left 7.5px
+    display flex
+    max-width 66.66%
+    min-width 66.66%
+
+    .banner-wrapper
+      display flex
+      position relative
+      overflow hidden
+      flex-grow 1
+      border-radius border-radius
+
+    img
+      position absolute
+      top 0
+      bottom 0
+      left 0
+      right 0
+      overflow hidden
+      height 100%
+      border-radius border-radius
+
+  .brands-inner
+    padding-right 7.5px
+    max-width 33.33%
+    min-width 33.33%
+
+  .featured-brands
+    &.area
+      margin 0
+
+      .area-content
+        padding-top 0
+
+      .title
+        padding-top 15px
+        padding-bottom 15px
+        border-bottom 0
+
+      .glide-nav
+        position absolute
+        top -45px
+        left 175px
+        width 80px
+        height 35px
+
+        button
+          opacity 1
+
+      .glide__track
+        .glide__slides
+
+          & > li
+            & > a
+              background home-bg
+              padding 10px
+              margin 0 0 15px
+              border-radius border-radius
+
+              .item-title
+                margin-top 10px
+
+              .img-wrapper
+                img
+                  border 1px solid #eee
+                  border-radius 100px
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  .brands-wrapper
+    flex-direction column
+
+    .featured-brands
+      &.area
+        .glide-nav
+          height 0
+          width 0
+          position static
+
+          button
+            margin-top -25px
+
+    .brand-banner
+      img
+        position static
+
+    .brand-banner
+    .banner-wrapper
+    .brands-inner
+      max-width 100%
+      min-width 100%
+      padding 0
+
+    .brands-inner
+      margin-bottom 15px
+
+    .banner
+      img
+        position static
+
+@media only screen and (max-width: 576px)
+  .brands-wrapper
+    .featured-brands
+      &.area
+        .glide-nav
+          button
+            margin-top -20px
+
+        .glide__track
+          .glide__slides
+            & > li
+              & > a
+                margin 0 0 10px

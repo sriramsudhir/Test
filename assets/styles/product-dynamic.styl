@@ -1,0 +1,68 @@
+@import "variables.styl";
+
+
+.rtl .c_slider__wrapper
+  direction ltr
+
+
+.rtl .c_slider__wrapper .p-tile
+  text-align right
+  direction rtl
+
+.c_slider__wrapper
+  position relative
+
+  .c_slider__container
+    transition all .4s cubic-bezier(0.165, 0.84, 0.44, 1)
+
+  .c_slider__nav
+    button
+      padding 7.5px
+      position absolute
+      top 40%
+      right 0
+      z-index 1
+      border-radius 50px
+      border 1px solid #fff
+      background #fff
+      box-shadow 0 2px 5px 0 rgba(213,217,217,.5)
+
+      i
+        opacity .6
+
+      &:hover
+        background primary-lite-color
+
+      &:active
+        background primary-color
+
+    .next-btn
+      display flex
+
+    .prev-btn
+      display flex
+      left 0
+      right auto
+
+  ul
+    min-width 100%
+    flex-grow 1
+    display flex
+    margin 0 -10px
+
+    li
+      padding 0 10px
+
+//RESPONSIVE
+@media only screen and (max-width: 992px)
+  .c_slider__wrapper
+    .c_slider__nav
+      button
+        padding 5px
+
+    ul
+      margin 0 -5px
+
+      li
+        padding 0 5px
+

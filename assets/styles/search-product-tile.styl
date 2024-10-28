@@ -1,0 +1,84 @@
+.grid-product-wrapper
+  .search-product-tile
+    margin 10px 7.5px 0
+    display flex
+    flex-wrap wrap
+
+    & > a
+      border-radius 0
+      background transparent
+      padding 0
+      margin 0 7.5px 15px
+
+      .item-inner
+        border 0
+        border-bottom 1px solid #eee
+
+
+.search-product-tile
+  .item
+    display flex
+    width calc(33.33% - 15px)
+    border-radius border-radius
+    overflow hidden
+    background #FAFAFB
+
+    .compare-btn
+      padding 0
+      height auto
+      line-height 1
+      border-radius 2px
+      margin-left 10px
+
+      i
+        margin 0
+        opacity .75
+
+    .item-inner
+      display flex
+      flex-grow 1
+      border 1px solid #eee
+
+      .title-wrap
+        display flex
+        flex-direction column
+        justify-content center
+        text-align left
+        padding 0 15px
+
+      .img-container
+        height 70px
+        width 70px
+        min-width 70px
+        background #fff
+
+        img
+          padding 5px 0
+
+// RESPONSIVE
+@media only screen and (max-width: 1400px)
+  .search-product-tile
+    .item
+      width calc(50% - 15px)
+
+@media only screen and (max-width: 768px)
+  .search-product-tile
+    .item
+      width calc(100% - 15px)
+
+@media only screen and (max-width: 576px)
+  .grid-product-wrapper
+    .search-product-tile
+      margin 10px 5px 0
+
+      & > a
+        margin 0 5px 10px
+
+  .search-product-tile
+    .item
+      .item-inner
+        .img-container
+          height 60px
+          width 60px
+          min-width 60px
+

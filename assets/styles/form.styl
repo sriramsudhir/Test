@@ -1,0 +1,128 @@
+@import "variables.styl"
+
+.search-input
+  position relative
+
+  input
+    width 100%
+    padding 0 60px 0 15px
+    border none
+    background home-bg
+
+    &:focus
+      box-shadow 0 0 1px 1px primary-color
+
+  & > button
+    border-radius 0 border-radius border-radius 0
+    position absolute
+    top 0
+    bottom 0
+    right 0
+    width 45px
+    border none
+    background primary-color
+
+    &:hover
+      background #555
+
+    i
+      height 20px
+      width 20px
+      opacity 1
+      margin 0
+
+form
+  & > .flex:not(button, .no-space)
+    margin 0 -7.5px
+
+    .input-wrap
+      flex 1
+      margin-right 7.5px
+      margin-left 7.5px
+
+.rtl .input-wrap .input-text > span
+  border 1px solid #ddd
+  border-radius 0 border-radius border-radius 0 !important
+
+
+.rtl .input-wrap .input-text > input
+  border-radius border-radius 0 0 border-radius !important
+  border-right none !important
+  border-left 1px solid #ddd !important
+
+
+.input-wrap
+  margin-bottom 20px
+
+  .input-text
+    display flex
+
+    & > span
+      padding 0 10px
+      background #f3f4f6
+      font-size .9em
+      display flex
+      align-items center
+      border 1px solid #ddd
+      border-radius border-radius 0 0 border-radius !important
+
+    & > input
+      border-radius 0 border-radius border-radius 0 !important
+      border-left none !important
+
+
+  label
+    font-size .85em
+    font-weight 600
+    margin-bottom 10px
+    display block
+
+  textarea
+  input
+    width 100%
+    display block
+    border 1px solid #ddd
+    padding 0 15px
+
+  textarea
+    padding 15px
+    max-height 120px
+
+.error
+  font-size .85em
+  margin-top 5px
+  color danger-foreground
+
+.invalid
+  textarea
+  input
+    border-color danger-foreground
+
+.user-form
+  max-width 500px
+  background #fff !important
+  text-align center
+  margin 0 auto
+  border 1px solid #ddd
+  border-radius border-radius
+  padding 40px
+  box-shadow: 1px 2px 2px 0 rgba(0, 0, 0, .16)
+
+  .input-wrap
+    text-align left
+
+// RESPONSIVE
+@media only screen and (max-width: 768px)
+  .user-form
+    padding 15px
+
+@media only screen and (max-width: 576px)
+  .input-wrap
+    textarea
+      padding 10px
+
+    input
+      padding 0 10px
+
+  .user-form
+    padding 15px 10px

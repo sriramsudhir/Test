@@ -1,0 +1,28 @@
+@import "variables.styl"
+
+.subscription-wrapper
+  background #D0C8FD
+  padding 30px 0
+  border-top 1px solid #eee
+
+  input
+    background #fff
+
+  .success-msg
+    i
+      min-height 50px
+      min-width 50px
+
+//RESPONSIVE
+@media only screen and (max-width: 576px)
+
+  .subscription-wrapper
+    padding 15px 0
+    .mx-w-400x
+      &>.grow
+        &>.grow
+          display block
+
+          .icon-input
+            margin-right 0!important
+            margin-bottom 10px!important

@@ -1,0 +1,61 @@
+@import "variables.styl"
+
+nav[aria-label="breadcrumb"]
+  margin 10px 0
+  padding 0
+
+.rtl .breadcrumb li a
+  padding-right 0
+  padding-left 25px
+
+
+.rtl .breadcrumb li a:after
+  right auto
+  left 0
+  transform scale(.6) rotate(90deg)
+
+.breadcrumb
+  list-style none
+  padding 0
+  margin 0
+  display flex
+  flex-wrap wrap
+
+.breadcrumb li
+  display flex
+  margin-right 0
+
+
+.breadcrumb li span
+  white-space normal
+  overflow hidden
+  text-overflow ellipsis
+  display -webkit-box
+  -webkit-line-clamp 1
+  -webkit-box-orient vertical
+
+.breadcrumb li a
+  padding-right 25px
+  position relative
+
+.breadcrumb li a:after
+  content ''
+  position absolute
+  top 50%
+  margin-top -12px
+  right 0
+  background-position 23% 1.5%
+  transform scale(.6) rotate(-90deg)
+  height 24px
+  width 24px
+  min-width 24px
+  background-size 1400% 1400%
+  background-image url(svg-sprite)
+
+.breadcrumb li a
+  text-decoration none
+
+
+.breadcrumb li:last-child
+  color #888
+

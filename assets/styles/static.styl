@@ -1,0 +1,56 @@
+@import "variables.styl"
+
+.static-container
+  background #fff
+  border-radius border-radius
+  padding 15px 0
+
+  .static-area
+    gap 10px
+    max-width 25%
+    min-width 25%
+    padding 10px 20px
+    display flex
+    justify-content center
+    align-items center
+
+    .detail
+      p
+        font-size .9rem
+        color #555
+
+    img
+      height 45px
+      width 45px
+      background-size 1500%
+
+
+//RESPONSIVE
+@media only screen and (max-width: 992px)
+  .static-container
+    .static-area
+      justify-content flex-start
+      min-width 50%
+      max-width 50%
+
+@media only screen and (max-width: 768px)
+  .static-container
+    .static-area
+      padding 10px 15px
+
+@media only screen and (max-width: 576px)
+  .static-container
+    .static-area
+      padding 10px
+      min-width 100%
+      max-width 100%
+
+@media only screen and (max-width: 320px)
+  .static-container
+    & + div
+    .opacity-1
+      .home-section
+        & > .flex
+          display block
+          &> .flex
+            justify-content space-between

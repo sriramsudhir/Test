@@ -1,0 +1,511 @@
+{
+  "accountLayout": {
+    "myProfile": "My profile",
+    "myAddressBook": "My address book",
+    "vouchers": "Vouchers",
+    "myOrders": "My orders",
+    "myWishlist": "My wishlist",
+    "comparedList": "Compared list"
+  },
+  "trackOrder": {
+    "estimatedDelivery": "Estimated delivery",
+    "estimated": "Estimated",
+    "enterCode": "Enter the track code of your order",
+    "trackOrder": "Track Your Order",
+    "orderStatus": "Status of the Order",
+    "haveAnOrder": "Have an order? Want to know where your order is now?",
+    "knowProgress": "Know the progress of your product delivery."
+  },
+  "addressPopup": {
+    "country": "Country",
+    "order": "Order",
+    "state": "State",
+    "email": "Email",
+    "name": "Name",
+    "address": "Address",
+    "city": "City",
+    "zipCode": "Zip code",
+    "isRequired": "{type} is required",
+    "phone": "Phone",
+    "cancel": "Cancel",
+    "update": "Update",
+    "thisAddress": "{type} this address",
+    "saving": "Saving",
+    "save": "Save",
+    "message": "Message",
+    "addressPlaceholder": "Street address or P.O. Box",
+    "address2Placeholder": "Apt, suite, unit, building, floor, etc.",
+    "subject": "Subject"
+  },
+  "ajaxButton": {
+    "gettingResponse": "Getting response",
+    "submit": "Submit"
+  },
+  "cartProductTile": {
+    "bundleOffer": "Bundle offer",
+    "fromPickupPlace": "From pickup place",
+    "noShipMessage": "This product can not be shipped to {state} {country}. Please Uncheck the product first or change the shipping address",
+    "deleteAlert": "Do you really want to delete?",
+    "fromLocation": "From location"
+  },
+  "categoryListingLayout": {
+    "noItemFound": "No item found."
+  },
+  "checkoutRight": {
+    "subtotalItems": "Subtotal ({itemCount} items)",
+    "shipping": "Shipping",
+    "total": "Total",
+    "proceedToCheckout": "Proceed to checkout",
+    "voucher": "voucher",
+    "submitting": "Submitting"
+  },
+  "contact": {
+    "errorOccurred": "Following error occurred",
+    "email": "email",
+    "name": "name",
+    "your": "Your {type}",
+    "invalidEmail": "Invalid email",
+    "success": "Success",
+    "successMessage": "We have received your message. We are going to contact you as soon as possible.",
+    "goToHome": "Go to home",
+    "now": "now",
+    "contactUs": "Love to hear from you",
+    "feelFree": "Feel free to contact us. We will get back to as soon as we can."
+
+  },
+  "detailRight": {
+    "details": "Details",
+    "shippingFeeDetails": "Shipping & fee details",
+    "transactionIsSecured": "Transaction is secured",
+    "price": "Price",
+    "shippingFee": "Shipping Fee",
+    "quantity": "Quantity",
+    "adding": "Adding",
+    "addToCart": "Add to cart",
+    "secureTransaction": "Secure transaction",
+    "secureTransactionMsg": "We work hard to protect your security and privacy. Our payment security system encrypts your information during transmission. We don’t share your credit card details with third-party sellers.",
+    "arrives": "Arrives",
+    "addingToWishlist": "Adding to wishlist",
+    "removingFromWishlist": "Removing from wishlist",
+    "addToWishlist": "Add to wishlist",
+    "removeFromWishlist": "Remove from wishlist",
+    "outOfStock": "This product is out of stock.",
+    "requiredAttributes": "Please select all required attributes.",
+    "exceedsInventory": "Product quantity exceeds inventory.",
+    "buyNow": "Buy now",
+    "off": "{amount} off",
+    "noReview": "No review yet."
+  },
+  "discover": {
+    "dailyDiscover": "Daily discover",
+    "showMore": "Show more"
+  },
+  "dropdown": {
+    "choose": "Choose"
+  },
+  "featured": {
+    "featured": "Featured",
+    "sold": "sold",
+    "showAll": "Show all"
+  },
+  "listingLayout": {
+    "sortBy": "Sort by",
+    "for": "for",
+    "close": "Close",
+    "paginationResult": "Showing {from} to {to} of  {total} results",
+    "allProducts": "All products",
+    "price": "Price",
+    "anyPrice": "Any price",
+    "go": "Go",
+    "priceLowToHigh": "Price low to high",
+    "priceHighToLow": "Price high to low",
+    "avgCustomerReview": "Avg. customer review",
+    "clear": "Clear",
+    "up": "up",
+    "max": "Max",
+    "min": "Min",
+    "collections": "Collections",
+    "shippingOptions": "Shipping Options",
+    "brands": "Brands",
+    "noProductFound": "No product found.",
+    "showingResult": "Showing result",
+    "customerReviews": "Customer reviews",
+    "loading": "Loading",
+    "filter": "Filter"
+  },
+  "orderCancelPopup": {
+    "cancelOrder": "Cancel order",
+    "title": "Title",
+    "titleSmall": "title",
+    "SendMessage": "Send message"
+  },
+  "orderTabbing": {
+    "cancelled": "Cancelled",
+    "cardPayment": "Card payment",
+    "paid": "Paid",
+    "unPaid": "Unpaid",
+    "cod": "Cash on delivery"
+  },
+  "payButton": {
+    "placedSuccess": "Your order has been placed successfully."
+  },
+  "productImage": {
+    "rollOver": "Roll over image to zoom in",
+    "extendedView": "Click image for extended view"
+  },
+  "productReview": {
+    "customerReviews": "Customer reviews",
+    "reviews": "{count} Reviews",
+    "star": "{count} star",
+    "peopleReviewed": "{count} people reviewed this product"
+  },
+  "productDynamic": {
+    "pageOf": "Page {current} of {total}",
+    "extendedView": "Click image for extended view"
+  },
+  "quantityNav": {
+    "maximumExceeds": "Maximum quantity exceeds.",
+    "min": "Must have minimum 1 item."
+  },
+  "ratePopup": {
+    "addImage": "Add Image",
+    "rateNow": "Rate Now",
+    "uploadingError": "There is an error while uploading some of the images.",
+    "supportedImage": "Supported images: jpg, png(Max size: {max}kb)"
+  },
+  "searchPopup": {
+    "suggestedSearch": "Suggested Search Keywords",
+    "products": "Products",
+    "nothingFound": "Nothing found for ",
+    "categories": "Categories"
+  },
+  "socialShare": {
+    "share": "Share",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "pinterest": "Pinterest"
+  },
+  "stripePayment": {
+    "bestDeal": "Get the best deal",
+    "creditDebit": "Credit or debit card",
+    "creditExpiry": "Credit expiry",
+    "creditCvc": "CVC",
+    "placing": "Placing",
+    "pay": "Pay {amount}"
+  },
+  "suggestedProducts": {
+    "recommendedForYou": "Recommended for you",
+    "alsoViewed": "People who viewed this item also viewed"
+  },
+  "toastMessage": {
+    "error": "Error"
+  },
+  "userAddress": {
+    "noAddress": "No address found.",
+    "deleting": "Deleting",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+  "vouchers": {
+    "noVoucher": "No voucher found.",
+    "minSpend": "Min spend",
+    "valid": "Valid"
+  },
+  "footer": {
+    "siteLogo": "Site Logo",
+    "services": "Services",
+    "about": "About",
+    "social": "Social",
+    "allRights": "All rights reserved by",
+    "payment": "Payment"
+  },
+  "store": {
+    "avgRating": "Avg. rating of this seller products is ",
+    "noData": "No store found.",
+    "memberSince": "Member since",
+    "visitStore": "Visit Store",
+    "follow": "Follow",
+    "following": "Following",
+    "unFollowing": "Unfollowing",
+    "followingStores": "Following Stores"
+  },
+  "header": {
+    "searchHere": "Search Here",
+    "trackOrder": "Track Order",
+    "account": "My Account",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "orders": "Orders",
+    "vouchers": "Vouchers",
+    "logout": "Logout",
+    "cart": "Cart",
+    "brands": "Brands",
+    "hotDeals": "Hot Deals",
+    "faq": "FAQ",
+    "help": "Help",
+    "contact": "Contact us",
+    "wishList": "Wish List",
+    "comparedList": "Compared List"
+  },
+  "empty": {
+    "welcome": "Welcome to {name}",
+    "or": "OR",
+    "loginFacebook": "Login with facebook",
+    "loginGoogle": "Login with google",
+    "agreement": "By continuing, you agree to the ",
+    "privacyPolicy": "Privacy policy"
+  },
+  "error": {
+    "sorry": "SORRY",
+    "try": "Try",
+    "reload": "Reload",
+    "or": "or",
+    "goHome": "Go to homepage"
+  },
+  "ratingStar": {
+    "outOf": "{rating} out of 5"
+  },
+  "product": {
+    "home": "Home",
+    "rating": "Rating",
+    "endsIn": "Ends in",
+    "bundleDeal": "Bundle deal",
+    "brand": "Brand",
+    "readLess": "Read less",
+    "readMore": "Read more",
+    "authentic": "100% authentic",
+    "refundWarranty": "Refund & warranty",
+    "compare": "Compare",
+    "removeCompare": "Remove compare",
+    "shocking": "SHOCKING SALE"
+  },
+  "order": {
+    "orderCancelled": "This order has been cancelled",
+    "orderRefunded": "This order has been refunded",
+    "order": "Order",
+    "orderMethod": "Order method",
+    "orderDate": "Order date",
+    "orderAmount": "Order amount",
+    "paymentStatus": "Payment status",
+    "image": "Image",
+    "cancellationMessage": "View cancellation message",
+    "cancelOrder": "Cancel this order",
+    "subtotal": "Subtotal",
+    "shippingCost": "Shipping cost",
+    "shipTo": "Ship To",
+    "deliveryFee": "Delivery Fee",
+    "deliveryStatus": "Delivery status"
+  },
+  "addresses": {
+    "addAddress": "Add new address",
+    "try": "Try searching or",
+    "goHome": "Go to homepage"
+  },
+  "orders": {
+    "noOrderYet": "No order yet.",
+    "manageOrder": "Manage order",
+    "shippingStatus": "Shipping status",
+    "loggedWith": "Logged in with",
+    "updateProfile": "Update Profile",
+    "qty": "Qty"
+  },
+  "profile": {
+    "password": "Password",
+    "updatePassword": "Update password",
+    "retypePassword": "Retype password",
+    "currentPassword": "Current password",
+    "confirmPassword": "Confirm password",
+    "yourCurrentPassword": "Your current password",
+    "newPassword": "New password",
+    "invalidLength": "Invalid Password Length",
+    "noMatch": "Password didn't match",
+    "google": "Google",
+    "facebook": "Facebook",
+    "updatingPassword": "Updating Password"
+  },
+  "wishlist": {
+    "noWishlist": "No wishlisted product found."
+  },
+  "compared": {
+    "noData": "No compared product found."
+  },
+  "cart": {
+    "shoppingCart": "Shopping cart",
+    "selectItems": "Select all items",
+    "deselectItems": "Deselect all items",
+    "subtotal": "Subtotal ({items} items)",
+    "noSelected": "No item Selected",
+    "tax": "Tax",
+    "productAdded": "Product added to cart successfully"
+  },
+  "checkout": {
+    "selectPayment": "Select payment method",
+    "apply": "Apply",
+    "applying": "Applying",
+    "payNow": "Pay now",
+    "voucherCode": "Code",
+    "confirmOrderAnd": "Confirm order and pay now ({amount})",
+    "confirmOrder": "Confirm order",
+    "noPayment": "Currently no payment method is available"
+  },
+  "forgotPassword": {
+    "errorOccurred": "Following error occurred",
+    "sentEmail": "We have sent you and email containing a code. Please paste the code in the code field in order to update your password.",
+    "code": "Code",
+    "signIn": "Sign In",
+    "youCan": "You can",
+    "verified": "You have successfully verified your account.",
+    "congratulations": "Congratulations",
+    "createAccount": "Create an account",
+    "noAccount": "Don't have an account?",
+    "registering": "Registering",
+    "codeFrom": "Code from the mail"
+  },
+  "login": {
+    "password": "password",
+    "loggingIn": "Logging in",
+    "forgotPassword": "Forgot password"
+  },
+  "razorpayCallback": {
+    "wait": "Please wait"
+  },
+  "register": {
+    "haveAccount": "Already have an account?",
+    "sentEmail": "We have sent you and email containing a code. Please paste the code below in order to verify your account."
+  },
+  "shipping": {
+    "instruction": "Delivery instruction",
+    "ordered": "Ordered Products",
+    "addAddress": "Please add an address first.",
+    "unableShipped": "Product is unable to be shipped.",
+    "noProductSelected": "You don't have any product selected. Please a select a product first.",
+    "proceed": "Proceed to checkout",
+    "shippingOption": "Set shipping option"
+  },
+  "productHelper": {
+    "refundable": "Refundable",
+    "notRefundable": "Not refundable",
+    "mindChange": "Change of mind is not applicable",
+    "available": "Warranty available",
+    "notAvailable": "Warranty not available"
+  },
+  "util": {
+    "location": "Location",
+    "pickup": "Pickup",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "pickedUp": "Picked up",
+    "onWay": "On the way",
+    "delivered": "Delivered",
+    "creditDebit": "Credit/Debit card",
+    "paypal": "Paypal",
+    "stripe": "Stripe",
+    "flutterwave": "Flutterwave",
+    "razorpay": "Razorpay"
+  },
+  "home": {
+    "mail": "Mail",
+    "helpline": "Helpline",
+    "shortPeriod": "With a short period of time",
+
+    "subscribeNewsletter": "Subscribe to our Newsletter",
+    "getLatestEmail": "Get our latest update in your email",
+    "subscribe": "Subscribe",
+    "subscribeSuccessMsg": "You have successfully subscribe to our newsletter.",
+    "secureTransaction": "Secure transaction",
+    "off": "{percent}% off"
+  },
+  "detail": {
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "sitemap": {
+    "find": "Find product suitable for you",
+    "stock": "Buy hundreds of products from the infinity stock"
+  },
+  "payment":  {
+    "paypal": "Pay with Paypal",
+    "flutterwave": "Pay with Flutterwave",
+    "stripe": "Pay with Stripe",
+    "razorpay": "Pay with Razorpay",
+    "bestDeal": "Get the best deal"
+  },
+  "filter": {
+    "hideAll": "Hide all",
+    "shop": "Shop Vouchers",
+    "rating": "Rating & Review",
+    "copied": "Copied",
+    "copy": "Copy",
+    "ckout": "Checkout",
+    "address": "User Address",
+    "iyzicoPayment": "Iyzico payment",
+    "payIyzico": "Pay with Iyzico",
+    "placed": "Placed on {date}",
+    "featured": "Featured {title}",
+    "success": "Success",
+    "addSucc": "Address {msg} successfully!!!"
+  },
+  "date": {
+    "sat": "Saturday",
+    "sun": "Sunday",
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec",
+    "ddddMMMD": "{day}, {mon} {date}",
+    "MMMDDYYYY": "{mon} {date}, {year}",
+    "da": "Delete account",
+    "addr": "Addresses",
+    "gb": "Go back",
+    "bav": "Be a seller",
+    "nf": "This page could not be found",
+    "sn": "Store name",
+    "bt": "Bank transfer",
+    "pv": "Payment verification",
+    "vp": "Verify payment",
+    "ti": "Trans ID",
+    "bn": "Bank name",
+    "ahn": "Account Holder Name",
+    "an": "Account Number",
+    "brn": "Branch Name",
+    "kr": "Kindly remit your payment directly to the provided bank details. Be sure to include the transaction ID and submit it for payment verification.",
+    "pds": "Payment data submitted successfully",
+    "cb": "The website uses cookies to ensure you get the best experience on our website.",
+    "gi": "Got it",
+    "fi": "Feature Image",
+    "dad": "Delivery Address",
+    "os": "Order Summary",
+    "ptp": "Proceed to Payment",
+    "ttl": "Your total saving amount on this order",
+    "pa": "Pickup Address",
+    "tl": "Tel",
+    "reg": "Register now with few easy steps!",
+    "sr": "Seller Registration",
+    "pm": "Please make sure to fill in the form with your actual information or else your account may become banned or suspended.",
+    "yw": "You will receive an email after your account will be approved.",
+    "gh": "Go Home",
+    "offer": "{amount}% Offer"
+  },
+  "invent": {
+    "fs": "Free shipping",
+    "fre": "Free",
+    "pf": "Payfast",
+    "pc": "Payment has been cancelled",
+    "pv": "Unable to verify the payment",
+    "in": "Invalid number"
+  }
+}

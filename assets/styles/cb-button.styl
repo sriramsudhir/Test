@@ -1,0 +1,28 @@
+@import "variables.styl"
+
+.ck-button
+  margin 0 10px 10px 0
+
+.ck-button label span
+  background #fff
+  border-radius 100px
+  border 1px solid #D0D0D0
+  cursor pointer
+  padding 7.5px 20px
+  display block
+  &:hover
+    background #ddd
+
+.ck-button label input
+  position absolute
+  top -20px
+
+.ck-button input:checked + span
+  background-color success-bg-color
+  color success-foreground
+
+//RESPONSIVE
+@media only screen and (max-width: 576px)
+  .ck-button
+    margin 0 5px 5px 0
+

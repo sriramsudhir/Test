@@ -1,0 +1,57 @@
+.sticky-cart-wrap
+  position fixed
+  top 0
+  left 0
+  right 0
+  background #fff
+  transition all .15s
+  z-index 8
+  border-bottom 1px solid #ddd
+  transform translateY(-100%)
+
+.show-cart .sticky-cart-wrap
+  transform translateY(0)
+
+.sticky-cart
+  display flex
+  gap 15px
+  align-items center
+  justify-content space-between
+  padding 10px 0
+
+.sticky-cart .sticky-title
+  display flex
+  gap 15px
+  align-items center
+  max-width 500px
+
+.sticky-cart .sticky-title img
+  height 60px
+  width 60px
+  border-radius 8px
+  border 1px solid #eee
+
+.btn-wrap
+  display flex
+  align-items center
+  gap 10px
+
+.btn-wrap .btn
+  padding 0 30px
+
+//RESPONSIVE
+@media only screen and (max-width: 768px)
+  .sticky-cart .sticky-title img
+    display none
+
+@media only screen and (max-width: 576px)
+  .btn-wrap .btn
+    padding 0 20px
+    height 40px
+    line-height 38px
+
+  .sticky-cart
+    justify-content center
+
+  .sticky-cart .sticky-title
+    display none

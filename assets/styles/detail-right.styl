@@ -1,0 +1,106 @@
+@import "variables.styl";
+
+.rtl .product-detail
+  padding-right 0
+  padding-left detail-right-width
+
+.rtl .product-detail .detail-right
+  right auto
+  left 0
+
+.rtl .product-detail .detail-left
+  margin-left 20px!important
+  margin-right 0!important
+
+.p-tile .discount
+  word-break break-all
+
+.price-wrapper
+  gap 5px
+  display flex
+  align-items center
+  word-break break-all
+  flex-wrap wrap
+  white-space break-spaces
+
+
+.product-detail
+  position relative
+  padding-right detail-right-width
+
+  .detail-right
+    position absolute
+    top 0
+    right 0
+    bottom 0
+    width detail-right-width
+
+    .sticky-right
+      top 125px
+      position sticky
+      z-index 0
+
+      .price-wrapper
+        .strike-through
+          font-size .7em
+
+      .content
+        padding 0
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  .rtl .product-detail
+    padding-right 0
+    padding-left 250px
+
+
+  .product-detail
+    padding-right 250px
+
+    .detail-right
+      width 250px
+
+    .dropdown-inner
+      left auto
+      right 0
+
+  .secure-trans
+    .pop-over-inner
+      left 30%
+
+@media only screen and (max-width: 992px)
+  .no-scroll
+    .product-detail
+      .detail-right
+        z-index 2
+
+  .secure-trans
+    .pop-over-inner
+      left 50%
+
+@media only screen and (max-width: 768px)
+
+  .rtl .product-detail .detail-left
+    margin-left 0!important
+
+  .rtl .product-detail
+    padding-left 0
+
+
+  .product-detail
+    padding-right 0
+
+    .detail-right
+      width 100%
+      position static
+
+      .sticky-right
+        position static
+
+        .content
+          background none
+          padding 15px 0 0
+          margin-top 10px
+          border 0
+          border-top 1px solid #ddd
+          border-radius 0

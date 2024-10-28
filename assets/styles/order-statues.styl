@@ -1,0 +1,78 @@
+@import "variables.styl"
+
+.rtl .order-status .status-item:last-child span.flex:before
+  left auto
+  right -15px
+
+.rtl .order-status .status-item:first-child span.flex:after
+  right auto
+  left -15px
+
+
+.order-status
+  display flex
+  flex-wrap wrap
+  justify-content center
+
+  .active
+    .status-str
+      color info-foreground
+
+  .done
+    .status-str
+      color success-foreground
+
+  .status-item
+    text-align center
+    margin 0 15px
+
+    span.flex
+      height 80px
+      width 80px
+      border-radius 100px
+      background #eee
+      position relative
+
+      &:before
+      &:after
+        content ''
+        position absolute
+        top 50%
+        height 4px
+        margin-top -2px
+        left -15px
+        width 15px
+        background inherit
+
+      &:after
+        left auto
+        right -15px
+
+  .status-item:first-child
+    span.flex:before
+      display none
+
+  .status-item:last-child
+    span.flex:after
+      display none
+
+  .active
+    span.flex
+      background info-foreground
+      background info-bg-color
+
+  .done
+    span.flex
+      color success-foreground
+      background success-bg-color
+
+
+//RESPONSIVE
+
+@media only screen and (max-width: 576px)
+  .order-status
+    .status-item
+      span.flex
+        &:before
+        &:after
+          display none

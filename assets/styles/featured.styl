@@ -1,0 +1,48 @@
+@import "variables.styl"
+
+.category-wrapper.area
+  background none
+
+  .area-content
+    padding-left 0
+    padding-right 0
+
+  .title
+    border-bottom 0
+    padding 0 0 15px
+
+  .glide-nav
+    position absolute
+    top -48px
+    left 205px
+    width 80px
+    height 35px
+
+    button
+      opacity 1
+
+  .glide__slides
+    & > li > a
+      background #fff
+      border-radius border-radius
+      padding 0 10px 15px
+
+      .img-wrapper
+        img
+          padding 10px 0
+
+//RESPONSIVE
+@media only screen and (max-width: 576px)
+  .category-wrapper.area
+    .glide-nav
+      height 0
+      width 0
+      position static
+
+      .next-btn
+        left auto
+        right 10px
+
+      .prev-btn
+        left 10px
+        right auto

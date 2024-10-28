@@ -1,0 +1,45 @@
+
+.category-tile-wrapper
+  display flex
+  flex-wrap wrap
+  margin 0 -10px
+
+  .category-tile
+    text-align center
+    width 14.28%
+    padding 0 10px
+    margin-bottom 20px
+
+    .img-wrapper
+      img
+        padding 15px
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  .category-tile-wrapper
+    .category-tile
+      width 20%
+
+@media only screen and (max-width: 992px)
+  .category-tile-wrapper
+    .category-tile
+      width 25%
+      margin-bottom 15px
+
+@media only screen and (max-width: 768px)
+  .category-tile-wrapper
+    .category-tile
+      width 33.33%
+
+      .img-wrapper
+        img
+          padding 10px
+
+@media only screen and (max-width: 576px)
+  .category-tile-wrapper
+    margin 0
+
+    .category-tile
+      padding 0 5px
+      width 50%
+      margin-bottom 10px

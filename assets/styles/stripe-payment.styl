@@ -1,0 +1,51 @@
+@import "variables.styl"
+.card-popup
+  .pop-over-inner
+    min-width 350px
+
+    .pop-footer
+      padding 0 !important
+      border none
+
+      button
+        text-transform uppercase
+        font-size 1.1em
+        height 50px
+        line-height 50px
+        border-radius 0
+
+    .pop-heading
+      padding 15px !important
+      border none
+      color #fff
+      background linear-gradient(to bottom, primary-hover, primary-deep)
+      align-items flex-start
+
+      .close-btn
+        background rgba(255, 255, 255, .4)
+
+    .pop-over-content
+      padding-top 20px !important
+      padding-bottom 10px !important
+      min-height 250px
+
+.stripe-form
+  transition all .2s
+  .input-wrap
+    label
+      font-size .85em
+      font-weight 600
+      margin-bottom 7.5px
+      display block
+      color #707070
+
+    .StripeElement
+      width 100%
+      display block
+      border 1px solid #ddd
+      padding 0 15px
+      border-radius border-radius
+
+    .StripeElement--focus
+      background: rgba(0, 0, 0, .02);
+      box-shadow 0 0 2px 1px primary-color

@@ -1,0 +1,247 @@
+@import "variables.styl"
+
+.video-thumb
+  position relative
+  display flex
+  align-items center
+  cursor pointer
+
+  img
+    pointer-events none
+
+  span
+    pointer-events none
+    position absolute
+    top 50%
+    left 50%
+    height 30px
+    width 30px
+    border-radius 100px
+    background rgba(255, 255, 255, .6)
+    margin -15px 0 0 -15px
+
+    i
+      pointer-events none
+      height 24px
+      width 24px
+      position relative
+      z-index 1
+      opacity 1
+      background-size 1600% 1600%
+      margin 0
+
+.rtl .glide__track
+  direction ltr
+
+.rtl .area .glide-nav button.next-btn
+  left 0
+  transform scaleX(-1)
+  right auto
+
+.rtl .area .glide-nav button.prev-btn
+  right 0
+  transform scaleX(-1)
+  left auto
+
+.rtl .glide__track .p-tile
+  text-align right
+  direction rtl
+
+.image-popup-wrapper
+  position fixed
+  top 0
+  bottom 0
+  left 0
+  right 0
+  background rgba(0, 0, 0, .4)
+  z-index 999
+  display flex
+  align-items center
+  justify-content center
+  overflow auto
+
+  .image-popup
+    border-radius border-radius
+    height 80%
+    width 80%
+    position relative
+    background #fff
+    box-shadow 0 1px 10px rgba(0, 0, 0, .3)
+    padding 20px 320px 20px 0
+
+    .fav-btn
+    .share-btn
+      display none
+      box-shadow none
+      top 0
+      right 0
+
+      .icon
+        height 28px
+        width 28px
+        min-width 28px
+
+    .fav-btn
+      right auto
+      left 0
+
+    .slider-wrapper
+      flex-grow 1
+      height 100%
+
+      .slider-content-inner
+        display flex
+        align-items center
+        justify-content center
+
+      .slider-content-inner
+      .slider-content
+      .glide__slides
+      .glide__track
+        text-align center
+        height 100%
+
+        img
+          width auto
+          height auto
+          max-width 100%
+          max-height 100%
+
+    .thumb-wrapper
+      background #F1F2F1
+      position absolute
+      top -20px
+      right -320px
+      bottom -20px
+      flex-wrap wrap
+      width 320px
+      padding 40px 20px 20px
+      border-left 1px solid #ddd
+      border-radius 0 border-radius border-radius 0
+
+      .title
+        padding 5px
+
+      .active
+        border 2px solid rgba(0, 0, 0, 0)
+        box-shadow 0 0 3px 1px primary-color
+
+      .img-handler
+        cursor pointer
+        width 80px
+        height 80px
+        border-radius border-radius
+        border 2px solid rgba(0, 0, 0, .2)
+        margin 5px
+
+/* RESPONSIVE */
+@media only screen and (max-width: 1200px)
+  .image-popup-wrapper
+    .image-popup
+      height 90%
+      width 90%
+      padding-right 270px
+
+      .thumb-wrapper
+        width 270px
+        right -270px
+
+        .img-handler
+          width 70px
+          height 70px
+
+@media only screen and (max-width: 992px)
+  .rtl .image-popup-wrapper .image-popup .next-btn
+    right auto
+    left 0!important
+    transform scaleX(-1)
+
+
+  .rtl .image-popup-wrapper .image-popup .prev-btn
+    left auto!important
+    right 0
+    transform scaleX(-1)
+
+  .stacked.image-popup-wrapper
+    position static
+
+    .image-popup
+      position static
+
+      .close-btn
+        display none
+
+      .slider-wrapper
+
+        .thumb-wrapper
+          bottom -30px
+
+  .preload-img
+    max-width 400px
+    display block
+    padding 30px
+    margin 0 auto
+
+  .image-popup-wrapper
+    background none
+
+    .image-popup
+      height 100%
+      width 100%
+      padding 30px 0 10px
+      overflow hidden
+
+      .prev-btn
+        z-index 0
+        right auto
+        left 0 !important
+
+      .next-btn
+        z-index 0
+        left auto !important
+        right 0
+
+      .slider-content-inner
+        max-width 400px
+        margin auto
+        padding 0 30px
+
+        img
+        video
+          max-height 400px!important
+
+        & > .full-dimen
+          height auto
+
+      .slider-wrapper
+        margin-bottom 40px
+
+        .thumb-wrapper
+          bottom 0
+          left 0
+          right 0
+          width 100%
+          top auto
+          padding 0
+          border none
+          background none
+
+          & > div
+            display flex
+            justify-content center
+            align-items center
+
+            .img-handler
+              height 20px
+              width 20px
+              margin 0 2.5px
+
+          .title
+            display none
+
+@media only screen and (max-width: 768px)
+  .image-popup-wrapper
+    .image-popup
+      .fav-btn
+      .right-btn
+        display flex

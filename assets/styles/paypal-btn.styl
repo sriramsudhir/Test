@@ -1,0 +1,31 @@
+@import "variables.styl"
+
+.paypal-tab
+  max-width 0
+  max-height 0
+  opacity 1
+  z-index -1
+
+  &.paypal-active
+    position static
+    opacity 1
+    z-index 1
+    max-width 1000px
+    max-height 100px
+    height btn-height
+
+    .paypal-buttons
+      border-radius border-radius
+      overflow hidden
+      height btn-height!important
+      min-height btn-height!important
+
+  .paypal-buttons
+    position absolute!important
+    transition none!important
+    height 0!important
+    min-height 0!important
+
+.paypal-buttons
+  max-width 300px !important
+

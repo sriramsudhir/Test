@@ -1,0 +1,27 @@
+@import "variables.styl"
+
+.toast-message
+  padding 15px 30px
+  background #333
+  color #fff
+  position fixed
+  left 50%
+  transform translateX(-50%)
+  bottom 50px
+  border-radius border-radius
+  z-index 1111
+
+.error-toast
+  color danger-foreground
+  background danger-bg-color
+
+  span
+    margin-right 5px
+
+//RESPONSIVE
+@media only screen and (max-width: 768px)
+  .toast-message
+    text-align center
+    padding 10px
+    bottom 30px
+

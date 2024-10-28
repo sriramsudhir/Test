@@ -1,0 +1,1423 @@
+@import "variables.styl"
+
+
+.ignore-click
+  pointer-events none
+
+.page-link
+  padding 2px 2px 0
+  position relative
+
+  &:active:before
+    content ''
+    position absolute
+    top 2px
+    bottom 2px
+    left 2px
+    right 2px
+    border-radius border-radius
+    z-index 1
+    background rgba(255,255,255,.1)
+    box-shadow 0 0 1px 2px primary-color
+
+.img-loading.opacity-0
+  opacity 1
+
+.sb::-webkit-scrollbar-track
+  background-color #F5F5F5
+
+.sb::-webkit-scrollbar
+  width 8px
+  background-color #F5F5F5
+
+.sb::-webkit-scrollbar-thumb
+  background-color #C1C1C1
+
+.full-dimen
+  height 100%
+  width 100%
+
+.lazy-img
+  transition none
+  opacity 0
+
+.scale-8
+  transform scale(.8)
+
+.transition
+  transition all .2s
+
+.compare-btn
+  height 35px
+  width 35px
+  display flex
+  align-items center
+  justify-content center
+  border-radius 7px
+  background #eee
+  transition all .2s
+
+  i
+    opacity .8
+    margin 0
+
+.btn-simple
+  background primary-lite-color
+  padding 5px 10px
+  font-size .9em
+  border-radius border-radius
+
+
+.clear-btn
+  line-height 1
+  height auto
+
+.color-warning
+  color warning-foreground
+
+.color-success
+  color success-foreground
+
+.color-offer
+  color offer-color
+
+.color-free
+  letter-spacing 1px
+  color offer-color
+  font-weight 600
+
+.color-reduced
+  color reduced-color
+
+.color-danger
+  color danger-foreground
+
+.color-info
+  color info-bg-color
+
+.color-primary
+  color primary-color
+
+.color-deep
+  color primary-deep
+
+button.color-deep
+  &:hover
+    color primary-color
+
+.link-color
+  text-transform uppercase
+  color link-color
+  text-decoration underline
+
+  &:hover
+    text-decoration none
+
+.info-msg
+  padding 12.5px 15px
+  border-radius border-radius
+  background info-bg-color
+  color info-foreground
+
+.warning-msg
+  padding 12.5px 15px
+  border-radius border-radius
+  color warning-foreground
+  background warning-bg-color
+
+.success-msg
+  padding 12.5px 15px
+  border-radius border-radius
+  color success-foreground
+  background success-bg-color
+
+.danger-msg
+  padding 12.5px 15px
+  border-radius border-radius
+  color danger-foreground
+  background danger-bg-color
+
+.fw-600
+  font-weight 600
+
+.fw-500
+  font-weight 500
+
+.fw-400
+  font-weight 400
+
+.b-dashed
+  border 1px dashed #ddd
+
+.d-none
+  display none
+
+.card
+  border-radius border-radius
+  border 1px solid #eee
+  background #fff
+
+  & > input[type="radio"]
+    max-height 0
+    max-width 0
+    opacity 0
+    display none
+
+label.card
+  transition all .1s
+  cursor pointer
+  display flex
+  position relative
+
+  &:before
+    content ''
+    position absolute
+    top -10px
+    right -10px
+    opacity 0
+    height 22px
+    min-width 22px
+    border-radius 22px
+    display inline-block
+    border 4px solid #aaa
+
+  &:hover
+    background primary-lite-color
+
+  &:active
+    background #ddd
+
+label.card.active
+  background #EEFAF4
+  border-color primary-color
+
+  &:before
+    opacity 1
+    border none
+    background primary-color
+    background-image url(svg-sprite)
+    background-position 33.5% 22.5%
+    background-size 1000% 1000%
+
+.lh-2
+  line-height 2
+
+  span
+    line-height 2
+
+.lite-bold
+  color #666
+  font-weight 700
+  margin-right 15px
+
+.no-bg
+  background transparent
+
+.btn-input
+  position relative
+
+  input
+    width 100%
+
+  button
+    position absolute
+    top 0
+    right 0
+    bottom 0
+    height auto
+    border-radius 0 border-radius border-radius 0
+
+.flex-w-450x
+  width 450px
+  min-width 450px
+  max-width 450px
+
+.flex-w-350x
+  width 350px
+  min-width 350px
+  max-width 350px
+
+.mx-w-600x
+  max-width 600px
+
+.cp
+  cursor pointer
+
+.w-70x
+  width 70px
+
+.w-80x
+  width 80px
+
+.w-100x
+  width 100px
+
+.w-120x
+  width 120px
+
+.w-150x
+  width 150px
+
+.mx-h-0
+  max-height 0
+
+.mx-h-50x
+  max-height 50px
+
+.mx-h-55x
+  max-height 55px
+
+.mx-h-100
+  max-height 100%
+
+.clear-height
+  height auto
+  line-height inherit
+
+.dimen-16x
+  height 16px !important
+  width 16px !important
+  min-width 16px !important
+
+.dimen-20x
+  height 20px !important
+  width 20px !important
+  min-width 20px !important
+
+.dimen-80x
+  height 80px
+  width 80px
+  min-width 80px
+
+.opacity-0
+  opacity 0
+
+.opacity-35
+  opacity .35
+
+.opacity-6
+  opacity .6
+
+.opacity-8
+  opacity .8
+
+.opacity-1
+  opacity 1
+
+.no-click
+  pointer-events none
+
+button
+span
+  & > .icon
+    height 20px
+    width 20px
+    min-width 20px
+    opacity .6
+    margin 2px 5px
+
+  .m-0.icon
+    height 18px
+    width 18px
+    min-width 18px
+
+button
+span
+  & > .icon.arrow-up
+  & > .icon.arrow-left
+  & > .icon.arrow-right
+  & > .icon.arrow-down
+    height 16px
+    width 16px
+    min-width 16px
+
+.no-scroll
+  overflow-y hidden
+
+.tab-wrapper
+  .tabs
+    margin 0 -5px
+
+    li
+      cursor pointer
+      font-size 1.1em
+      margin 0 5px
+      padding 12.5px 25px
+      border-radius border-radius border-radius 0 0
+      transition all .1s
+
+      &:hover
+        background #eee
+
+      &:active
+        background #ddd
+
+  .tabs
+    .active
+      border 1px solid primary-color
+
+
+.devider
+  background #ddd
+  height 1px
+
+.slug
+  font-size .9em
+
+  > li
+    &:after
+      font-size .9em
+      content '>'
+      margin 0 7.5px
+
+    > a
+      &:hover
+        text-decoration underline
+
+  > li:last-child
+    color #888
+
+    &:after
+      display none
+
+.two-sided
+  gap 10px
+  display flex
+  align-items center
+
+  .left
+    color #888
+    width 120px
+    min-width 120px
+
+.ellipsis-para
+  max-height 110px
+  position relative
+  overflow hidden
+
+  &:after
+    content ''
+    position absolute
+    left 0
+    right 0
+    bottom 0
+    height 50px
+    background linear-gradient(to top, #fff, rgba(0, 0, 0, 0))
+
+input.no-control::-webkit-outer-spin-button
+input.no-control::-webkit-inner-spin-button
+  -webkit-appearance none
+  margin 0
+
+/* Firefox */
+input.no-control[type=number]
+  -moz-appearance textfield
+
+.f-12
+  font-size 1.2em !important
+
+.f-13
+  font-size 1.3em !important
+
+.f-16
+  font-size 1.6em
+  line-height 1.6
+
+.f-11
+  font-size 1.1em
+
+.f-10
+  font-size 1em
+
+
+.f-9
+  font-size .9em
+
+.f-8
+  font-size .8em
+
+.f-7
+  font-size .7em
+
+.mn-w-70x
+  min-width 70px
+
+.mn-w-90x
+  min-width 90px
+
+.mn-w-200x
+  min-width 200px
+
+.mn-w-300x
+  min-width 300px
+
+.mn-w-350x
+  min-width 350px
+
+.mn-w-400x
+  min-width 400px
+
+.mn-w-600x
+  min-width 600px
+
+.mn-w-50
+  min-width 50%
+
+.mx-w-200x
+  max-width 200px
+
+.mx-w-300x
+  max-width 300px
+
+.mx-w-400x
+  max-width 400px
+
+.mx-w-700x
+  max-width 700px
+
+.h-40x
+  height 40px
+
+.mn-h-200x
+  min-height 200px
+
+.mn-h-300x
+  min-height 300px
+
+.mn-h-400x
+  min-height 400px
+
+.mn-h-500x
+  min-height 500px
+
+.mn-h-700x
+  min-height 700px
+
+.fade-enter-active
+.fade-leave-active
+  transition opacity .2s
+
+.fade-enter
+.fade-leave-to
+  opacity 0
+
+.ellipsis
+  white-space normal
+  overflow hidden
+  text-overflow ellipsis
+  display -webkit-box
+  -webkit-box-orient vertical
+
+.ellipsis-1
+  -webkit-line-clamp 1
+
+.ellipsis-2
+  -webkit-line-clamp 2
+
+.ellipsis-3
+  -webkit-line-clamp 3
+
+.ellipsis-4
+  -webkit-line-clamp 4
+
+.price
+  font-weight 600
+
+
+.strike-through
+  position relative
+  padding 0 2px
+  color #666
+  line-height 0
+  font-size .9em
+  margin-right 5px
+
+  &:after
+    content ''
+    position absolute
+    top 50%
+    left 0
+    right 0
+    height 1px
+    margin-top 0
+    background #777
+
+.strike-through.color-reduced
+  color reduced-color
+  font-size 1em
+
+  &:after
+    background reduced-color
+
+.text-nowrap
+  white-space nowrap
+
+.text-t-normal
+  text-transform none
+
+.text-upper
+  text-transform uppercase
+
+.color-lite
+  color #555
+
+.z-1
+  z-index 1
+
+.z-2
+  z-index 2 !important
+
+.z-7
+  z-index 7
+
+.z-10
+  z-index 10
+
+.b-t
+  border-top 1px solid #ddd
+
+.b-b
+  border-bottom 1px solid #ddd
+
+.link-wrap
+  a
+    text-decoration underline
+
+    &:hover
+      text-decoration none
+
+.link-hover
+  a
+    &:hover
+      text-decoration underline
+
+.color-white
+  color white
+
+.icon
+  height 24px
+  width 24px
+  min-width 24px
+  background-size 1400% 1400%
+  background-image url(svg-sprite)
+
+.layer
+  position fixed
+  top header-height
+  left 0
+  right 0
+  bottom 0
+  z-index -1
+  background rgba(0, 0, 0, .4)
+
+.lh-0
+  line-height 0
+
+.lh-30
+  line-height 30px
+
+.f-right
+  float right
+
+.f-left
+  float left
+
+.center-text
+  text-align center
+
+.right-text
+  text-align right
+
+.left-text
+  text-align left
+
+.left-btn
+.right-btn
+  position absolute
+  top 10px
+  right 10px
+  z-index 100
+  bottom 10px
+  height 26px
+  width 26px
+  border-radius 100px
+  padding 0
+  display flex
+  align-items center
+  justify-content center
+  box-shadow 0 0 1px 1px primary-color
+
+  .close-icon
+    opacity .6
+    background-position 1.5% 1.5%
+
+  &:hover
+    background #fff
+
+  &:active
+    background primary-lite-color
+    box-shadow 0 0 2px 3px primary-color
+
+.left-btn
+  right 10px
+
+.pos-static
+  position static
+
+.pos-sticky
+  top 100px
+  position sticky
+
+.inline
+  display inline-block
+
+.gap-5
+  gap 5px
+
+.gap-10
+  gap 10px
+
+.gap-15
+  gap 15px
+
+.gap-20
+  gap 20px
+
+.flex
+  display flex
+  align-items center
+  justify-content center
+
+.sided
+  justify-content space-between
+
+.f-reverse
+  flex-direction row-reverse
+
+.br-primary
+  border-radius border-radius
+
+.br-5
+  border-radius 5px
+
+.wrap
+  flex-wrap wrap
+
+.reverse
+  flex-direction row-reverse
+
+.grow
+  flex-grow 1
+
+.j-end
+  justify-content flex-end !important
+
+.start
+  justify-content flex-start
+
+.top
+  align-items flex-start
+
+.flex-1
+  flex 1
+
+.align-end
+  align-items flex-end
+
+.align-start
+  align-items flex-start
+
+.align-initial
+  align-items initial
+
+.right
+  justify-content flex-end
+
+.lite-btn
+  line-height 1
+  height auto
+  padding 7.5px 10px
+  border-radius border-radius
+  background primary-lite-color
+  border 1px solid primary-lite-color
+  color primary-deep
+
+  &:hover
+    background #fff!important
+    border 1px solid primary-deep !important
+
+.outline-btn
+  font-size 1em
+  height btn-height
+  line-height btn-height - 2px
+  border 1px solid #bbb
+  background linear-gradient(to bottom, #f7f8fa, #e7e9ec)
+  box-shadow 0 1px 0 rgba(255, 255, 255, .3) inset
+
+  &:hover
+    background linear-gradient(to top, #f7f8fa, #e7e9ec)
+
+  &:active
+    box-shadow 0 1px 2px 1px #b7b8ba
+
+.primary-btn
+  border-radius border-radius
+  text-align center
+  font-size 1em
+  background primary-color
+  /*border 1px solid primary-hover*/
+  font-weight 700
+  color primary-foreground
+  height btn-height
+  line-height btn-height
+  transition all .2s
+  box-shadow 0 1px 0 rgba(255, 255, 255, .3) inset
+
+  &:hover
+    background primary-hover
+
+  &:active
+    box-shadow 0 1px 3px 1px primary-hover
+
+.btn-lg
+  font-size 1.1em
+  height btn-height + 8px
+  line-height btn-height + 6px
+
+.primary-deep
+  background linear-gradient(to bottom, primary-hover, primary-deep)
+
+  &:hover
+    background linear-gradient(to bottom, primary-deep, primary-hover)
+
+  &:active
+    box-shadow 0 1px 3px 1px primary-deep
+
+.google-btn
+  background none
+  text-align center
+  border-color #ccc
+  color font-color
+  transition all .1s
+  background primary-lite-color
+
+  &:hover
+    opacity .9
+    box-shadow 1px 1px 3px rgba(0, 0, 0, .3)
+    background primary-lite-color !important
+
+  &:active
+    background primary-semi !important
+
+.facebook-btn
+  background #4267B2 !important
+  text-align center
+
+  &:hover
+    box-shadow 1px 1px 3px rgba(0, 0, 0, .3)
+    background #4267B2 !important
+    opacity .9
+
+  &:active
+    opacity .7
+
+.bold
+  font-weight 600
+
+.color-inherit
+  color inherit
+
+.semi-bold
+  font-weight 600
+
+.h-100
+  height 100%
+
+.w-50
+  width 50%
+
+.w-90
+  width 90%
+
+.w-100
+  width 100%
+
+.dimen-100
+  height 100%
+  width 100%
+
+.ls-0
+  letter-spacing 0
+
+.p-5
+  padding 5px !important
+
+.p-10
+  padding 10px !important
+
+.p-15
+  padding 15px !important
+
+.p-20
+  padding 20px !important
+
+.p-25
+  padding 25px !important
+
+.p-30
+  padding 30px !important
+
+.pt-0
+  padding-top 0 !important
+
+.pt-5
+  padding-top 5px !important
+
+.pt-10
+  padding-top 10px !important
+
+.pt-15
+  padding-top 15px !important
+
+.pt-20
+  padding-top 20px !important
+
+.pt-30
+  padding-top 30px !important
+
+.pt-50
+  padding-top 50px !important
+
+.pb-0
+  padding-bottom 0 !important
+
+.pb-5
+  padding-bottom 5px !important
+
+.pb-10
+  padding-bottom 10px !important
+
+.pb-15
+  padding-bottom 15px !important
+
+.pb-20
+  padding-bottom 20px !important
+
+.pb-30
+  padding-bottom 30px !important
+
+.pl-0
+  padding-left 0 !important
+
+.pl-7-5
+  padding-left 7.5px !important
+
+.pl-15
+  padding-left 15px !important
+
+.pl-20
+  padding-left 20px !important
+
+.pl-30
+  padding-left 30px !important
+
+.pl-50
+  padding-left 50px !important
+
+.pr-7-5
+  padding-right 7.5px !important
+
+.pr-10
+  padding-right 10px !important
+
+.no-shadow
+  box-shadow none
+
+.pr-15
+  padding-right 15px !important
+
+.pr-20
+  padding-right 20px !important
+
+.pr-30
+  padding-right 30px !important
+
+.pr-80
+  padding-right 80px !important
+
+.ptb-5
+  padding-top 5px !important
+  padding-bottom 5px !important
+
+.ptb-7-5
+  padding-top 7.5px !important
+  padding-bottom 7.5px !important
+
+.ptb-10
+  padding-top 10px !important
+  padding-bottom 10px !important
+
+.ptb-15
+  padding-top 15px !important
+  padding-bottom 15px !important
+
+.ptb-20
+  padding-top 20px !important
+  padding-bottom 20px !important
+
+.plr-0
+  padding-left 0 !important
+  padding-right 0 !important
+
+.plr-10
+  padding-left 10px !important
+  padding-right 10px !important
+
+.plr-15
+  padding-left 15px !important
+  padding-right 15px !important
+
+.plr-20
+  padding-left 20px !important
+  padding-right 20px !important
+
+.plr-25
+  padding-left 25px !important
+  padding-right 25px !important
+
+.plr-30
+  padding-left 30px !important
+  padding-right 30px !important
+
+.plr-35
+  padding-left 35px !important
+  padding-right 35px !important
+
+.plr-40
+  padding-left 40px !important
+  padding-right 40px !important
+
+.m--5
+  margin -5px !important
+
+.m--7-5
+  margin -7.5px !important
+
+.m-0
+  margin 0 !important
+
+.m-5
+  margin 5px !important
+
+.m-7-5
+  margin 7.5px !important
+
+.mt--2
+  margin-top -2px !important
+
+.mt-0
+  margin-top 0 !important
+
+.mt-2
+  margin-top 2px !important
+
+.mt-5
+  margin-top 5px !important
+
+.mt-10
+  margin-top 10px !important
+
+.mt-15
+  margin-top 15px !important
+
+.mt-20
+  margin-top 20px !important
+
+.mt-25
+  margin-top 25px !important
+
+.mt-30
+  margin-top 30px !important
+
+.mt-50
+  margin-top 50px !important
+
+.mb-0
+  margin-bottom 0 !important
+
+.mb-5
+  margin-bottom 5px !important
+
+.mb-10
+  margin-bottom 10px !important
+
+.mb-15
+  margin-bottom 15px !important
+
+.mb-20
+  margin-bottom 20px !important
+
+.mb-25
+  margin-bottom 25px !important
+
+.mb-30
+  margin-bottom 30px !important
+
+.mb-50
+  margin-bottom 50px !important
+
+.ml--7-5
+  margin-left -7.5px !important
+
+.ml-5
+  margin-left 5px !important
+
+.ml-10
+  margin-left 10px !important
+
+.ml-15
+  margin-left 15px !important
+
+.mr-5
+  margin-right 5px !important
+
+.mr-10
+  margin-right 10px !important
+
+.mr-15
+  margin-right 15px !important
+
+.mr-20
+  margin-right 20px !important
+
+.mr-50
+  margin-right 50px !important
+
+.mtb-0
+  margin-top 0 !important
+  margin-bottom 0 !important
+
+.mtb-5
+  margin-top 5px !important
+  margin-bottom 5px !important
+
+.mtb-10
+  margin-top 10px !important
+  margin-bottom 10px !important
+
+.mtb-15
+  margin-top 15px !important
+  margin-bottom 15px !important
+
+.mtb-30
+  margin-top 30px !important
+  margin-bottom 30px !important
+
+.mtb-20
+  margin-top 20px !important
+  margin-bottom 20px !important
+
+.mlr--2-5
+  margin-left -2.5px !important
+  margin-right -2.5px !important
+
+.mlr--5
+  margin-left -5px !important
+  margin-right -5px !important
+
+.mlr--7-5
+  margin-left -7.5px !important
+  margin-right -7.5px !important
+
+.mlr--15
+  margin-left -15px !important
+  margin-right -15px !important
+
+.mlr-auto
+  margin-left auto !important
+  margin-right auto !important
+
+.mlr-0
+  margin-left 0 !important
+  margin-right 0 !important
+
+.mlr-2-5
+  margin-left 2.5px !important
+  margin-right 2.5px !important
+
+.mlr-5
+  margin-left 5px !important
+  margin-right 5px !important
+
+.mlr-7-5
+  margin-left 7.5px !important
+  margin-right 7.5px !important
+
+.mlr-10
+  margin-left 10px !important
+  margin-right 10px !important
+
+.mlr-15
+  margin-left 15px !important
+  margin-right 15px !important
+
+.flow-hidden
+  overflow hidden
+
+.flow-auto
+  overflow auto
+
+.link
+  line-height 1.6
+  height auto
+  text-decoration underline
+
+  &:hover
+    text-decoration none
+
+.pos-rel
+  position relative
+
+.block
+  display block
+
+.hide
+  display none
+
+/* RESPONSIVE */
+@media only screen and (max-width: 1200px)
+  .hide-lg
+    display none
+
+@media only screen and (max-width: 992px)
+
+  .j-start-md
+    justify-content flex-start!important
+
+  .mn-w-200x-md
+    min-width 200px
+
+  .mb-md-15
+    margin-bottom 15px !important
+
+  .pl-md
+    padding-left 0 !important
+
+  .pr-md
+    padding-right 0 !important
+
+  .w-md-100
+    width 100%
+
+  .block-md
+    display block
+
+  .hide-md
+    display none
+
+@media only screen and (max-width: 768px)
+  .j-start-sm
+    justify-content flex-start!important
+
+  .mb-sm-20
+    margin-bottom 20px!important
+
+  .btn-lg
+    height btn-height + 2px
+    line-height btn-height
+
+  .plr-sm-20
+    padding-right 20px !important
+    padding-left 20px !important
+
+  .ptb-sm-15
+    padding-top 15px !important
+    padding-bottom 15px !important
+
+  .plr-sm-15
+    padding-right 15px !important
+    padding-left 15px !important
+
+  .pr-sm-15
+    padding-right 15px !important
+
+
+
+
+  .p-sm-15
+    padding 15px !important
+
+  .pt-sm-15
+    padding-top 15px !important
+
+  .pr-sm
+    padding-right 0 !important
+
+  .pb-sm
+    padding-bottom 0 !important
+
+
+  .pb-sm-5
+    padding-bottom 5px !important
+
+  .pb-sm-10
+    padding-bottom 10px !important
+
+  .pb-sm-15
+    padding-bottom 15px !important
+
+  .pb-sm-20
+    padding-bottom 20px !important
+
+  .inl-b-sm
+    display inline-block
+
+  .mtb-sm-15
+    margin-top 15px !important
+    margin-bottom 15px !important
+
+  .mr-sm-15
+    margin-right 15px !important
+
+  .mb-sm-15
+    margin-bottom 15px !important
+
+  .mr-sm
+    margin-right 0 !important
+
+  .mlr-sm--2-5
+    margin-left -2.5px
+    margin-right -2.5px
+
+  .mlr-sm-2-5
+    margin-left 2.5px
+    margin-right 2.5px
+
+  .flex-sm
+    display flex
+
+  .w-sm-50
+    width 50%
+
+  .mtb-sm-10
+    margin-top 10px !important
+    margin-bottom 10px !important
+
+  .mn-w-sm-0
+    min-width 0
+
+  .pl-sm-0
+    padding-left 0 !important
+
+  .pr-sm-0
+    padding-right 0 !important
+
+  .hide-sm
+    display none !important
+
+  .mr-sm-10
+    margin-right 10px !important
+
+  .mb-sm
+    margin-bottom 0 !important
+
+  .mb-sm-10
+    margin-bottom 10px !important
+
+  .mb-sm-15
+    margin-bottom 15px !important
+
+  .mt-sm
+    margin-top 0 !important
+
+  .mt-sm-10
+    margin-top 10px !important
+
+  .mt-sm-15
+    margin-top 15px !important
+
+  .mt-sm-20
+    margin-top 20px !important
+
+  .f-none-sm
+    float none
+
+  .block-sm
+    display block
+
+@media only screen and (max-width: 576px)
+  .mlr-xs-auto
+    margin-right auto!important
+    margin-left auto!important
+
+  .p-xs-10
+    padding 10px !important
+
+  .pb-xs
+    padding-bottom 0 !important
+
+  .mb-xs
+    margin-bottom 0 !important
+
+  .mt-xs-10
+    margin-top 10px !important
+
+  .ml-xs
+    margin-left 0 !important
+
+  .ml-xs-5
+    margin-left 5px !important
+
+  .p-xs-10
+    padding 10px !important
+
+  .plr-xs-10
+    padding-right 10px !important
+    padding-left 10px !important
+
+  .plr-xs-15
+    padding-right 15px !important
+    padding-left 15px !important
+
+  .flex-xs
+    display block
+
+    .flex-1
+      margin 0 0 10px !important
+      width 100%
+
+  .mt-xs
+    margin-top 0 !important
+
+  .mt-xs-5
+    margin-top 5px !important
+
+  .mt-xs-15
+    margin-top 15px !important
+
+  .block-xs
+    display block
+
+  .hide-xs
+    display none
+
+  .mb-xs-5
+    margin-bottom 5px !important
+
+  .mb-xs-10
+    margin-bottom 10px !important
+
+  .mb-xs-15
+    margin-bottom 15px !important
+
+  .icon
+    height 22px
+    width 22px
+    min-width 22px
+
+@media only screen and (max-width: 380px)
+  .block-xxs
+    display block
+
+  .hide-xxs
+    display none

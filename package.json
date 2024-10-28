@@ -1,0 +1,36 @@
+{
+  "name": "Ishop",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@glidejs/glide": "^3.4.1",
+    "@nuxtjs/auth": "^4.9.1",
+    "@nuxtjs/auth-next": "^5.0.0-1616003482.75c20e6",
+    "@nuxtjs/axios": "^5.12.5",
+    "@nuxtjs/i18n": "^7.2.2",
+    "@nuxtjs/moment": "^1.6.1",
+    "@nuxtjs/pwa": "^3.3.5",
+    "core-js": "^3.8.3",
+    "debounce": "^1.2.1",
+    "draggable-vue-directive": "^2.1.0",
+    "express": "^4.18.2",
+    "lozad": "^1.16.0",
+    "nuxt": "^2.14.12",
+    "v-dragged": "0.0.5",
+    "vue-cryptojs": "^2.1.6",
+    "vue-dompurify-html": "^2.1.2",
+    "vue-image-magnifier": "^0.2.1",
+    "vue-product-zoomer": "^3.0.1",
+    "vue-social-sharing": "^3.0.7"
+  },
+  "devDependencies": {
+    "stylus": "^0.54.8",
+    "stylus-loader": "^3.0.2"
+  }
+}

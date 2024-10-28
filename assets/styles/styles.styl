@@ -1,0 +1,336 @@
+@import "variables.styl"
+@import "base.styl"
+@import "grid.styl"
+@import "common.styl"
+@import "form.styl"
+@import "icons.styl"
+@import "shimmer.styl"
+@import "profile.styl"
+@import "featured.styl"
+@import "header.styl"
+@import "ajax-button.styl"
+@import "footer.styl"
+@import "featured-brands.styl"
+@import "toast-message.styl"
+@import "pagination.styl"
+@import "pop-over.styl"
+@import "stripe-payment.styl"
+@import "dropdown.styl"
+@import "search-popup.styl"
+@import "product-review.styl"
+@import "cart-product-tile.styl"
+@import "flash-product-list.styl"
+@import "flash-sale.styl"
+@import "cb-button.styl"
+@import "home-hero.styl"
+@import "glider-slider.styl"
+@import "product-tile.styl"
+@import "category-tile.styl"
+@import "product-detail.styl"
+@import "image-slider-popup.styl"
+@import "detail-images.styl"
+@import "detail-right.styl"
+@import "social-share.styl"
+@import "product-dynamic.styl"
+@import "quantity-nav.styl"
+@import "order.styl"
+@import "rating.styl"
+@import "vouchers.styl"
+@import "static.styl"
+@import "product-banner.styl"
+@import "address-popup.styl"
+@import "product-list.styl"
+@import "heading-tab.styl"
+@import "paypal-btn.styl"
+@import "input.styl"
+@import "shipping.styl"
+@import "spinner.styl"
+@import "search-product-tile.styl"
+@import "subscription.styl"
+@import "banner.styl"
+@import "contact.styl"
+@import "sitemap.styl"
+@import "breadcrumb.styl"
+@import "track-order.styl"
+@import "order-statues.styl"
+@import "store.styl"
+@import "store-tile.styl"
+@import "user-following.styl"
+@import "cart.styl"
+@import "checkout.styl"
+@import "tree-node.styl"
+@import "seller-registration.styl"
+@import "cookie-banner.styl"
+@import "whatsapp-btn.styl"
+@import "checkbox.styl"
+@import "radio.styl"
+@import "sticky-cart-btn.styl"
+
+
+.rtl
+  direction rtl
+
+main
+  padding-top calc(152px + 4%)
+
+.no-banner ~ main
+  padding-top 152px
+
+
+#cart-pop-over
+  top 50%
+  margin 0
+  transform translate(-50%, -50%)
+
+#dropdown-100
+  left 50%
+
+.html-render
+  p
+    margin 15px 0
+
+.thumb-list
+  .video-thumb
+    margin-top 5px
+    border 1px solid #ddd
+    border-radius border-radius
+    width 60px
+    min-width 60px
+    height 60px
+
+.error-list
+  font-size .9em
+
+  li
+    display block
+    color danger-foreground
+
+    &:first-child
+      color font-color
+      font-size 1.1em
+
+.h-24x
+  height 24px
+
+.w-70
+  width 70%
+
+.pb-70p
+  padding-bottom 70% !important
+
+.pb-100p
+  padding-bottom 100% !important
+
+.flash-sale
+.checkout
+.shipping
+.order-id
+div[class^="user-"]
+.cart
+.body-bg
+.index
+  transition background .2s
+  background home-bg
+
+.body-bg
+#__layout
+#__nuxt
+  min-height 100vh
+
+body
+  max-width 1920px
+  margin 0 auto
+  position relative
+
+  &:after
+    content ''
+    position fixed
+    background #fff
+    opacity 0
+    top 0
+    bottom 0
+    height 100%
+    width 100%
+    z-index -1
+    transition all .05s
+
+
+.page-title
+  color #470096
+
+.going-next
+  &:after
+    z-index 1
+
+.section
+  padding 50px 0 30px
+
+.home-section
+  margin-top 20px
+  margin-bottom 20px
+
+.rtl .rating-stars
+  .rating
+    left auto
+    right 0
+
+.rating-stars
+  position relative
+  color rating-color
+  font-size 1.2em
+
+  .rating
+    overflow hidden
+    position absolute
+    top 0
+    left 0
+
+.drift-bounding-box
+  display none
+
+.detail-page
+  .drift-bounding-box
+    display block
+
+.area
+  background white
+  border-radius border-radius
+
+  .area-content
+    padding 0 15px 0
+
+  .title
+    font-weight 600
+    padding 10px 15px
+    border-bottom 1px solid #eee
+
+  .glide-nav
+    button
+      opacity .4
+
+      &.prev-btn
+        left 0
+        right auto
+
+      &.next-btn
+        right 0
+        left auto
+
+      &:hover
+        opacity .9
+
+      &:active
+        opacity 1 !important
+
+  &:hover
+    .glide-nav
+      button
+        opacity 1
+
+.img-wrapper
+  position relative
+  padding-bottom 100%
+
+  .shimmer
+  img
+    position absolute
+    top 50%
+    left 50%
+    transform translate(-50%, -50%)
+    max-height 100%
+    max-width 100%
+    height auto
+    width auto
+
+  .shimmer
+    height 100%
+    width 100%
+
+.popup-banner-wrapper
+  position fixed
+  top 0
+  left 0
+  height 100%
+  width 100%
+  z-index 10
+  background rgba(0, 0, 0, .5)
+
+  .popup-banner
+    max-width 600px
+    position absolute
+    top 50%
+    left 50%
+    z-index 1
+    transform translate(-50%, -50%)
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  #cart-pop-over
+    min-width 80%
+
+@media only screen and (max-width: 992px)
+  .area
+    .title
+      padding 10px 15px
+
+@media only screen and (max-width: 768px)
+  #cart-pop-over
+   top unset
+
+  main
+    min-height 400px
+    overflow hidden
+    padding-top calc(230px + 4%)
+
+
+  .no-banner ~ main
+    padding-top 230px
+
+  .section
+    padding 30px 0 0
+
+  .home-section
+    margin-top 15px
+    margin-bottom 15px
+
+@media only screen and (max-width: 576px)
+  main
+    padding-top calc(230px + 6%)
+
+  .no-banner ~ main
+    padding-top 230px
+
+  .section
+    padding 15px 0 0
+
+  .area
+    .area-content
+      padding 0 10px 0
+
+    .title
+      padding 7.5px 10px
+
+    .glide-nav
+      button
+        opacity .9
+
+@media only screen and (max-width: 420px)
+  main
+    padding-top calc(195px + 6%)
+
+  .no-banner ~ main
+    padding-top 195px
+
+@media only screen and (max-width: 380px)
+  main
+    padding-top calc(175px + 6%)
+
+  .no-banner ~ main
+    padding-top 175px
+
+@media only screen and (max-width: 350px)
+  main
+    padding-top calc(200px + 6%)
+
+  .no-banner ~ main
+    padding-top 200px

@@ -1,0 +1,97 @@
+@import "variables.styl";
+
+.scroller-at-left
+  display block !important
+
+.zoomer-base-container
+  text-align center
+
+.drift-bounding-box
+  z-index 10
+
+.detail-image
+  position relative
+  width auto
+
+  .thumb-list
+    justify-content center
+    margin 5px 0 10px
+    align-items center
+
+    .zoomer-control
+      transform rotate(-90deg)
+
+  .arrow-hide
+    .thumb-list
+      & > .zoomer-control
+        display none
+
+  .pleceholder-zoomer-base-container
+  .zoomer-base-container
+    cursor pointer
+    width 100% !important
+    max-height 520px
+    position static !important
+
+    & > img
+      width auto
+      height auto
+      max-width 100%
+      max-height 420px
+      min-height 400px
+
+  .pleceholder-zoomer-base-container
+    /*height 550px*/
+    height 400px
+
+
+  .pleceholder-thumb-list
+    margin 0 -5px
+  .pleceholder-thumb-list
+  .thumb-list
+    width auto !important
+    grid-row-gap 0 !important
+    height auto !important
+    display flex !important
+    justify-content center
+
+    .responsive-image
+      height 60px !important
+      width 60px !important
+      margin 5px
+      border-radius border-radius
+      border 1px solid #ddd
+
+    .zoomer-control.responsive-image
+      height 30px !important
+      width 30px !important
+      border none
+      opacity .3
+
+      &:hover
+        opacity .6
+
+    .choosed-thumb
+      box-shadow 0 0 2px 1px primary-color !important
+
+.pane-container
+  top 0 !important
+  height 500px !important
+  width 500px !important
+  left calc(100% + 15px) !important
+  border-radius border-radius
+  z-index 1000
+  overflow hidden
+  box-shadow 0 1px 5px rgba(0, 0, 0, .3)
+
+.rtl .drift-zoom-pane img
+  left 0
+
+.rtl .pane-container
+  right calc(100% + 15px) !important
+  left 0 !important
+
+//RESPONSIVE
+@media only screen and (max-width: 768px)
+  .detail-image
+    padding-left 0

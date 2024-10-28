@@ -1,0 +1,264 @@
+@import "variables.styl"
+
+
+.category-wrapper .node-data a
+  padding 5px 0
+
+.collapsible
+  overflow hidden
+  margin-left -10px
+  padding-left 10px
+  max-height 150px
+  transition all .2s
+
+.collapsible.expanded
+  max-height 1000px
+
+.price-search
+  gap 7.5px
+  flex-wrap wrap
+  justify-content flex-start
+
+  .input-wrap
+    width 70px
+    margin-bottom 5px
+    flex-grow 1
+
+    .input-text
+      & > span
+        padding 0 7.5px
+
+    input
+      padding 0 7.5px
+
+  .outline-btn
+    margin-bottom 5px
+
+.rtl .list-heading .sort-dropdown .dropdown-inner
+  right auto
+  left 0
+
+.list-heading
+  padding 5px 0
+
+  .filter-btn
+    display none
+
+  .sort-dropdown
+    span
+      max-width 1000px
+
+    .dropdown-inner
+      left auto
+      right 0
+
+.rtl .product-list .left-area .sticky .sidebar
+  padding-left 30px
+  padding-right 0
+  border-right 0
+  border-left 1px solid #ddd
+
+.rtl .product-list .main-content
+  padding-right 25px
+  padding-left 0
+
+.product-list
+  position relative
+  display flex
+  width 100%
+
+  .main-content
+    flex-grow 1
+    padding-left 25px
+
+    & > .pos-rel
+      min-height 500px
+
+    .tile-container
+      .p-tile
+        min-width 20%
+        width 20%
+
+  .left-area
+    min-width 250px
+
+    .sticky
+      top 30px
+      position sticky
+      z-index 1
+
+      .close-btn-wrapper
+        text-align right
+        display none
+        padding 7.5px 25px
+        font-weight 600
+        font-size 1.1em
+        color primary-color
+        border-bottom 1px solid #ddd
+
+      .sidebar
+        padding-right 30px
+        padding-bottom 20px
+        border-right 1px solid #ddd
+
+        .sidebar-section
+          margin 20px 0
+
+          .title
+            font-weight 600
+            margin-bottom 15px
+
+        .star-filter
+          & > button.active
+            font-weight 700
+            color primary-color
+
+          & > button
+            height auto
+            line-height 1.4
+            display block
+
+            .rating-stars
+              line-height 1 !important
+              font-size 1.7em
+
+              span
+                line-height 1
+
+// RESPONSIVE
+@media only screen and (max-width: 1500px)
+  .rtl .product-list .main-content
+    padding-right 15px
+    padding-left 0
+
+
+  .rtl .product-list .left-area .sticky .sidebar
+    padding-right 0
+    padding-left 15px
+
+
+  .product-list
+    .main-content
+      padding-left 15px
+
+    .left-area
+      .sticky
+        .sidebar
+          padding-right 15px
+          padding-bottom 15px
+
+@media only screen and (max-width: 1200px)
+  .product-list
+    .main-content
+      .tile-container
+        .p-tile
+          min-width 33.33%
+          width 33.33%
+
+@media only screen and (max-width: 992px)
+  .price-search
+    .input-wrap
+      width 50%
+
+      &:first-child
+        margin-right 0
+
+  .product-list
+    padding-left 0
+    .main-content
+      .tile-container
+        .p-tile
+          min-width 50%
+          width 50%
+
+    .left-area
+      min-width 220px
+      width 220px
+
+@media only screen and (max-width: 768px)
+  .rtl .list-heading .sort-dropdown .dropdown-inner
+  .list-heading .sort-dropdown .dropdown-inner
+    left 50%
+
+
+@media only screen and (max-width: 576px)
+  .collapsible
+    max-height 135px
+
+  .list-heading
+    .filter-btn
+      display flex
+
+    & > .flex
+      width 100%
+      justify-content space-between
+
+  .rtl .product-list .main-content
+    padding-right 0
+
+  .rtl .product-list .left-area .sticky .sidebar
+    padding 15px 15px 0
+
+
+  .product-list
+    padding-left 0
+
+    .main-content
+      padding-left 0
+
+      & > .pos-rel
+        min-height 0
+
+    .left-area
+      position fixed
+      top 0
+      bottom 0
+      left 0
+      width 100%
+      z-index 10
+
+      .layer
+        display block
+
+      .sticky
+        top auto
+        box-shadow 0 -2px 20px rgba(0, 0, 0, .2)
+        border-radius 20px 20px 0 0
+        background #fff
+        position absolute
+        bottom 0
+        left 0
+        right 0
+
+        .close-btn-wrapper
+          display block
+          padding 5px 20px
+
+        .sidebar
+          max-height 40vh
+          overflow auto
+          padding 15px 15px 0
+
+          .sidebar-section
+            margin 15px 0
+
+          .star-filter
+            & > button:not(.clear-btn)
+              display inline-block
+              margin-right 10px
+
+          .category-wrapper
+            .main-category a
+            ul li a
+              border-radius border-radius
+              display inline-block
+              margin 0 5px 10px
+              padding 2.5px 10px
+              background primary-lite-color
+
+            .main-category
+              margin-bottom 0 !important
+
+            ul
+              li
+                display inline-block

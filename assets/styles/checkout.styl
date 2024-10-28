@@ -1,0 +1,70 @@
+@import "variables.styl"
+
+
+.discounted-price
+  background #EEFAF4
+  color #2DBF74
+  display flex
+  gap 15px
+  justify-content space-between
+
+  .price
+    text-align right
+    color inherit
+    min-width 100px
+
+
+.rtl .checkout-detail.product-detail .detail-left
+  margin-left 20px!important
+  margin-right 0!important
+
+.rtl .checkout-detail.product-detail
+  padding-right 0
+  padding-left order-right-width
+
+.checkout-detail.product-detail
+  padding-right order-right-width
+
+.checkout-detail.product-detail .detail-right
+  width order-right-width
+
+
+.checkout
+  .tab-heading label
+    height 140px
+    width 140px
+
+    .bank-icon
+      transform scale(1.2)
+      opacity .8
+
+    i + span
+      font-weight bold
+      margin-top 5px
+      opacity .8
+
+
+/*RESPONSIVE*/
+@media only screen and (max-width: 1200px)
+  .rtl .checkout-detail.product-detail
+    padding-left 300px
+
+  .checkout-detail.product-detail
+    padding-right 300px
+
+  .checkout-detail.product-detail .detail-right
+    width 300px
+
+@media only screen and (max-width: 768px)
+  .rtl .checkout-detail.product-detail .detail-left
+    margin-left 0!important
+
+  .rtl .checkout-detail.product-detail
+    padding-right 0
+    padding-left 0
+
+  .checkout-detail.product-detail
+    padding-right 0
+
+  .checkout-detail.product-detail .detail-right
+    width 100%

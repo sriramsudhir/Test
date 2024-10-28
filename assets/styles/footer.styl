@@ -1,0 +1,110 @@
+@import "variables.styl"
+
+.rtl footer .top-area a:not(.logo)
+  margin 0 0 10px 10px
+  padding 0 0 0 10px
+
+footer .payment-icons
+  display flex
+  flex-wrap wrap
+  gap 5px
+
+footer .table-tree
+  display flex
+  flex-wrap wrap
+  gap 15px
+
+footer .table-tree .tree-node
+  display flex
+  flex-wrap wrap
+
+footer .table-tree .tree-node ul
+  display flex
+  flex-wrap wrap
+
+footer .table-tree .tree-node .node-data
+  display inline-block
+
+footer .table-tree > .tree-node
+  display block
+  width calc(25% - 12px)
+  min-width calc(25% - 12px)
+
+footer .table-tree > .tree-node > .node-data
+  font-weight 700
+  display block
+  font-size 1.05rem
+
+footer .table-tree > .tree-node > .node-data a
+  display block
+
+footer
+  background header-bg
+
+  .logo
+    img
+      object-fit contain
+      max-height 50px
+
+  .b-t
+    border-color rgba(0, 0, 0, .15)
+
+  .bold
+    color #000
+
+  a:not(.bold)
+    color #444
+
+  .bottom-area
+    background home-bg
+
+    a
+      padding 5px 0
+      display flex
+      gap 10px
+      align-items center
+
+      img
+
+        height 15px
+        width auto
+
+    .payment
+      a
+        display inline-block
+
+        img
+          height 20px
+
+  .top-area
+    background #fff
+
+    a:not(.logo)
+      position relative
+      margin 0 10px 10px 0
+      padding 0 10px 0 0
+      border-right 2px solid rgba(255, 255,255, .3)
+
+      &:last-child
+        border-right none
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  footer .table-tree > .tree-node
+    width calc(33.33% - 10px)
+    min-width calc(33.33% - 10px)
+
+
+@media only screen and (max-width: 992px)
+  footer .table-tree > .tree-node
+    width calc(50% - 8px)
+    min-width calc(50% - 8px)
+
+@media only screen and (max-width: 768px)
+  footer .table-tree > .tree-node
+    width 100%
+    min-width 100%
+
+  footer
+    .bold.mb-15
+      margin-bottom 5px!important

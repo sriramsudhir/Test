@@ -1,0 +1,164 @@
+@import "variables.styl"
+
+right-slider-width = 300px
+
+.main-slider
+  position relative
+  height 600px
+
+  .slider-wrapper
+    height 100%
+    width 100%
+
+    &.has-right
+      .left
+        margin-right right-slider-width
+
+    .img-wrap
+      position relative
+      height 100%
+      min-height 150px
+
+    .left
+      height 100%
+
+      & > .pos-rel
+        height 100%
+        min-height inherit
+        border-radius border-radius
+        overflow hidden
+
+      .placeholder-img
+        z-index 1
+        position absolute
+        top 0
+        bottom 0
+        left 0
+        right 0
+
+        &.img-loaded
+          z-index -1
+
+      .glide
+      .glide__track
+      .glide__slides
+      .glide__slides > li
+        height 100%
+
+      .slider-content
+        height 100%
+        position relative
+
+        .slider-content-inner
+          position absolute
+          top 0
+          bottom 0
+          left 0
+          right 0
+
+          img
+            height 100%
+
+    .right
+      position absolute
+      top 0
+      right 0
+      height 100%
+      width right-slider-width
+      padding-left 15px
+
+      .img-wrap
+        border-radius border-radius
+        overflow hidden
+        margin 0 0 7.5px
+        height calc(50% - 7.5px)
+
+        &:last-child
+          margin 15px 0 0
+
+        img
+          height 100%
+
+//RESPONSIVE
+@media only screen and (max-width: 1400px)
+  .main-slider
+    padding-bottom 45%
+    height auto
+
+    .slider-wrapper
+      position absolute
+      top 0
+      left 0
+
+      &.has-right
+        .left
+          margin-right 25%
+
+      .right
+        width 25%
+
+
+@media only screen and (max-width: 768px)
+  .main-slider
+    padding-bottom 0
+    height 100%
+
+    .slider-wrapper
+      position relative
+
+      .left
+      .slider-content
+        min-height 0
+
+
+      &.has-right
+        .left
+          margin-right 0
+          height auto
+      .left
+        & > .pos-rel
+          height auto
+          min-height 0
+
+        .glide
+          position absolute
+
+        .placeholder-img
+          display flex
+          position relative
+
+        .glide
+        .glide__track
+        .glide__slides
+        .glide__slides > li
+          height auto
+
+        .slider-content
+          height auto
+
+          .slider-content-inner
+            line-height 0
+            position static
+
+      .right
+        position relative
+        width 100%
+        padding 0
+        margin-top 10px
+        display flex
+        justify-content space-between
+
+        .img-wrap
+          width calc(50% - 5px)
+          height auto
+          margin 0
+
+          &:last-child
+            margin 0
+
+@media only screen and (max-width: 350px)
+  .main-slider
+    .slider-wrapper
+      .right
+        .img-wrap
+          min-height 0

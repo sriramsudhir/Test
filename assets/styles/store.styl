@@ -1,0 +1,73 @@
+
+.store-container
+  padding 15px 0
+  background #eee
+  border-bottom 1px solid #ddd
+
+  .store-info
+    border 0
+    padding 0
+    flex-wrap wrap
+    display flex
+    gap 15px
+    align-items center
+    justify-content space-between
+
+    .left-area
+      display flex
+      gap 20px
+      align-items center
+
+    .store-content
+      flex-wrap wrap
+      display flex
+      gap 20px
+      align-items center
+
+      & > div:first-child
+        padding-right 20px
+        border-right 1px solid #ddd
+
+    .img-wrap
+      background #fff
+      object-fit contain
+      height 80px
+      overflow hidden
+      width 80px
+      border-radius 100px
+      display flex
+      padding 10px
+      align-items center
+
+
+//RESPONSIVE
+
+@media only screen and (max-width: 768px)
+  .store-container
+    .store-info
+      .img-wrap
+        height 60px
+        width 60px
+        min-width 60px
+
+      .left-area
+        gap 15px
+
+      .store-rating
+        max-width 200px
+
+
+@media only screen and (max-width: 576px)
+  .store-container
+    .store-info
+      .store-content
+        gap 10px
+
+      .store-content > div:first-child
+        padding 0
+        border 0
+
+      .store-rating
+        max-width 150px
+
+

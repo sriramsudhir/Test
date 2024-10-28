@@ -1,0 +1,164 @@
+@import "variables.styl"
+
+.product-product-id
+  .home-section
+    .area-content
+    .title
+      padding-left 0
+      padding-right 0
+
+.detail-menu
+  font-size .9em
+  background #F1F2F3
+  border-bottom 1px solid #eee
+
+  a
+    padding 0 15px
+    line-height 40px
+
+    &:hover
+      background #fff
+
+    &:active
+      background #ddd
+
+.product-detail
+  .product-main
+    flex-grow 1
+    gap 15px
+    display flex
+    position relative
+
+    .vouchers-wrapper
+      .flex
+        .card:last-child
+          margin-bottom 0!important
+
+    .detail-image-wrapper
+      min-width 400px
+      max-width 400px
+
+      .detail-image-inner
+        position sticky
+        top 20px
+        z-index 1
+
+.suggested-container
+  position relative
+  transition all .2s
+  max-height 10000px
+
+  .review-list
+  .rating-banner
+  .total-rating
+    opacity 0
+
+  .suggested-wrapper
+    position relative
+    padding-left 365px
+
+    .suggested-banner
+      width 365px
+      position absolute
+      left 0
+      top 0
+      padding-right 30px
+
+.suggested-container.mx-h-0
+  min-height 0
+  max-height 0
+  overflow hidden
+
+.suggested-container.review-loaded
+  .review-list
+  .rating-banner
+  .total-rating
+    opacity 1
+
+.voucher-code
+  margin-bottom 5px
+
+.bundle-deal
+  border-radius border-radius
+  font-size .9em
+  padding 4px 10px
+  color primary-deep
+  border 1px dashed primary-color
+
+.product-detail
+  .vouchers-wrapper
+    min-height 200px
+    .card
+      flex-grow 1
+
+.expanded
+  max-height 100%!important
+
+  &:after
+    display none
+
+.rtl .editor ul
+  padding-left 0
+  padding-right 2em
+
+
+.editor
+  li
+    line-height 1.9
+    list-style disc
+    display list-item
+
+  ul
+    padding-left 2em
+    list-style-type disc
+    list-style-position inside
+
+  ol
+    padding-left 2em
+    list-style-position inside
+    list-style-type decimal
+
+    li
+      list-style decimal
+
+
+//RESPONSIVE
+@media only screen and (max-width: 1200px)
+  .product-detail
+    .product-main
+      .detail-image-wrapper
+        min-width 340px
+        max-width 100%
+
+
+@media only screen and (max-width: 992px)
+  .product-detail
+    .product-main
+      flex-direction column
+
+@media only screen and (max-width: 768px)
+  .no-scroll .detail-image-inner
+    z-index 2!important
+
+
+  .detail-image-inner.z-2
+    z-index 1 !important
+
+
+  .product-detail
+    .product-main
+      padding-left 0
+
+      .detail-image-wrapper
+        width 100%
+        min-width 0
+        min-height 380px
+        position static
+
+        .slider-content-inner
+          min-height 300px
+
+@media only screen and (max-width: 576px)
+  .product-main .two-sided .left
+    width 90px
+    min-width 90px

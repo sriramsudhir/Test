@@ -1,0 +1,73 @@
+@import "variables.styl"
+
+.contact-wrapper .contact-info > .flex.spinner-wrapper
+  align-items center
+  justify-content center
+
+.contact-wrapper .contact-info > .flex.spinner-wrapper span
+  background none
+
+
+.contact-wrapper
+  & > .flex
+    align-items flex-start
+    gap 10px
+
+  .contact-info
+    width 100%
+    max-width 400px
+    padding 25px 25px 0
+    margin 0 0 15px
+    border-radius 10px
+    background #fff
+    border 1px solid #ddd
+
+    & > .flex
+      justify-content flex-start
+      margin-bottom 25px
+      gap 15px
+      align-items flex-start
+
+      & > span
+        height 50px
+        width 50px
+        min-height 50px
+        min-width 50px
+        border-radius 100px
+        background home-bg
+        display flex
+        align-items center
+        justify-content center
+
+        .icon
+          height 70%
+          width 70%
+          margin 0
+
+  .contact-form
+    flex-grow 1
+    padding 25px
+    margin 0 0 15px
+    border-radius 10px
+    background #fff
+    border 1px solid #ddd
+
+    .primary-btn
+      width 50%
+
+//RESPONSIVE
+@media only screen and (max-width: 992px)
+  .contact-wrapper
+    & > .flex
+      flex-direction column-reverse
+
+    .contact-info
+      padding 15px 15px 0
+      max-width 100%
+
+      & > .flex
+        margin-bottom 15px
+
+    .contact-form
+      width 100%
+      padding 15px

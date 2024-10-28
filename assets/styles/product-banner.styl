@@ -1,0 +1,19 @@
+@import "variables.styl"
+
+.product-banner
+  display flex
+  margin -7.5px
+
+  & > a
+    display flex
+    margin 7.5px
+    border-radius border-radius
+    overflow hidden
+
+// RESPONSIVE
+@media only screen and (max-width: 576px)
+  .product-banner
+    flex-direction column
+
+    & > a
+      margin-bottom 10px

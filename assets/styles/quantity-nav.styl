@@ -1,0 +1,42 @@
+@import "variables.styl";
+
+.rtl .quantity-area button:first-child
+  border-radius 0 border-radius border-radius 0
+
+.rtl .quantity-area button:last-child
+  border-radius border-radius 0 0 border-radius
+
+
+.quantity-area
+  display flex
+
+  .no-control
+  button
+    height btn-height-sm
+    line-height btn-height-sm
+    width 40px
+
+  button
+    font-size 1.3em
+    border 1px solid #ddd
+
+    &:active
+      box-shadow none
+      border-color primary-color
+      background primary-lite-color
+
+  .no-control
+  input
+    position relative
+    z-index 1
+    font-size 1.1em
+    text-align center
+    border-radius 0
+    border-top 1px solid #ddd
+    border-bottom 1px solid #ddd
+
+  button:first-child
+    border-radius border-radius 0 0 border-radius
+
+  button:last-child
+    border-radius 0 border-radius border-radius 0
