@@ -94,7 +94,7 @@ export function showLogin(opts = {}) {
         const retry = Number(res.headers.get('retry-after')) || null;
         err.textContent = `Too many attempts. Try again ${retry ? `in ${retry}s` : 'in a minute'}.`;
       } else if (res.status === 401 || res.status === 403) {
-        err.textContent = data.error && !/unauthori[sz]ed/i.test(data.error) ? data.error : 'Wrong password.';
+        err.textContent = 'Wrong password.';
       } else {
         err.textContent = data.error || `Sign-in failed (HTTP ${res.status}).`;
       }

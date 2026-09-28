@@ -12,6 +12,8 @@ export function h(tag, attrs, ...children) {
     if (attrs != null && attrs !== false) children.unshift(attrs);
     attrs = {};
   }
+  // Tolerate empty class segments from templates like `td.num.${cls}` with cls === ''.
+  tag = String(tag).replace(/[.#]+(?=[.#]|$)/g, '');
   const m = /^([a-z0-9-]+)?((?:[.#][\w-]+)*)$/i.exec(tag);
   const el = document.createElement((m && m[1]) || 'div');
   if (m && m[2]) {

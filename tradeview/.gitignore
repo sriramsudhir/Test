@@ -5,3 +5,4 @@ data/
 *.db-*
 .env
 web/test/screenshots/
+.next/

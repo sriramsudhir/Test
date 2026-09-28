@@ -7,15 +7,15 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 - [ ] Server data: Bybit REST/WS, SQLite, backfill (365d, all tfs), footprint from trade dumps, REST + WS API
 - [x] Server intelligence: PineTS runner + library, backtest engine, alert engine + Laya gate, Claude agent
 - [x] Web chart core: ChartView, chart types incl. footprint, drawings, indicators, multi-layout, bar replay + paper trading
-- [ ] Web app shell: panels (watchlist, alerts, chat agent, Pine editor, strategy tester, replay trading), loud alarms
+- [x] Web app shell: panels (watchlist, alerts, chat agent, Pine editor, strategy tester, replay trading), loud alarms
 
 ## Phase 1b: change set 2 (ARCHITECTURE §13)
 - [ ] Delta Exchange primary provider + 24/7 trade recording for footprint
 - [x] Claude Code subscription driver (Agent SDK, CLAUDE_CODE_OAUTH_TOKEN), agent status
-- [ ] Site login, Web Push + Telegram alerts, PWA service worker
+- [x] Site login (web), Web Push + Telegram alerts, PWA service worker
 
 ## Phase 1c: Next.js (ARCHITECTURE §14)
-- [ ] web/ as Next.js App Router mounting existing modules; single-process server with Next handler
+- [x] web/ as Next.js App Router mounting existing modules; single-process server with Next handler
 
 ## Phase 2: integration
 - [ ] Wire everything; `npm run build` and `npm test` pass

@@ -314,8 +314,9 @@ export class StrategyTesterPanel {
     const summary = h('div.tester-summary');
     for (const key of SUMMARY) {
       const def = METRICS.find((x) => x[0] === key);
-      const v = m[key];
-      const sub = def[3] != null && m[def[3]] != null ? formatPct(m[def[3]]) : null;
+      // Drawdown-style metrics are reported as positive magnitudes: show them as losses.
+      const v = def[4] && typeof m[key] === 'number' ? -Math.abs(m[key]) : m[key];
+      const sub = def[3] != null && m[def[3]] != null ? formatPct(def[4] ? -Math.abs(m[def[3]]) : m[def[3]]) : null;
       const cls = def[2] === 'money' ? (def[4] ? 'down' : v > 0 ? 'up' : v < 0 ? 'down' : '') : '';
       summary.appendChild(h('div.sum-item', h('div.sum-label', def[1]), h(`div.sum-value.${cls}`, fmtMetric(v, def[2]).replace(' USDT', '')), sub ? h(`div.sum-sub.${cls}`, sub) : null));
     }
@@ -344,10 +345,10 @@ export class StrategyTesterPanel {
     const grid = h('div.metrics-grid');
     for (const [key, label, kind, pctKey, negative] of METRICS) {
       if (!(key in m)) continue;
-      const v = m[key];
+      const v = negative && typeof m[key] === 'number' ? -Math.abs(m[key]) : m[key];
       const cls = kind === 'money' && typeof v === 'number' ? (negative ? (v ? 'down' : '') : v > 0 ? 'up' : v < 0 ? 'down' : '') : '';
       grid.appendChild(h('div.metric', h('div.metric-label', label),
-        h(`div.metric-value.${cls}`, fmtMetric(v, kind), pctKey && m[pctKey] != null ? h('span.metric-sub', ` ${formatPct(m[pctKey])}`) : null)));
+        h(`div.metric-value.${cls}`, fmtMetric(v, kind), pctKey && m[pctKey] != null ? h('span.metric-sub', ` ${formatPct(negative ? -Math.abs(m[pctKey]) : m[pctKey])}`) : null)));
     }
     for (const [k, v] of Object.entries(m)) {
       if (KNOWN.has(k) || typeof v === 'object') continue;
@@ -392,6 +393,7 @@ export class StrategyTesterPanel {
     if (eq.length < 2) { host.appendChild(h('div.empty', 'No equity data')); return; }
     const chart = createChart(host, {
       autoSize: true,
+      localization: { locale: 'en-US' },
       layout: { background: { type: ColorType.Solid, color: '#131722' }, textColor: '#b2b5be', fontSize: 11, panes: { separatorColor: '#2a2e39' } },
       grid: { vertLines: { color: '#1e222d' }, horzLines: { color: '#1e222d' } },
       rightPriceScale: { borderColor: '#2a2e39' },
