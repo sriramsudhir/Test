@@ -57,7 +57,7 @@ export class Instruments {
         this._failedAt = 0;
       } catch (err) {
         this._failedAt = Date.now();
-        this.log.warn?.(`instruments: Bybit unavailable (${err.message}); using ${this.byKey.size ? 'cache' : 'DB symbols'}`);
+        this.log.warn?.(`instruments: providers unavailable (${err.message}); using ${this.byKey.size ? 'cache' : 'DB symbols'}`);
         if (!this.byKey.size) this._loadFromCandles();
       }
       return this;

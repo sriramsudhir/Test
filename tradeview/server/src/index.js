@@ -120,10 +120,19 @@ async function createNext(cfg, log) {
     const nextApp = next({ dev, dir: cfg.webDir, hostname: 'localhost', port: cfg.port });
     await nextApp.prepare();
     log.info(`Next.js ${dev ? 'dev server' : 'production build'} ready (${cfg.webDir})`);
+    // The router-server upgrade handler is what Next itself attaches for dev HMR (`/_next/hmr`);
+    // getUpgradeHandler() only reaches the inner render server, so prefer the former.
+    let upgrade = null;
+    try {
+      upgrade = nextApp.upgradeHandler ?? null;
+    } catch {
+      upgrade = null;
+    }
+    if (!upgrade && typeof nextApp.getUpgradeHandler === 'function') upgrade = nextApp.getUpgradeHandler();
     return {
       app: nextApp,
       handle: nextApp.getRequestHandler(),
-      upgrade: typeof nextApp.getUpgradeHandler === 'function' ? nextApp.getUpgradeHandler() : null,
+      upgrade,
       close: () => nextApp.close?.(),
     };
   } catch (err) {
