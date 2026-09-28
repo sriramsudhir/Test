@@ -179,6 +179,10 @@ export class IndicatorManager {
   }
   onDataReset() {
     this._barCloseRecompute.cancel();
+    for (const rec of this.items.values()) {
+      rec.mode = 'pending';
+      rec.token++;
+    }
     this.recomputeAll({ pine: true });
   }
   onBarClose() {
@@ -205,7 +209,6 @@ export class IndicatorManager {
   _compute(rec, { pine }) {
     const v = this.view;
     const candles = v.indicatorCandles();
-    const token = ++rec.token;
     if (!candles.length) return;
     if (rec.builtin && hasFastPath(rec.builtin)) {
       try {
@@ -226,6 +229,7 @@ export class IndicatorManager {
       this.view.emit('indicators', this.list());
       return;
     }
+    const token = ++rec.token; // only Pine runs bump the token; fast recomputes never cancel an in-flight run
     this._runPine(rec, token).catch((e) => {
       if (token !== rec.token) return;
       rec.error = e.message || String(e);
