@@ -1,0 +1,17 @@
+{
+  "name": "tradeview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted TradingView-style platform: Bybit data, PineTS, Claude agent, Laya decision alerts",
+  "workspaces": ["server", "web"],
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"npm run dev -w server\" \"npm run dev -w web\"",
+    "build": "npm run build -w web",
+    "start": "npm run start -w server",
+    "backfill": "npm run backfill -w server --",
+    "test": "npm test -w server"
+  },
+  "devDependencies": { "concurrently": "^9.1.0" }
+}
