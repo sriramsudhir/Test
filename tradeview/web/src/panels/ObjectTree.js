@@ -1,5 +1,5 @@
 // Object tree: indicators and drawings of the active chart, with hide/show and remove.
-import { h, clear, icon, iconButton } from './util/dom.js';
+import { h, clear, icon, iconButton, add } from './util/dom.js';
 import { toast, confirmDialog } from './util/dialog.js';
 import { chartState, chartDrawings, chartIndicators } from './util/chartHub.js';
 import { splitKey, formatPrice } from './util/fmt.js';
@@ -14,7 +14,7 @@ export class ObjectTreePanel {
     el.classList.add('panel', 'object-tree');
     this.body = h('div.panel-body');
     this.title = h('div.panel-title', 'Object tree');
-    el.append(h('div.panel-header', this.title, h('div.panel-actions', iconButton('refresh', 'Refresh', () => this.render()))), this.body);
+    add(el, h('div.panel-header', this.title, h('div.panel-actions', iconButton('refresh', 'Refresh', () => this.render()))), this.body);
     const rerender = () => this.scheduleRender();
     for (const ev of ['active', 'charts', 'symbol', 'drawing', 'indicator', 'indicators', 'chartType']) app.hub.on(ev, rerender);
     // Indicators may not emit events: poll lightly while the panel is visible.

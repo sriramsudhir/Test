@@ -416,7 +416,8 @@ function positionTool(id, side) {
       // live/replay progress inside the box
       if (r.path && r.path.length) {
         const up = long ? r.lastPrice >= pe.price : r.lastPrice <= pe.price;
-        const yL = r.p2y(r.lastPrice);
+        const yRaw = r.p2y(r.lastPrice);
+        const yL = yRaw == null ? null : Math.max(Math.min(yT, yS), Math.min(Math.max(yT, yS), yRaw));
         const xL = Math.min(xR, r.path[r.path.length - 1].x);
         if (yL != null && xL > xE) {
           ctx.fillStyle = up ? 'rgba(8,153,129,0.25)' : 'rgba(242,54,69,0.25)';
@@ -429,7 +430,8 @@ function positionTool(id, side) {
       ctx.strokeStyle = '#9598a1';
       line(ctx, { x: xE, y: Math.round(yE) + 0.5 }, { x: xR, y: Math.round(yE) + 0.5 });
 
-      if (r.selected || r.hovered || r.creating || r.style.alwaysShowStats !== false) {
+      {
+        const showStats = r.selected || r.hovered || r.creating || r.style.alwaysShowStats === true;
         const qty = r.style.qty || 1;
         const tpD = ptp.price - pe.price;
         const slD = psl.price - pe.price;
@@ -438,10 +440,10 @@ function positionTool(id, side) {
         const rr = risk ? reward / risk : 0;
         const font = fontOf(11);
         const cx = xE + W / 2;
-        label(ctx, `Target: ${r.fmtPrice(ptp.price)} (${fmtPct(pct(ptp.price, pe.price))}) ${r.fmtPrice(tpD)}, Amount: ${formatCompact(reward * qty)}`, cx, long ? Math.min(yT, yE) - 4 : Math.max(yT, yE) + 4, {
+        if (showStats) label(ctx, `Target: ${r.fmtPrice(ptp.price)} (${fmtPct(pct(ptp.price, pe.price))}) ${r.fmtPrice(tpD)}, Amount: ${formatCompact(reward * qty)}`, cx, long ? Math.min(yT, yE) - 4 : Math.max(yT, yE) + 4, {
           bg: '#089981', color: '#fff', align: 'center', baseline: long ? 'bottom' : 'top', font,
         });
-        label(ctx, `Stop: ${r.fmtPrice(psl.price)} (${fmtPct(pct(psl.price, pe.price))}) ${r.fmtPrice(slD)}, Amount: ${formatCompact(risk * qty)}`, cx, long ? Math.max(yS, yE) + 4 : Math.min(yS, yE) - 4, {
+        if (showStats) label(ctx, `Stop: ${r.fmtPrice(psl.price)} (${fmtPct(pct(psl.price, pe.price))}) ${r.fmtPrice(slD)}, Amount: ${formatCompact(risk * qty)}`, cx, long ? Math.max(yS, yE) + 4 : Math.min(yS, yE) - 4, {
           bg: '#f23645', color: '#fff', align: 'center', baseline: long ? 'top' : 'bottom', font,
         });
         let center = `${long ? 'Long' : 'Short'} ${qty}  ·  Risk/Reward Ratio: ${rr.toFixed(2)}`;

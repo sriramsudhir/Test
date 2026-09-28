@@ -126,7 +126,7 @@ class FootprintRenderer {
     if (w < 3 || !d.levels) {
       // plain candle
       ctx.fillStyle = color;
-      const bw = Math.max(1, Math.floor(w * 0.7));
+      const bw = Math.max(1, Math.floor(Math.min(w * 0.7, 14)));
       ctx.fillRect(Math.round(x) - 0.5, yH, 1, Math.max(1, yL - yH));
       if (w >= 3) ctx.fillRect(Math.round(x - bw / 2), Math.min(yO, yC), bw, Math.max(1, Math.abs(yC - yO)));
       return;
@@ -146,7 +146,7 @@ class FootprintRenderer {
     const cx = stripX + stripW + 2;
     const cw = Math.max(1, xL + w - 2 - cx);
     const mode = opt.mode || 'bidask';
-    const textMode = cellH >= 9.5 && cw >= (mode === 'bidask' ? 46 : 26);
+    const textMode = cellH >= 11.5 && cw >= (mode === 'bidask' ? 46 : 26);
 
     let maxVol = 0;
     let maxSide = 0;
@@ -161,7 +161,7 @@ class FootprintRenderer {
     maxAbsDelta ||= 1;
 
     const ratio = opt.imbalanceRatio > 0 ? opt.imbalanceRatio : 3;
-    const fontSize = Math.max(8, Math.min(12, Math.floor(cellH * 0.72)));
+    const fontSize = Math.max(9, Math.min(12, Math.floor(cellH * 0.72)));
     if (textMode) {
       ctx.font = `${fontSize}px ${THEME.font}`;
       ctx.textBaseline = 'middle';

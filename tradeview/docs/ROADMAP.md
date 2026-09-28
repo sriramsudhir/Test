@@ -6,7 +6,7 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 ## Phase 1: core build (parallel subagents)
 - [ ] Server data: Bybit REST/WS, SQLite, backfill (365d, all tfs), footprint from trade dumps, REST + WS API
 - [x] Server intelligence: PineTS runner + library, backtest engine, alert engine + Laya gate, Claude agent
-- [ ] Web chart core: ChartView, chart types incl. footprint, drawings, indicators, multi-layout, bar replay + paper trading
+- [x] Web chart core: ChartView, chart types incl. footprint, drawings, indicators, multi-layout, bar replay + paper trading
 - [ ] Web app shell: panels (watchlist, alerts, chat agent, Pine editor, strategy tester, replay trading), loud alarms
 
 ## Phase 1b: change set 2 (ARCHITECTURE §13)

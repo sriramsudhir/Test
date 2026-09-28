@@ -11,7 +11,7 @@ import { alarm } from './audio/alarm.js';
 import { requestNotificationPermission, notificationPermission, isFlashing, stopFlash } from './audio/notify.js';
 import { checkSession, showLogin, logout } from './panels/Login.js';
 import { registerServiceWorker } from './panels/util/push.js';
-import { h, clear, icon, isEditableTarget } from './panels/util/dom.js';
+import { h, add, clear, icon, isEditableTarget } from './panels/util/dom.js';
 import { closeTopDialog, closeMenu, hasOpenDialog, toast, popupMenu, openDialog } from './panels/util/dialog.js';
 import { load, save } from './panels/util/store.js';
 import { ChartHub, chartState } from './panels/util/chartHub.js';
@@ -198,6 +198,8 @@ async function boot(rootEl, disposers, ctx) {
     try {
       const t = new Ctor(el, layout);
       disposers.push(() => t.destroy?.());
+      // The chart toolbar has its own symbol button; hide the shell's duplicate.
+      if (name === 'toolbar') els.app.classList.add('has-toolbar');
     } catch (err) {
       console.error(`[app] ${name} failed to initialise`, err);
     }
@@ -262,7 +264,7 @@ async function boot(rootEl, disposers, ctx) {
   function renderSymbolButton() {
     const st = chartState(hub.active);
     const { symbol, category } = splitKey(st.symbol || '');
-    clear(els.symbolBtn).append(icon('search', 16), h('span.sym', symbol || 'Symbol'),
+    add(clear(els.symbolBtn), icon('search', 16), h('span.sym', symbol || 'Symbol'),
       st.symbol ? h(`span.cat-tag.${category}`, categoryLabel(category)) : null);
   }
   listen(els.symbolBtn, 'click', () => openSymbolSearch());
@@ -280,7 +282,7 @@ async function boot(rootEl, disposers, ctx) {
   });
 
   const topBtn = (ico, label, title, onclick) => h('button.top-btn', { type: 'button', title, onclick }, icon(ico, 17), h('span.top-btn-label', label));
-  els.topActions.append(
+  add(els.topActions, 
     topBtn('alarm', 'Alert', 'Create alert (Alt+A)', () => app.alerts?.createAtCrosshair()),
     topBtn('replay', 'Replay', 'Bar replay (Alt+R)', () => startReplay()),
     topBtn('code', 'Pine', 'Pine Editor', () => toggleBottom('pine')),
@@ -382,7 +384,7 @@ async function boot(rootEl, disposers, ctx) {
   const collapseBtn = h('button.icon-btn', { type: 'button', title: 'Collapse panel' }, icon('chevDown', 16));
   maxBtn.addEventListener('click', () => { ui.bottomMax = !ui.bottomMax; ui.bottomOpen = true; applyBottom(); });
   collapseBtn.addEventListener('click', () => { ui.bottomOpen = !ui.bottomOpen; applyBottom(); });
-  els.bottomTabs.append(h('span.spacer'), h('div.bottom-actions', maxBtn, collapseBtn));
+  add(els.bottomTabs, h('span.spacer'), h('div.bottom-actions', maxBtn, collapseBtn));
 
   function applyBottom() {
     els.app.classList.toggle('bottom-open', ui.bottomOpen);

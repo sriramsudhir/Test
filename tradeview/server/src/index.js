@@ -1,20 +1,23 @@
-// TradeView server entry point: builds the shared ctx (ARCHITECTURE §11), registers every route module,
-// starts engines, serves web/dist in production and shuts down gracefully.
+// TradeView server entry point (ARCHITECTURE §11, §13, §14): one process, one port.
+// Builds the shared ctx, registers auth + every route module, starts engines and the 24/7 trade recorder,
+// and hands every non-/api, non-/ws request to the in-process Next.js app (dev or production build).
+//   node src/index.js            API + Next (dev unless NODE_ENV=production)
+//   node src/index.js --no-web   API only (or WEB=off)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
-import fastifyStatic from '@fastify/static';
 
 import config from './config.js';
 import { initDb } from './db/index.js';
-import { BybitRest } from './bybit/rest.js';
+import { createProviders } from './providers/index.js';
 import { Instruments } from './bybit/instruments.js';
-import { BybitStreams } from './bybit/ws.js';
 import { MarketData } from './data/market.js';
 import { LiveHub } from './data/live.js';
+import { Recorder } from './data/recorder.js';
 import { runGapfill } from './data/gapfill.js';
+import * as authRoutes from './auth/index.js';
 import * as marketRoutes from './api/market.js';
 import * as drawingsRoutes from './api/drawings.js';
 import * as healthRoutes from './api/health.js';
@@ -23,8 +26,14 @@ import { createSocketHub } from './api/ws.js';
 
 const SRC_DIR = path.dirname(fileURLToPath(import.meta.url));
 
-/** Intelligence-team modules, registered when present (guarded so the server boots without them). */
-const OPTIONAL_ROUTES = ['pine/routes.js', 'backtest/routes.js', 'alerts/routes.js', 'agent/routes.js', 'laya/routes.js'];
+/** Other teams' route modules, registered when present (guarded so the server boots without them). */
+const OPTIONAL_ROUTES = [
+  'pine/routes.js', 'backtest/routes.js', 'alerts/routes.js', 'agent/routes.js', 'laya/routes.js', 'notify/routes.js',
+];
+/**
+ * Engines with start(ctx)/stop(). The notifier (notify/index.js) is started by the alert engine itself.
+ */
+const ENGINES = [{ name: 'alerts engine', file: 'alerts/engine.js' }];
 
 /**
  * Import a module relative to src/, returning null (and logging) if it is missing or throws on load.
@@ -93,114 +102,179 @@ async function registerRoutes(app, ctx, name, mod) {
 }
 
 /**
+ * Create and prepare the in-process Next.js app. Returns null (with a warning) when it cannot start, so the
+ * API keeps working.
+ */
+async function createNext(cfg, log) {
+  const dev = !cfg.isProd;
+  if (!fs.existsSync(path.join(cfg.webDir, 'package.json'))) {
+    log.warn(`web app not found at ${cfg.webDir}; serving the API only`);
+    return null;
+  }
+  if (!dev && !fs.existsSync(path.join(cfg.webDir, '.next'))) {
+    log.warn('no Next.js production build found (web/.next); run "npm run build" first. Serving the API only');
+    return null;
+  }
+  try {
+    const { default: next } = await import('next');
+    const nextApp = next({ dev, dir: cfg.webDir, hostname: 'localhost', port: cfg.port });
+    await nextApp.prepare();
+    log.info(`Next.js ${dev ? 'dev server' : 'production build'} ready (${cfg.webDir})`);
+    return {
+      app: nextApp,
+      handle: nextApp.getRequestHandler(),
+      upgrade: typeof nextApp.getUpgradeHandler === 'function' ? nextApp.getUpgradeHandler() : null,
+      close: () => nextApp.close?.(),
+    };
+  } catch (err) {
+    log.warn({ err }, `Next.js failed to start (${err.message}); serving the API only`);
+    return null;
+  }
+}
+
+/**
  * Build the Fastify app and ctx without listening.
- * @param {{ config?: any, logger?: any, gapfill?: boolean, streams?: any, fetch?: typeof fetch,
- *   optionalModules?: boolean }} [opts] optionalModules=false skips the intelligence-team modules (tests)
+ * @param {{ config?: any, logger?: any, gapfill?: boolean, streams?: any, fetch?: typeof fetch, WebSocket?: any,
+ *   optionalModules?: boolean, web?: boolean, record?: boolean }} [opts]
+ *   optionalModules=false skips the other teams' modules; web=false skips Next.js; record=false skips the recorder.
  */
 export async function buildServer(opts = {}) {
   const cfg = opts.config ?? config;
   const app = Fastify({
-    logger: opts.logger ?? {
-      level: cfg.logLevel,
-    },
+    logger: opts.logger ?? { level: cfg.logLevel },
     bodyLimit: 5 * 1024 * 1024,
     forceCloseConnections: true,
+    trustProxy: cfg.trustProxy ?? false,
   });
   const log = app.log;
 
   const { db, repos } = initDb(cfg.dbPath);
-  const rest = new BybitRest({ baseUrl: cfg.bybitRest, rateLimit: cfg.rateLimit, log, fetch: opts.fetch });
+  const providers = createProviders({ config: cfg, log, fetch: opts.fetch, WebSocket: opts.WebSocket });
+  const rest = providers.rest;
+  const streams = opts.streams ?? providers.streams;
   const instruments = new Instruments({ rest, repos, log });
-  const streams = opts.streams ?? new BybitStreams({ baseUrl: cfg.bybitWs, log });
   const market = new MarketData({ repos, rest, instruments, log, config: cfg });
   const live = new LiveHub({ config: cfg, log, repos, instruments, market, streams });
   market.live = live;
   const hub = createSocketHub({ log });
+  const recorder = new Recorder({ live, repos, config: cfg, log });
 
   const ctx = {
     config: cfg,
     log,
     db,
     repos,
-    bybit: { rest, instruments, streams },
+    // `rest` routes by symbol prefix (delta:* -> Delta, linear:/spot:/inverse:* -> Bybit).
+    providers: { rest, streams, delta: providers.delta, bybit: providers.bybit },
+    bybit: { rest, instruments, streams, client: providers.bybit.rest },
+    delta: { rest: providers.delta.rest, ws: providers.delta.ws },
     market,
     live,
+    recorder,
     sockets: hub,
     broadcast: hub.broadcast,
     laya: offlineLaya('initialising'),
+    auth: null,
   };
   if (opts.optionalModules !== false) ctx.laya = await createLaya(ctx);
 
-  // Dev CORS for the Vite dev server (and any CORS_ORIGINS).
-  if (!cfg.isProd) {
-    const allowed = new Set(cfg.corsOrigins);
-    app.addHook('onRequest', async (req, reply) => {
-      const origin = req.headers.origin;
-      if (!origin || !allowed.has(origin)) return;
-      reply.header('Access-Control-Allow-Origin', origin);
-      reply.header('Vary', 'Origin');
-      reply.header('Access-Control-Allow-Credentials', 'true');
-      if (req.method === 'OPTIONS') {
-        reply.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-        reply.header('Access-Control-Allow-Headers', req.headers['access-control-request-headers'] || 'content-type');
-        reply.header('Access-Control-Max-Age', '600');
-        return reply.code(204).send();
-      }
-    });
-  }
-
   await app.register(websocket, { options: { maxPayload: 1024 * 1024 } });
+
+  // Auth first: its onRequest hook protects /api/* and /ws for every route.
+  await registerRoutes(app, ctx, 'auth/index.js', authRoutes);
+  if (!ctx.auth) throw new Error('auth failed to initialise');
 
   // Data team routes.
   for (const [name, mod] of [['api/health.js', healthRoutes], ['api/market.js', marketRoutes], ['api/drawings.js', drawingsRoutes], ['api/ws.js', wsRoutes]]) {
     await registerRoutes(app, ctx, name, mod);
   }
-  // Intelligence team routes (guarded).
+  // Other teams' routes (guarded).
   for (const rel of opts.optionalModules === false ? [] : OPTIONAL_ROUTES) {
     const mod = await importOptional(rel, log);
     if (mod) await registerRoutes(app, ctx, rel, mod);
   }
 
-  // Static web build (production, or SERVE_WEB=1) with SPA fallback.
-  const serveWeb = (cfg.isProd || process.env.SERVE_WEB === '1') && fs.existsSync(path.join(cfg.webDist, 'index.html'));
-  if (serveWeb) {
-    await app.register(fastifyStatic, { root: cfg.webDist, prefix: '/', wildcard: false, index: ['index.html'] });
-    log.info(`serving web build from ${cfg.webDist}`);
-  } else if (cfg.isProd) {
-    log.warn(`web build not found at ${cfg.webDist}; run "npm run build" first`);
-  }
-  app.setNotFoundHandler((req, reply) => {
-    const url = req.url.split('?')[0];
-    if (serveWeb && req.method === 'GET' && !url.startsWith('/api/') && url !== '/ws' && !path.extname(url)) {
-      return reply.type('text/html').sendFile('index.html');
-    }
-    return reply.code(404).send({ error: 'not found', path: url });
-  });
   app.setErrorHandler((err, req, reply) => {
     const status = err.statusCode && err.statusCode >= 400 ? err.statusCode : 500;
     if (status >= 500) req.log.error({ err }, 'request failed');
     reply.code(status).send({ error: err.message || 'internal error' });
   });
 
+  // Next.js: catch-all after /api and /ws, plus non-/ws upgrade requests (dev HMR).
+  const web = (opts.web ?? cfg.webEnabled) ? await createNext(cfg, log) : null;
+  if (web) {
+    await app.register(async (scope) => {
+      // Leave request bodies unread so Next receives the raw stream.
+      scope.removeAllContentTypeParsers();
+      scope.addContentTypeParser('*', (req, payload, done) => done(null));
+      scope.all('/*', (req, reply) => {
+        const url = req.raw.url || '/';
+        if (url === '/api' || url.startsWith('/api/') || url.startsWith('/api?')) {
+          return reply.code(404).send({ error: 'not found', path: url.split('?')[0] });
+        }
+        reply.hijack();
+        Promise.resolve(web.handle(req.raw, reply.raw)).catch((err) => {
+          log.error({ err }, 'Next.js handler failed');
+          if (!reply.raw.headersSent) {
+            reply.raw.statusCode = 500;
+            reply.raw.end('Internal Server Error');
+          }
+        });
+      });
+    });
+    if (web.upgrade) {
+      // Single upgrade dispatcher: /ws -> @fastify/websocket, everything else (dev HMR) -> Next.
+      const server = app.server;
+      const wsListeners = server.listeners('upgrade');
+      const upgraded = new Set();
+      server.removeAllListeners('upgrade');
+      server.on('upgrade', (req, socket, head) => {
+        const p = (req.url || '').split('?')[0];
+        if (p === '/ws') {
+          for (const l of wsListeners) l.call(server, req, socket, head);
+          return;
+        }
+        upgraded.add(socket);
+        socket.once('close', () => upgraded.delete(socket));
+        Promise.resolve(web.upgrade(req, socket, head)).catch(() => socket.destroy());
+      });
+      // Next dev also tries to attach its own 'upgrade' listener to the server on the first request; two
+      // handlers answering the same handshake break HMR, so later 'upgrade' listeners are ignored.
+      const on = server.on.bind(server);
+      server.on = server.addListener = (ev, fn) => (ev === 'upgrade' ? server : on(ev, fn));
+      // Upgraded sockets are not closed by forceCloseConnections; end them so shutdown does not hang.
+      app.addHook('preClose', async () => {
+        for (const s of upgraded) s.destroy();
+      });
+    }
+  } else {
+    app.setNotFoundHandler((req, reply) => reply.code(404).send({ error: 'not found', path: req.url.split('?')[0] }));
+  }
+
   // Engines with lifecycle (guarded).
-  let alertsEngine = null;
+  const engines = [];
   const startEngines = async () => {
     if (opts.optionalModules === false) return;
-    const mod = await importOptional('alerts/engine.js', log);
-    const start = mod?.start ?? mod?.default?.start;
-    if (typeof start === 'function') {
-      try {
-        await start.call(mod.default ?? mod, ctx);
-        alertsEngine = mod.default?.stop ? mod.default : mod;
-        log.info('alerts engine started');
-      } catch (err) {
-        log.warn({ err }, `alerts engine failed to start: ${err.message}`);
+    for (const { name, file } of ENGINES) {
+      const mod = await importOptional(file, log);
+      const owner = mod?.start ? mod : mod?.default?.start ? mod.default : null;
+      if (!owner) {
+        if (mod) log.warn(`${file} has no start(ctx) export`);
+        continue;
       }
-    } else if (mod) log.warn('alerts/engine.js has no start(ctx) export');
+      try {
+        await owner.start(ctx);
+        engines.push({ name, owner });
+        log.info(`${name} started`);
+      } catch (err) {
+        log.warn({ err }, `${name} failed to start: ${err.message}`);
+      }
+    }
   };
 
   const startBackground = () => {
     instruments.load().catch((err) => log.warn(`instrument load failed: ${err.message}`));
+    if (opts.record !== false) recorder.start(cfg.recordSymbols);
     if (cfg.gapfillOnStart && opts.gapfill !== false) {
       runGapfill(ctx).catch((err) => log.warn(`gapfill failed: ${err.message}`));
     }
@@ -210,18 +284,26 @@ export async function buildServer(opts = {}) {
   const stop = async () => {
     if (closing) return closing;
     closing = (async () => {
-      try {
-        if (alertsEngine?.stop) await alertsEngine.stop();
-      } catch (err) {
-        log.warn(`alerts engine stop failed: ${err.message}`);
+      for (const e of engines.reverse()) {
+        try {
+          await e.owner.stop?.();
+        } catch (err) {
+          log.warn(`${e.name} stop failed: ${err.message}`);
+        }
       }
       try {
         await ctx.laya?.close?.();
       } catch {
         /* ignore */
       }
+      recorder.stop();
       live.stop();
       await app.close();
+      try {
+        await web?.close();
+      } catch {
+        /* ignore */
+      }
       try {
         db.close();
       } catch {
@@ -231,7 +313,7 @@ export async function buildServer(opts = {}) {
     return closing;
   };
 
-  return { app, ctx, startEngines, startBackground, stop };
+  return { app, ctx, web, startEngines, startBackground, stop };
 }
 
 /** Build, listen, start engines and background tasks. */
@@ -241,6 +323,7 @@ export async function startServer(opts = {}) {
   await server.app.listen({ port: cfg.port, host: cfg.host });
   await server.startEngines();
   server.startBackground();
+  server.ctx.log.info(`TradeView on http://localhost:${cfg.port}${server.web ? '' : ' (API only)'}`);
   return server;
 }
 

@@ -103,6 +103,8 @@ const config = {
 
   /** Fastify trustProxy. Set TRUST_PROXY=true (or hop count / CIDR list) behind a reverse proxy such as Caddy. */
   trustProxy: parseTrustProxy(env.TRUST_PROXY),
+  /** Web Push contact (mailto: or https: URL) used in VAPID JWTs. */
+  vapidSubject: str('VAPID_SUBJECT', undefined),
   /** Site auth is enabled when AUTH_PASSWORD or AUTH_PASSWORD_HASH is set. */
   authEnabled: !!(env.AUTH_PASSWORD || env.AUTH_PASSWORD_HASH),
   sessionDays: int('SESSION_DAYS', 30),

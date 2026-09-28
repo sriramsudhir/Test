@@ -2,7 +2,7 @@ import { DrawingPrimitive } from './DrawingPrimitive.js';
 import { getTool, normalizeTool, toolHandles, toolDrag } from './tools.js';
 import { apiRequest } from '../apiHelpers.js';
 import { DRAWING_COLORS } from '../theme.js';
-import { uid, toMs, el, unwrapList, debounce } from '../util.js';
+import { uid, toMs, el, unwrapList } from '../util.js';
 import { isSecondsTf } from '../timeframes.js';
 
 const HANDLE_R = 8;
@@ -52,7 +52,6 @@ export class DrawingManager {
     document.addEventListener('mousedown', this._onDocDown, true);
 
     this._buildPropsBar();
-    this._syncAxis = debounce(() => this._requestAll(), 0);
   }
 
   destroy() {
@@ -479,7 +478,7 @@ export class DrawingManager {
 
   _toolDown(p) {
     const tool = getTool(this.tool);
-    const pt = this._ptFromLocal(p);
+    const pt = this._ptFromLocal(p, { snapTime: tool.clicks !== 0 });
     if (!this.draft) {
       const model = this._normalizeDraft(tool, pt);
       if (tool.clicks === 1) {

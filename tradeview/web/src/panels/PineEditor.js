@@ -2,7 +2,7 @@
 // "Add to chart" (validated via POST /api/pine/run, errors shown as line markers) and "Run backtest".
 import { loadMonaco } from './monacoLoader.js';
 import { registerPine, PINE_LANGUAGE_ID, PINE_THEME, PINE_TEMPLATES } from './pineLanguage.js';
-import { h, clear, icon, debounce } from './util/dom.js';
+import { h, clear, icon, debounce, add } from './util/dom.js';
 import { popupMenu, promptDialog, confirmDialog, toast } from './util/dialog.js';
 import { load, save } from './util/store.js';
 import { chartState } from './util/chartHub.js';
@@ -43,7 +43,7 @@ export class PineEditorPanel {
     this.console = h('div.pine-console');
     this.host = h('div.pine-editor');
 
-    el.append(
+    add(el, 
       h('div.subbar.pine-toolbar',
         h('button.btn.btn-ghost.btn-sm', { type: 'button', onclick: (e) => this.openMenu(e.currentTarget) }, icon('folder', 14), 'Open', icon('chevDown', 12)),
         this.nameInput, this.dirtyDot,
@@ -148,7 +148,7 @@ export class PineEditorPanel {
     const strat = isStrategy(this.getSource());
     this.testBtn.style.display = strat ? '' : 'none';
     const onChart = this.onChart[this.name];
-    clear(this.addBtn).append(icon(onChart ? 'refresh' : 'plus', 14), onChart ? 'Update on chart' : 'Add to chart');
+    add(clear(this.addBtn), icon(onChart ? 'refresh' : 'plus', 14), onChart ? 'Update on chart' : 'Add to chart');
   }
 
   // ---------------------------------------------------------------- console / markers

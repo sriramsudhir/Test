@@ -1,5 +1,5 @@
 // Watchlist: grouped symbol lists with live last price and daily change (socket kline 1D + trades).
-import { h, clear, icon, iconButton } from './util/dom.js';
+import { h, clear, icon, iconButton, add } from './util/dom.js';
 import { popupMenu, promptDialog, confirmDialog, toast } from './util/dialog.js';
 import { formatPrice, formatPct, formatSigned, splitKey, categoryLabel } from './util/fmt.js';
 import { load, save } from './util/store.js';
@@ -32,9 +32,9 @@ export class WatchlistPanel {
       h('div.panel-actions',
         iconButton('plus', 'Add symbol', () => this.addSymbol(this.groups[0])),
         iconButton('list', 'Watchlist menu', (e) => this.menu(e.currentTarget))));
-    this.colHead = h('div.wl-cols', h('span', 'Symbol'), h('span', 'Last'), h('span', 'Chg'), h('span', 'Chg%'));
+    this.colHead = h('div.wl-cols', h('span', 'Symbol'), h('span', 'Last'), h('span', 'Chg%'));
     this.body = h('div.panel-body.wl-body');
-    el.append(this.header, this.colHead, this.body);
+    add(el, this.header, this.colHead, this.body);
 
     socket.on('kline', (m) => {
       if (m.tf !== '1D' || !m.candle) return;
@@ -96,7 +96,8 @@ export class WatchlistPanel {
     }, 'sm wl-remove');
     const row = h('div.wl-row', { dataset: { key }, title: key, draggable: true },
       h('span.wl-sym', h('span.wl-sym-name', symbol), h(`span.cat-tag.${category}`, categoryLabel(category))),
-      last, chg, pct, rm);
+      last, pct, rm);
+    row.title = key;
     row.addEventListener('click', () => this.load(key));
     row.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/x-wl', JSON.stringify({ key, from: this.groups.indexOf(group) }));
@@ -205,6 +206,7 @@ export class WatchlistPanel {
       e.pct.textContent = formatPct(pctV);
       e.chg.className = `wl-chg ${dir}`;
       e.pct.className = `wl-pct ${dir}`;
+      e.pct.title = e.chg.textContent;
       if (flash) {
         const up = q.last > q.prevLast;
         e.last.classList.remove('flash-up', 'flash-down');

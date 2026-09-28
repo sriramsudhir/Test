@@ -1,7 +1,9 @@
-// Market data REST routes (ARCHITECTURE §4): /api/symbols, /api/candles, /api/footprint, /api/timeframes.
+// Market data REST routes (ARCHITECTURE §4, §13.1): /api/symbols (both providers, `provider` filter),
+// /api/candles, /api/footprint, /api/timeframes.
 import { TIMEFRAMES, normalizeTf } from '../data/timeframes.js';
 import { parseSymbolKey, GROUPS } from '../bybit/markets.js';
 import { MAX_LIMIT } from '../data/market.js';
+import { PROVIDERS } from '../providers/index.js';
 
 /** Parse an optional numeric query param (ms timestamps; seconds are upgraded to ms). */
 export function parseTime(x) {
@@ -24,10 +26,12 @@ export async function register(app, ctx) {
   app.get('/api/timeframes', async () => ({ timeframes: TIMEFRAMES }));
 
   app.get('/api/symbols', async (req, reply) => {
-    const { group, q, category, limit } = req.query || {};
+    const { group, q, category, provider, contractType, all, limit } = req.query || {};
     if (group && !GROUPS.includes(group)) return badRequest(reply, `group must be one of ${GROUPS.join(', ')}`);
+    if (provider && !PROVIDERS.includes(provider)) return badRequest(reply, `provider must be one of ${PROVIDERS.join(', ')}`);
     const lim = limit ? Math.max(1, Math.min(5000, Number(limit) || 0)) : undefined;
-    return ctx.market.listSymbols({ group, q, category, limit: lim });
+    // Delta options / dated futures are hidden unless contractType (e.g. call_options) or all=1 is given.
+    return ctx.market.listSymbols({ group, q, category, provider, contractType, all: all === '1' || all === 'true', limit: lim });
   });
 
   app.get('/api/candles', async (req, reply) => {

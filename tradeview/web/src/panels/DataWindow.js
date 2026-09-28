@@ -1,5 +1,5 @@
 // Data window: OHLCV and indicator values at the crosshair of the active chart.
-import { h, clear } from './util/dom.js';
+import { h, clear, add } from './util/dom.js';
 import { formatPrice, formatCompact, formatPct, formatDateTime, splitKey } from './util/fmt.js';
 import { chartState, chartIndicators } from './util/chartHub.js';
 import { symbolInfo } from './SymbolSearch.js';
@@ -12,7 +12,7 @@ export class DataWindowPanel {
     el.classList.add('panel', 'data-window');
     this.title = h('div.panel-title', 'Data window');
     this.body = h('div.panel-body.dw-body');
-    el.append(h('div.panel-header', this.title), this.body);
+    add(el, h('div.panel-header', this.title), this.body);
     app.hub.on('crosshair', (c) => { if (c.chart === app.hub.active) { this.data = c; this.schedule(); } });
     app.hub.on('active', () => { this.data = app.hub.crosshair.get(app.hub.active) || null; this.schedule(); });
     app.hub.on('price', ({ chart }) => { if (chart === app.hub.active && (!this.data || !this.data.candle)) this.schedule(); });

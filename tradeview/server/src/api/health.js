@@ -1,4 +1,4 @@
-// GET /api/health -> { ok, bybit, db, laya, ... }
+// GET /api/health -> { ok, bybit, delta, db, laya, auth, details } (public: not behind auth)
 import { dbHealthy } from '../db/index.js';
 
 /**
@@ -9,14 +9,18 @@ export async function register(app, ctx) {
   const started = Date.now();
   app.get('/api/health', async () => {
     const db = dbHealthy(ctx.db);
-    const rest = ctx.bybit?.rest?.health ?? 'unknown';
-    const ws = ctx.live?.status?.().bybit ?? 'unknown';
-    // "connected" when REST is fine (or untested) and streams are up; "reconnecting" during WS outages;
-    // "down" when REST calls keep failing (offline mode, cached data only).
-    let bybit = 'connected';
-    if (rest === 'down') bybit = 'down';
-    else if (ws === 'reconnecting') bybit = 'reconnecting';
-    else if (rest === 'degraded') bybit = 'degraded';
+    const restHealth = ctx.providers?.rest?.healthByProvider ?? { bybit: ctx.bybit?.rest?.health ?? 'unknown' };
+    const live = ctx.live?.status?.() ?? {};
+    const streams = live.providers ?? {};
+    // Per provider: "down" when REST calls keep failing (offline: cached data only), "reconnecting" during a
+    // WS outage, "degraded" after sporadic REST failures, else "connected".
+    const providerState = (name) => {
+      const rest = restHealth[name] ?? 'unknown';
+      if (rest === 'down') return 'down';
+      if (streams[name] === 'reconnecting') return 'reconnecting';
+      if (rest === 'degraded') return 'degraded';
+      return 'connected';
+    };
     let laya = { ready: false, mode: 'off', model: null };
     try {
       laya = (await ctx.laya?.status?.()) ?? laya;
@@ -25,14 +29,17 @@ export async function register(app, ctx) {
     }
     return {
       ok: db,
-      bybit,
+      bybit: providerState('bybit'),
+      delta: providerState('delta'),
       db,
       laya,
+      auth: { enabled: !!ctx.auth?.enabled },
       details: {
-        rest,
-        restStats: ctx.bybit?.rest?.stats,
-        ws,
-        subscriptions: ctx.live?.subscriptions?.().length ?? 0,
+        rest: restHealth,
+        restStats: ctx.providers?.rest?.stats ?? ctx.bybit?.rest?.stats,
+        streams,
+        subscriptions: live.subscriptions ?? 0,
+        recorder: ctx.recorder?.status?.(),
         instruments: ctx.bybit?.instruments?.size ?? 0,
         instrumentsSource: ctx.bybit?.instruments?.source,
         sockets: ctx.sockets?.size ?? 0,

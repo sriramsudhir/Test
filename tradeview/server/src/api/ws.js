@@ -92,7 +92,7 @@ export async function register(app, ctx) {
   const onKline = (e) => hub.publish(subKey('kline', e.symbol, e.tf), { type: 'kline', symbol: e.symbol, tf: e.tf, candle: e.candle, closed: e.closed });
   const onFootprint = (e) => hub.publish(subKey('footprint', e.symbol, e.tf), { type: 'footprint', symbol: e.symbol, tf: e.tf, bar: e.bar });
   const onTrades = (e) => hub.publish(subKey('trades', e.symbol), { type: 'trade', symbol: e.symbol, trades: e.trades });
-  const onStatus = (e) => hub.broadcast({ type: 'status', bybit: e.bybit });
+  const onStatus = (e) => hub.broadcast({ type: 'status', bybit: e.bybit, providers: e.providers });
   if (live) {
     live.on('kline', onKline);
     live.on('footprint', onFootprint);
@@ -169,7 +169,8 @@ export async function register(app, ctx) {
     socket.on('pong', () => {
       client.alive = true;
     });
-    hub.send(client, { type: 'status', bybit: live?.status?.().bybit ?? 'connected' });
+    const st = live?.status?.() ?? {};
+    hub.send(client, { type: 'status', bybit: st.bybit ?? 'connected', providers: st.providers });
 
     socket.on('message', (raw) => {
       client.alive = true;

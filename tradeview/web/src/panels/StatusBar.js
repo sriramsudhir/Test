@@ -1,6 +1,6 @@
 // Status bar: browser socket, Bybit feed, Laya status (/api/laya/status), server health (/api/health),
 // sound / notification state, UTC clock.
-import { h, clear, icon } from './util/dom.js';
+import { h, clear, icon, add } from './util/dom.js';
 import { alarm } from '../audio/alarm.js';
 import { notificationPermission, requestNotificationPermission } from '../audio/notify.js';
 import { toast } from './util/dialog.js';
@@ -25,7 +25,7 @@ export class StatusBar {
     this.soundEl = h('button.sb-item', { type: 'button' });
     this.notifEl = h('button.sb-item', { type: 'button' });
     this.clockEl = h('span.sb-item.sb-clock', { title: 'UTC time' });
-    el.append(this.sockEl, this.bybitEl, this.layaEl, this.serverEl, this.chartEl, h('span.spacer'), this.soundEl, this.notifEl, this.clockEl);
+    add(el, this.sockEl, this.bybitEl, this.layaEl, this.serverEl, this.chartEl, h('span.spacer'), this.soundEl, this.notifEl, this.clockEl);
 
     socket.on('connection', () => this.renderSocket());
     socket.on('status', (m) => { this.mergeFeeds(m); this.renderBybit(); });
@@ -71,7 +71,7 @@ export class StatusBar {
     const s = this.socket.state;
     const map = { open: ['ok', 'Live'], connecting: ['warn', 'Connecting…'], reconnecting: ['bad', `Reconnecting${this.socket.attempt > 1 ? ` (${this.socket.attempt})` : ''}…`], idle: ['bad', 'Offline'] };
     const [cls, text] = map[s] || ['bad', s];
-    clear(this.sockEl).append(this.dot(cls), text);
+    add(clear(this.sockEl), this.dot(cls), text);
     if (s === 'open') this.pollHealth();
   }
 
@@ -94,7 +94,7 @@ export class StatusBar {
     const tips = [];
     for (const [k, b] of Object.entries(this.feeds)) {
       const cls = b === 'connected' || b === 'ok' ? 'ok' : b === 'reconnecting' || b === 'degraded' || b === 'connecting' ? 'warn' : b === 'unknown' || b === 'off' || b === 'disabled' ? 'idle' : 'bad';
-      this.bybitEl.append(h('span.feed', this.dot(cls), names[k] || k));
+      add(this.bybitEl, h('span.feed', this.dot(cls), names[k] || k));
       tips.push(`${names[k] || k}: ${b === 'down' ? 'offline (cached data)' : b}`);
     }
     this.bybitEl.title = `Market data feeds\n${tips.join('\n')}`;
@@ -110,7 +110,7 @@ export class StatusBar {
       else if (l.ready) { cls = 'ok'; text = `Laya ${l.mode || ''}`.trim(); }
       else { cls = 'warn'; text = l.loading ? 'Laya loading…' : `Laya ${l.mode || ''} not ready`; }
     }
-    clear(this.layaEl).append(this.dot(cls), text);
+    add(clear(this.layaEl), this.dot(cls), text);
     this.layaEl.title = l ? `Laya decision engine\nmode: ${l.mode ?? '—'}\nmodel: ${l.model ?? '—'}${l.error ? '\n' + l.error : ''}` : 'Laya decision engine';
   }
 
@@ -123,7 +123,7 @@ export class StatusBar {
       else if (hl.ok) { cls = 'ok'; text = 'Server OK'; }
       else { cls = 'warn'; text = hl.db === false ? 'DB error' : 'Server degraded'; }
     }
-    clear(this.serverEl).append(this.dot(cls), text);
+    add(clear(this.serverEl), this.dot(cls), text);
     if (hl && !hl.error) {
       const d = hl.details || {};
       this.serverEl.title = `Server health\nDB: ${hl.db ? 'ok' : 'error'}${d.subscriptions != null ? `\nLive subscriptions: ${d.subscriptions}` : ''}${d.uptimeSec != null ? `\nUptime: ${Math.round(d.uptimeSec / 60)} min` : ''}`;
@@ -133,12 +133,12 @@ export class StatusBar {
   renderChart() {
     const st = chartState(this.app.hub.active);
     clear(this.chartEl);
-    if (st.symbol) this.chartEl.append(icon('target', 12), `${splitKey(st.symbol).symbol} · ${st.tf || ''}${st.chartType && st.chartType !== 'candles' ? ' · ' + st.chartType : ''}`);
+    if (st.symbol) add(this.chartEl, icon('target', 12), `${splitKey(st.symbol).symbol} · ${st.tf || ''}${st.chartType && st.chartType !== 'candles' ? ' · ' + st.chartType : ''}`);
   }
 
   renderSound() {
     const s = alarm.state;
-    clear(this.soundEl).append(icon(s.unlocked ? 'volume' : 'mute', 13), s.playing ? 'Stop alarm' : s.unlocked ? 'Sound on' : 'Sound locked');
+    add(clear(this.soundEl), icon(s.unlocked ? 'volume' : 'mute', 13), s.playing ? 'Stop alarm' : s.unlocked ? 'Sound on' : 'Sound locked');
     this.soundEl.classList.toggle('warn', !s.unlocked || s.playing);
     this.soundEl.title = s.unlocked ? 'Alert sounds enabled (click to test)' : 'Click to enable alert sounds';
   }
@@ -146,7 +146,7 @@ export class StatusBar {
   renderNotif() {
     const p = notificationPermission();
     const label = { granted: 'Notifications on', denied: 'Notifications blocked', default: 'Enable notifications', unsupported: 'No notifications' }[p];
-    clear(this.notifEl).append(icon('bell', 13), label);
+    add(clear(this.notifEl), icon('bell', 13), label);
     this.notifEl.classList.toggle('warn', p === 'default');
     this.notifEl.disabled = p === 'granted' || p === 'unsupported';
   }

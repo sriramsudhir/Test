@@ -43,6 +43,12 @@ function append(el, children) {
   }
 }
 
+/** Like el.append(...children) but skips null/undefined/false (native append would insert the text "null"). */
+export function add(el, ...children) {
+  append(el, children);
+  return el;
+}
+
 export function clear(el) {
   while (el.firstChild) el.removeChild(el.firstChild);
   return el;

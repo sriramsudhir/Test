@@ -1,5 +1,5 @@
 // Alerts panel: list/create/edit/delete alerts (§6), alert lines on charts, drag-to-move alert lines.
-import { h, clear, icon, iconButton } from './util/dom.js';
+import { h, clear, icon, iconButton, add } from './util/dom.js';
 import { openDialog, toast, confirmDialog, popupMenu } from './util/dialog.js';
 import { formatPrice, formatDateTime, formatTimeAgo, splitKey, categoryLabel, TIMEFRAMES, toDateTimeInput, DEFAULT_SYMBOL } from './util/fmt.js';
 import { chartState, chartDrawings } from './util/chartHub.js';
@@ -67,7 +67,7 @@ export class AlertsPanel {
     this.tabs = h('div.tabs.tabs-sm');
     this.list = h('div.panel-body.alert-list');
     this.pushEl = h('div.push-row');
-    el.append(
+    add(el, 
       h('div.panel-header',
         h('div.panel-title', 'Alerts'),
         h('div.panel-actions',
@@ -78,7 +78,18 @@ export class AlertsPanel {
       this.list);
     this.renderPush();
 
-    socket.on('alert_update', (m) => { if (m.alert) this.upsert(m.alert); });
+    socket.on('alert_update', (m) => {
+      const a = m.alert;
+      if (!a) return;
+      const prev = this.alerts.get(a.id);
+      const lc = a.lastCheck;
+      // A Laya-rejected hit produces no alert event, only an alert_update carrying lastCheck.
+      if (lc && lc.laya && lc.laya.passed === false && (!prev || !prev.lastCheck || prev.lastCheck.t !== lc.t)) {
+        const p = lc.laya.p;
+        toast(`${splitKey(a.symbol).symbol}: condition hit at ${formatPrice(lc.price, symbolInfo.get(a.symbol)?.tickSize)} — Laya rejected (P=${p == null ? '—' : Number(p).toFixed(2)})`, 'warn', 6000);
+      }
+      this.upsert(a);
+    });
     socket.on('alert', (m) => {
       const ev = m.event || {};
       const a = this.alerts.get(ev.alertId);
@@ -128,17 +139,31 @@ export class AlertsPanel {
     const sub = sup.supported ? await currentSubscription() : null;
     clear(el);
     if (busy) {
-      el.append(h('span.spinner'), h('span.muted', 'Setting up push alerts…'));
+      add(el, h('span.spinner'), h('span.muted', 'Setting up push alerts…'));
       return;
     }
     if (!sup.supported) {
       el.classList.add('muted-row');
-      el.append(icon('bell', 14), h('span.push-text', sup.reason));
+      add(el, icon('bell', 14), h('span.push-text', sup.reason));
       return;
     }
     el.classList.remove('muted-row');
     if (sub && Notification.permission === 'granted') {
-      el.append(icon('check', 14, 'ok'), h('span.push-text', 'Push alerts are on for this device — alerts reach you even with the tab closed.'),
+      add(el, icon('check', 14, 'ok'), h('span.push-text', 'Push alerts are on for this device — alerts reach you even with the tab closed.'),
+        h('button.btn.btn-ghost.btn-xs', { type: 'button', title: 'POST /api/push/test', onclick: async (e) => {
+          const btn = e.currentTarget;
+          btn.disabled = true;
+          try {
+            const r = await this.api.post('/api/push/test', {});
+            const sent = r && r.push ? r.push.sent : null;
+            if (r && r.error) toast(`Test failed: ${r.error}`, 'error');
+            else toast(sent != null ? `Test notification sent to ${sent} device${sent === 1 ? '' : 's'}${r.telegram && r.telegram.ok ? ' + Telegram' : ''}` : 'Test notification sent', 'success');
+          } catch (err) {
+            toast(`Test failed: ${err.message}`, 'error');
+          } finally {
+            btn.disabled = false;
+          }
+        } }, 'Send test'),
         h('button.btn.btn-ghost.btn-xs', { type: 'button', onclick: async () => {
           const r = await disablePush(this.api);
           toast(r.message, r.ok ? 'info' : 'error');
@@ -147,10 +172,10 @@ export class AlertsPanel {
       return;
     }
     if (sup.permission === 'denied') {
-      el.append(icon('warn', 14), h('span.push-text', 'Notifications are blocked for this site. Allow them in the site settings to get push alerts.'));
+      add(el, icon('warn', 14), h('span.push-text', 'Notifications are blocked for this site. Allow them in the site settings to get push alerts.'));
       return;
     }
-    el.append(
+    add(el, 
       h('button.btn.btn-sm.push-btn', { type: 'button', onclick: async () => {
         this.renderPush(true);
         const r = await enablePush(this.api);
@@ -254,7 +279,8 @@ export class AlertsPanel {
         h('span', TRIGGERS.find((t) => t.id === a.trigger)?.label || a.trigger || ''),
         a.sound ? h('span', icon('volume', 12), ` ${a.sound.preset}${a.sound.loop ? ' · loop' : ''}`) : null,
         a.expires ? h('span', { title: formatDateTime(a.expires) }, `expires ${formatDateTime(a.expires)}`) : null,
-        a.lastFired ? h('span', `fired ${formatTimeAgo(a.lastFired)}`) : null));
+        a.lastFired ? h('span', `fired ${formatTimeAgo(a.lastFired)}`) : null),
+      this.renderLastCheck(a));
     item.addEventListener('click', () => {
       const chart = this.layout.active;
       if (chart && a.symbol && chartState(chart).symbol !== a.symbol) chart.setSymbol?.(a.symbol);
@@ -270,6 +296,22 @@ export class AlertsPanel {
       ]);
     });
     return item;
+  }
+
+  /** "Laya rejected: P=0.42" line from alert.lastCheck = { t, price, laya }. */
+  renderLastCheck(a) {
+    const lc = a.lastCheck;
+    if (!lc || !lc.laya) return null;
+    const l = lc.laya;
+    const tick = symbolInfo.get(a.symbol)?.tickSize;
+    const when = lc.t ? ` · ${formatTimeAgo(lc.t)}` : '';
+    if (l.skipped) return h('div.alert-check.skipped', { title: l.reason || '' }, `Laya skipped at ${formatPrice(lc.price, tick)}${when}`);
+    const p = l.p == null ? '—' : Number(l.p).toFixed(2);
+    const passed = l.passed !== false;
+    return h(`div.alert-check.${passed ? 'passed' : 'rejected'}`,
+      { title: `threshold ${l.threshold ?? a.laya?.threshold ?? '—'}${l.direction ? ` · ${l.direction}` : ''}${l.confidence ? ` · ${l.confidence}` : ''}` },
+      passed ? `Laya passed: P=${p}` : `Laya rejected: P=${p}`,
+      h('span.muted', ` at ${formatPrice(lc.price, tick)}${when}`));
   }
 
   async setStatus(a, status) {
@@ -376,7 +418,7 @@ export class AlertsPanel {
           const p = this.app.hub.activePrice();
           if (p != null) { st.value = Number(Number(p).toPrecision(8)); v1.value = String(st.value); }
         });
-        condBox.append(
+        add(condBox, 
           field('Condition', opSel),
           h('div.field-row',
             field(isChannel ? 'Upper bound' : 'Value', v1),
@@ -389,7 +431,7 @@ export class AlertsPanel {
           const src = await this.app.getPineSource?.();
           if (src) { st.source = src; ta.value = src; } else toast('The Pine Editor is empty', 'warn');
         });
-        condBox.append(
+        add(condBox, 
           field('Pine script (fires when the plot named "signal" > 0, or on alertcondition)', ta),
           h('div.field-hint', 'Evaluated server-side on every closed bar of the selected timeframe.', fromEditor));
       } else {
@@ -397,7 +439,7 @@ export class AlertsPanel {
         const opts = drawingsCache.map((d) => ({ id: String(d.id), label: `${String(d.type || 'drawing').replace(/_/g, ' ')}${d.name ? ' · ' + d.name : ''} @ ${formatPrice(d.points && d.points[0] ? d.points[0].price : null)}` }));
         if (!st.drawingId && opts.length) st.drawingId = opts[0].id;
         const drawSel = opts.length ? select(opts, st.drawingId, (v) => { st.drawingId = v; }) : h('div.field-hint.warn', 'No trend lines or horizontal lines on a chart with this symbol. Draw one first.');
-        condBox.append(
+        add(condBox, 
           field('Drawing', drawSel),
           field('Condition', select(DRAWING_OPS, DRAWING_OPS.some((o) => o.id === st.op) ? st.op : (st.op = 'crosses'), (v) => { st.op = v; })));
       }
@@ -427,7 +469,7 @@ export class AlertsPanel {
     repeat.disabled = !!st.sound.loop;
     const testBtn = h('button.btn.btn-ghost.btn-sm', { type: 'button' }, icon('volume', 14), 'Test');
     let testHandle = null;
-    const setTestLabel = (playing) => { clear(testBtn).append(icon(playing ? 'stop' : 'volume', 14), playing ? 'Stop' : 'Test'); };
+    const setTestLabel = (playing) => { add(clear(testBtn), icon(playing ? 'stop' : 'volume', 14), playing ? 'Stop' : 'Test'); };
     testBtn.addEventListener('click', async () => {
       if (testHandle && alarm.playing) { alarm.stop(); testHandle = null; setTestLabel(false); return; }
       await alarm.unlock();

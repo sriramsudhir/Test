@@ -13,6 +13,8 @@ const nextConfig = {
   // Imperative charts/editors must not be mounted twice in development.
   reactStrictMode: false,
   poweredByHeader: false,
+  // Do not generate AGENTS.md / CLAUDE.md into the project on `next dev`.
+  agentRules: false,
   // npm workspaces: dependencies are hoisted to the repository root.
   outputFileTracingRoot: workspaceRoot,
   turbopack: { root: workspaceRoot },

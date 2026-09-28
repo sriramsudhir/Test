@@ -1,5 +1,5 @@
 // Alert log: history of fired alert events (GET /api/alerts/events + live socket 'alert'), incl. Laya decisions.
-import { h, clear, icon, iconButton } from './util/dom.js';
+import { h, clear, icon, iconButton, add } from './util/dom.js';
 import { formatPrice, formatDateTime, splitKey } from './util/fmt.js';
 import { layaSummary, layaBadge, layaBar } from './util/laya.js';
 import { symbolInfo } from './SymbolSearch.js';
@@ -19,7 +19,7 @@ export class AlertLogPanel {
     this.search.addEventListener('input', () => { this.filter = this.search.value.trim().toLowerCase(); this.render(); });
     this.count = h('span.muted');
     this.tbody = h('tbody');
-    el.append(
+    add(el, 
       h('div.subbar', this.search, this.count, h('span.spacer'),
         iconButton('refresh', 'Reload', () => this.load())),
       h('div.table-wrap', h('table.data-table.log-table',

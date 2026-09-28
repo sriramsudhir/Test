@@ -1,7 +1,7 @@
 // Strategy Tester: POST /api/backtest (§4, §9); overview metrics, equity + drawdown chart, trade list,
 // trade markers on the active chart.
 import { createChart, AreaSeries, HistogramSeries, LineSeries, ColorType, LineStyle } from 'lightweight-charts';
-import { h, clear, icon } from './util/dom.js';
+import { h, clear, icon, add } from './util/dom.js';
 import { toast } from './util/dialog.js';
 import { formatNum, formatPct, formatPrice, formatDateTime, formatSigned, splitKey, TIMEFRAMES, toDateInput, toMs, DEFAULT_SYMBOL } from './util/fmt.js';
 import { chartState } from './util/chartHub.js';
@@ -83,7 +83,7 @@ export class StrategyTesterPanel {
     el.classList.add('panel', 'tester-panel');
     this.formEl = h('div.tester-form');
     this.resultEl = h('div.tester-result');
-    el.append(this.formEl, this.resultEl);
+    add(el, this.formEl, this.resultEl);
     this.renderForm();
     this.renderResult();
     this.loadStrategies();
@@ -199,7 +199,7 @@ export class StrategyTesterPanel {
       paramsEl.appendChild(h('span.muted', 'Uses the strategy() script currently open in the Pine Editor.'));
     }
 
-    this.formEl.append(
+    add(this.formEl, 
       h('div.tester-row',
         h('div.fld', h('span', 'Strategy'), stratSel),
         h('div.fld', h('span', 'Symbol'), this.symLabel),
@@ -267,7 +267,7 @@ export class StrategyTesterPanel {
     this.editorSource = null;
     this.running = true;
     this.runBtn.disabled = true;
-    clear(this.runBtn).append(h('span.spinner'), 'Running…');
+    add(clear(this.runBtn), h('span.spinner'), 'Running…');
     clear(this.resultEl).appendChild(h('div.tester-loading', h('span.spinner.lg'), `Backtesting ${splitKey(req.symbol).symbol} ${req.tf}…`));
     try {
       const res = await this.api.post('/api/backtest', req);
@@ -281,7 +281,7 @@ export class StrategyTesterPanel {
     } finally {
       this.running = false;
       this.runBtn.disabled = false;
-      clear(this.runBtn).append(icon('play', 14), 'Run backtest');
+      add(clear(this.runBtn), icon('play', 14), 'Run backtest');
     }
   }
 
@@ -325,18 +325,18 @@ export class StrategyTesterPanel {
       h('span.muted.tester-meta', `${splitKey(this.request.symbol).symbol} ${this.request.tf}${meta.title ? ' · ' + meta.title : ''}${meta.mode ? ' · ' + meta.mode : ''}`),
       h('button.btn.btn-ghost.btn-sm', { type: 'button', title: 'Show trades on the active chart', onclick: () => this.drawMarkers(true) }, icon('target', 14), 'Chart'),
       h('button.btn.btn-ghost.btn-sm', { type: 'button', title: 'Remove trade markers', onclick: () => this.clearMarkers() }, icon('x', 14)));
-    this.resultEl.append(head);
+    add(this.resultEl, head);
     if (meta.note) this.resultEl.appendChild(h('div.tester-note', meta.note));
     for (const w of meta.warnings || []) this.resultEl.appendChild(h('div.tester-note.warn', typeof w === 'string' ? w : w.message || JSON.stringify(w)));
 
     if (this.view === 'overview') {
       const chartHost = h('div.equity-chart');
-      this.resultEl.append(summary, chartHost);
+      add(this.resultEl, summary, chartHost);
       requestAnimationFrame(() => this.buildChart(chartHost));
     } else if (this.view === 'trades') {
-      this.resultEl.append(this.renderTrades());
+      add(this.resultEl, this.renderTrades());
     } else {
-      this.resultEl.append(this.renderMetrics(m));
+      add(this.resultEl, this.renderMetrics(m));
     }
   }
 

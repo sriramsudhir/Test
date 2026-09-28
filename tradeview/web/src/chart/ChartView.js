@@ -212,6 +212,9 @@ export class ChartView extends Emitter {
     this.root.append(this.canvasHost);
     container.append(this.root);
     this.root.addEventListener('mousedown', () => this.emit('focus', this), true);
+    this._mouseInside = false;
+    this.canvasHost.addEventListener('mouseenter', () => (this._mouseInside = true));
+    this.canvasHost.addEventListener('mouseleave', () => (this._mouseInside = false));
   }
 
   _setStatus(kind, text) {
@@ -397,6 +400,7 @@ export class ChartView extends Emitter {
 
   _rebuild() {
     if (this._destroyed || !this.mainSeries) return;
+
     const src = this._visibleCandles();
     const bars = this._computeDisplay(src);
     this._display = bars;
@@ -407,6 +411,7 @@ export class ChartView extends Emitter {
     }
     this.mainSeries.setData(bars.map((b, i) => this._toItem(b, i, bars)));
     this.volumeSeries.setData(bars.map((b, i) => this._volItem(b, i, bars)));
+    this.volumeSeries.applyOptions({ visible: this.options.volume && this.chartType !== 'footprint' });
     this.vpvr.invalidate();
     this._refreshLegend();
     this._updateFpHint();
@@ -545,7 +550,7 @@ export class ChartView extends Emitter {
     const first = this._candles[0].t;
     try {
       const res = await apiRequest(this.api, 'get', '/api/candles', { symbol: this.symbol, tf: this.tf, to: first - 1, limit: PAGE });
-      if (token !== this._loadToken) return;
+      if (token !== this._loadToken || this._destroyed) return;
       const older = cleanCandles(unwrapList(res, 'candles')).filter((c) => c.t < first);
       if (!older.length) {
         this._exhausted = true;
@@ -584,7 +589,7 @@ export class ChartView extends Emitter {
         info = list.find((s) => s.key === sym) || list.find((s) => s.symbol === this._bareSymbol()) || null;
         if (info) symbolInfoCache.set(sym, info);
       }
-      if (sym !== this.symbol || !info) return;
+      if (sym !== this.symbol || !info || this._destroyed) return;
       this.symbolInfo = info;
       const tick = +info.tickSize;
       if (tick > 0) {
@@ -608,7 +613,7 @@ export class ChartView extends Emitter {
     this._fpPending = true;
     try {
       const res = await apiRequest(this.api, 'get', '/api/footprint', { symbol: this.symbol, tf: this.tf, from, to });
-      if (token !== this._loadToken) return;
+      if (token !== this._loadToken || this._destroyed) return;
       for (const b of unwrapList(res, 'bars')) {
         const t = toMs(b.t);
         if (t != null) this._fp.set(t, b);
@@ -777,18 +782,24 @@ export class ChartView extends Emitter {
       const pt = param.point;
       if (!pt || param.time == null || param.paneIndex > 0 && param.paneIndex == null) {
         this._hoverBar = null;
-        if (!this._plusHover) this._plus.hidden = true;
+        // the pointer may be moving onto the "+" button itself: decide after its mouseenter fired
+        clearTimeout(this._plusHideT);
+        this._plusHideT = setTimeout(() => {
+          if (!this._plusHover && !this._crosshairInPane) this._plus.hidden = true;
+        }, 60);
+        this._crosshairInPane = false;
         this._refreshLegend();
         if (!this._syncingCrosshair) this.emit('crosshair', null);
         return;
       }
+      this._crosshairInPane = true;
       const t = param.time * 1000;
       const i = lowerIndex(this._display, t);
       this._hoverBar = i >= 0 ? { bar: this._display[i], prev: this._display[i - 1] } : null;
       this._refreshLegend();
       let price = null;
       if ((param.paneIndex ?? 0) === 0 && this.mainSeries) price = this.mainSeries.coordinateToPrice(pt.y);
-      if (price != null && (param.paneIndex ?? 0) === 0) {
+      if (price != null && (param.paneIndex ?? 0) === 0 && this._mouseInside) {
         const size = chart.paneSize(0);
         this._plusPrice = this.roundPrice(price);
         this._plusTime = t;
@@ -965,7 +976,14 @@ export class ChartView extends Emitter {
   timeToX(t) {
     const l = this._timeToLogical(t);
     if (l == null) return null;
-    return this.chart.timeScale().logicalToCoordinate(l);
+    // logicalToCoordinate() only resolves integral logical indices: interpolate linearly between two of them
+    const ts = this.chart.timeScale();
+    const i = Math.floor(l);
+    const a = ts.logicalToCoordinate(i);
+    if (a == null) return null;
+    if (l === i) return a;
+    const b = ts.logicalToCoordinate(i + 1);
+    return b == null ? a : a + (b - a) * (l - i);
   }
 
   xToTime(x, snap = true) {
@@ -1126,7 +1144,7 @@ export class ChartView extends Emitter {
 
   setVolumeVisible(on) {
     this.options.volume = !!on;
-    this.volumeSeries.applyOptions({ visible: this.options.volume });
+    this.volumeSeries.applyOptions({ visible: this.options.volume && this.chartType !== 'footprint' });
     this._refreshLegend();
   }
 
@@ -1418,6 +1436,10 @@ export class ChartView extends Emitter {
     this._fpEnsure.cancel();
     this._fpHintDebounced.cancel();
     if (this._legendRaf) cancelAnimationFrame(this._legendRaf);
+    clearTimeout(this._plusHideT);
+    try {
+      this._destroyMainSeries(); // detaches primitives (stops the countdown timer)
+    } catch { /* ignore */ }
     this.chart.remove();
     this.root.remove();
     this.removeAllListeners();

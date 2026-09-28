@@ -237,7 +237,7 @@ test('Instruments: list/filter/tickSize and offline cache fallback', async () =>
   await inst.load();
   assert.equal(inst.size, 3);
   assert.deepEqual(inst.list({ group: 'commodities' }).map((s) => s.key), ['linear:XAUTUSDT']);
-  assert.deepEqual(inst.list({ group: 'forex' })[0], { key: 'spot:EURUSDT', symbol: 'EURUSDT', category: 'spot', group: 'forex', base: 'EUR', quote: 'USDT', tickSize: 0.0001, qtyStep: 0.01 });
+  assert.deepEqual(inst.list({ group: 'forex' })[0], { key: 'spot:EURUSDT', symbol: 'EURUSDT', category: 'spot', provider: 'bybit', group: 'forex', base: 'EUR', quote: 'USDT', tickSize: 0.0001, qtyStep: 0.01, contractType: null });
   assert.deepEqual(inst.list({ q: 'btc' }).map((s) => s.key), ['linear:BTCUSDT']);
   assert.equal(inst.tickSize('BTCUSDT'), 0.1);
 

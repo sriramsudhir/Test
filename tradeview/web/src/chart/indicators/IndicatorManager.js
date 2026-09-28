@@ -97,6 +97,7 @@ export class IndicatorManager {
       source,
       inputs: { ...(info?.inputs || {}), ...(spec.inputs || {}) },
       title: spec.title || info?.name?.replace(/\s*\(.*\)$/, '') || (builtin ? builtin.toUpperCase() : 'Pine Script'),
+      userTitle: !!spec.title,
       overlay: spec.overlay ?? info?.overlay ?? null,
       mode: 'pending',
       error: null,
@@ -269,7 +270,7 @@ export class IndicatorManager {
     if (!res.plots || !Object.keys(res.plots).length) throw new Error('Script produced no plots');
     rec.error = null;
     rec.mode = 'pine';
-    if (res.meta?.title) {
+    if (res.meta?.title && !rec.userTitle) {
       rec.title = res.meta.title;
       rec.titleFromPine = true;
     }
@@ -337,7 +338,7 @@ export class IndicatorManager {
     const overlay = res.meta?.overlay ?? rec.overlay ?? false;
     if (rec.overlay !== overlay && rec.series.size) this._clearSeries(rec);
     rec.overlay = overlay;
-    if (res.meta?.title && rec.mode !== 'pine') rec.title = rec.title || res.meta.title;
+    if (res.meta?.title && !rec.userTitle && (rec.mode !== 'pine' || rec.titleFromPine)) rec.title = res.meta.title;
     const paneIndex = this._paneIndexFor(rec, overlay);
     const names = Object.keys(res.plots);
     for (const [name, s] of [...rec.series]) {

@@ -176,6 +176,9 @@
   z-index: 6;
   display: flex;
   gap: 2px;
+  padding: 0 2px;
+  border-radius: 4px;
+  background: var(--tv-bg);
   opacity: 0.55;
   transition: opacity 0.15s;
 }

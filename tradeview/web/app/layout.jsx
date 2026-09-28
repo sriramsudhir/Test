@@ -1,4 +1,5 @@
 // Root layout (§14): html/body, metadata, PWA manifest, global CSS.
+import '../src/styles/chart.css';
 import '../src/styles/app.css';
 
 export const metadata = {

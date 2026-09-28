@@ -99,8 +99,8 @@ export const pineMonarch = {
   tokenizer: {
     root: [
       // version / compiler annotations: //@version=6, // @description ..., //@function ...
-      [/\/\/\s*@version\s*=\s*\d+/, 'annotation'],
-      [/\/\/\s*@(description|function|param|returns|type|field|variable|enum|strategy_alert_message)\b/, { token: 'annotation', next: '@annotationRest' }],
+      [/\/\/\s*[@]version\s*=\s*\d+/, 'annotation'], // [@]: Monarch treats @word in regexes as an attribute reference
+      [/\/\/\s*[@](description|function|param|returns|type|field|variable|enum|strategy_alert_message)\b/, { token: 'annotation', next: '@annotationRest' }],
       [/\/\/.*$/, 'comment'],
       // colors
       [/#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\b/, 'color'],

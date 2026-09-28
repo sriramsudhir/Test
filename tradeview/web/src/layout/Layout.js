@@ -137,8 +137,8 @@ export class Layout extends Emitter {
       const c = this.charts.pop();
       this._chartOffs.get(c)?.forEach((off) => off());
       this._chartOffs.delete(c);
-      c.container.remove();
       c.destroy();
+      c.container.remove();
       if (this.active === c) this.active = null;
     }
     this.charts.forEach((c, i) => (c.container.style.gridArea = `c${i}`));

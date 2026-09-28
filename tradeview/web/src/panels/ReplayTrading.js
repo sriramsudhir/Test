@@ -1,6 +1,6 @@
 // Replay trading panel: bound to layout.active.replay (ReplayController §12, events tick/state/fill).
 // Controls (start/play/pause/step/speed/exit), paper trading (buy/sell/close with qty), positions, fills, P&L.
-import { h, clear, icon } from './util/dom.js';
+import { h, clear, icon, add } from './util/dom.js';
 import { toast } from './util/dialog.js';
 import { formatPrice, formatNum, formatSigned, formatDateTime, splitKey, toDateTimeInput, toMs } from './util/fmt.js';
 import { chartState } from './util/chartHub.js';
@@ -44,7 +44,7 @@ export class ReplayTradingPanel {
     this.pnlEl = h('div.replay-pnl');
     this.posBody = h('tbody');
     this.fillBody = h('tbody');
-    el.append(
+    add(el, 
       h('div.subbar.replay-bar', this.statusEl, h('span.spacer'), this.controlsEl),
       h('div.replay-grid',
         h('div.replay-left', this.tradeEl, this.pnlEl),
@@ -137,11 +137,11 @@ export class ReplayTradingPanel {
   renderStatus() {
     clear(this.statusEl);
     const st = chartState(this.chart);
-    if (!this.chart) { this.statusEl.append(h('span.muted', 'No active chart')); return; }
-    if (!this.replay) { this.statusEl.append(h('span.muted', 'Bar replay is not available for this chart')); return; }
+    if (!this.chart) { add(this.statusEl, h('span.muted', 'No active chart')); return; }
+    if (!this.replay) { add(this.statusEl, h('span.muted', 'Bar replay is not available for this chart')); return; }
     const active = this.isActive();
     const tick = symbolInfo.get(st.symbol)?.tickSize;
-    this.statusEl.append(
+    add(this.statusEl, 
       h(`span.replay-badge.${active ? (this.isPlaying() ? 'playing' : 'paused') : 'idle'}`, active ? (this.isPlaying() ? 'PLAYING' : 'PAUSED') : 'REPLAY OFF'),
       h('span.replay-sym', `${splitKey(st.symbol).symbol} · ${st.tf || ''}`),
       active ? h('span.replay-time', icon('clock', 13), formatDateTime(this.currentTime())) : null,
@@ -158,7 +158,7 @@ export class ReplayTradingPanel {
       const vr = st.visibleRange || {};
       const def = toMs(vr.from && vr.to ? (toMs(vr.from) + toMs(vr.to)) / 2 : Date.now() - 30 * 86400000);
       const from = h('input.input.input-sm', { type: 'datetime-local', value: toDateTimeInput(def) });
-      this.controlsEl.append(
+      add(this.controlsEl, 
         h('span.muted', 'Start from'), from,
         h('button.btn.btn-primary.btn-sm', { type: 'button', onclick: () => this.start(new Date(from.value).getTime()) }, icon('replay', 14), 'Start replay'),
         h('button.btn.btn-ghost.btn-sm', { type: 'button', title: 'Start at the middle of the visible range', onclick: () => this.start(def) }, 'Visible range'));
@@ -171,7 +171,7 @@ export class ReplayTradingPanel {
     speedSel.addEventListener('change', () => { r.setSpeed(Number(speedSel.value)); this.state = { ...this.state, speed: Number(speedSel.value) }; });
     const jump = h('input.input.input-sm', { type: 'datetime-local', title: 'Jump to date', value: toDateTimeInput(this.currentTime() || Date.now()) });
     jump.addEventListener('change', () => { const t = new Date(jump.value).getTime(); if (isFinite(t)) r.jumpTo(t); });
-    this.controlsEl.append(
+    add(this.controlsEl, 
       btn('stepBack', 'Step back', () => r.stepBack(1)),
       this.isPlaying() ? btn('pause', 'Pause', () => r.pause(), '.accent') : btn('play', 'Play', () => r.play(), '.accent'),
       btn('step', 'Step forward', () => r.stepForward(1)),
@@ -193,7 +193,7 @@ export class ReplayTradingPanel {
     };
     const price = this.currentPrice();
     const tick = symbolInfo.get(chartState(this.chart).symbol)?.tickSize;
-    this.tradeEl.append(
+    add(this.tradeEl, 
       h('div.trade-title', 'Paper trading'),
       h('div.trade-row', h('span.muted', 'Qty'), qty),
       h('div.trade-buttons',
@@ -272,7 +272,7 @@ export class ReplayTradingPanel {
     }
     if (p.total == null && (p.realized != null || p.unrealized != null)) p.total = (p.realized || 0) + (p.unrealized || 0);
     const item = (label, v) => h('div.pnl-item', h('div.pnl-label', label), h(`div.pnl-value.${v > 0 ? 'up' : v < 0 ? 'down' : ''}`, v == null ? '—' : formatSigned(v, 2)));
-    this.pnlEl.append(item('Realized P&L', p.realized), item('Unrealized P&L', p.unrealized), item('Net P&L', p.total));
+    add(this.pnlEl, item('Realized P&L', p.realized), item('Unrealized P&L', p.unrealized), item('Net P&L', p.total));
     if (p.equity != null) this.pnlEl.appendChild(h('div.pnl-item', h('div.pnl-label', 'Equity'), h('div.pnl-value', formatNum(p.equity, 2))));
   }
 

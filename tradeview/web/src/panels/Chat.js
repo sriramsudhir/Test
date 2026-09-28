@@ -1,6 +1,6 @@
 // Claude agent panel (§7): streaming chat via SSE, executes chart_commands on the Layout,
 // tool-call chips, persisted sessions, suggested prompts, stop button.
-import { h, clear, icon, iconButton, uid, throttleRaf } from './util/dom.js';
+import { h, clear, icon, iconButton, uid, throttleRaf, add } from './util/dom.js';
 import { renderMarkdown } from './util/markdown.js';
 import { toast, popupMenu, confirmDialog } from './util/dialog.js';
 import { load, save, remove } from './util/store.js';
@@ -49,8 +49,9 @@ const CMD_DONE = {
 function short(sym) { return sym ? splitKey(sym).symbol : ''; }
 
 /** Stable signature for de-duplicating chart commands received from both the stream and the socket. */
-function commandSignature(cmd) {
-  if (cmd && (cmd.commandId || cmd.cmdId || cmd.uid)) return `id:${cmd.commandId || cmd.cmdId || cmd.uid}`;
+function commandSignature(cmd, id) {
+  const cid = id ?? (cmd && (cmd.commandId || cmd.cmdId || cmd.uid));
+  if (cid != null) return `id:${cid}`;
   const sortKeys = (v) => {
     if (Array.isArray(v)) return v.map(sortKeys);
     if (v && typeof v === 'object') return Object.keys(v).sort().reduce((o, k) => { o[k] = sortKeys(v[k]); return o; }, {});
@@ -76,12 +77,12 @@ export class ChatPanel {
     el.classList.add('panel', 'chat-panel');
     this.titleEl = h('div.panel-title', 'Agent');
     this.list = h('div.chat-list');
-    this.input = h('textarea.chat-input', { rows: 1, placeholder: 'Ask the agent… (Enter to send, Shift+Enter for newline)' });
+    this.input = h('textarea.chat-input', { rows: 1, placeholder: 'Ask the agent…', title: 'Enter to send · Shift+Enter for a new line' });
     this.sendBtn = h('button.chat-send', { type: 'button', title: 'Send' }, icon('send', 18));
     this.ctxChip = h('div.chat-context');
     this.agentEl = h('button.agent-status', { type: 'button', title: 'Agent status (click to refresh)', onclick: () => this.loadStatus() });
     this.agentNote = h('div.agent-note', { hidden: true });
-    el.append(
+    add(el, 
       h('div.panel-header', h('div.chat-head-title', icon('sparkles', 16), this.titleEl),
         h('div.panel-actions',
           iconButton('history', 'Conversations', (e) => this.sessionMenu(e.currentTarget)),
@@ -98,7 +99,7 @@ export class ChatPanel {
     this.sendBtn.addEventListener('click', () => (this.streaming ? this.stop() : this.send()));
 
     socket.on('chart_command', (m) => {
-      if (m.command) this.executeCommand(m.command, { source: 'socket' });
+      if (m.command) this.executeCommand(m.command, { source: 'socket', id: m.commandId ?? m.command.commandId });
     });
     app.hub.on('active', () => this.renderContext());
     app.hub.on('symbol', () => this.renderContext());
@@ -132,7 +133,7 @@ export class ChatPanel {
     const driver = names[s.driver] || s.driver || 'Agent';
     const cls = s.driver === 'off' ? 'idle' : s.ready ? 'ok' : 'warn';
     const detail = typeof s.detail === 'string' ? s.detail : s.detail ? JSON.stringify(s.detail) : '';
-    clear(this.agentEl).append(h(`span.dot.${cls}`), h('span', driver), s.model ? h('span.muted', ` · ${s.model}`) : null,
+    add(clear(this.agentEl), h(`span.dot.${cls}`), h('span', driver), s.model ? h('span.muted', ` · ${s.model}`) : null,
       h('span.muted', s.driver === 'off' ? ' · disabled' : s.ready ? ' · ready' : ' · not ready'));
     this.agentEl.title = `${s.driver === 'claude-code' ? 'Uses your Claude Pro/Max subscription via Claude Code on the server.' : s.driver === 'anthropic-api' ? 'Uses the Anthropic API key configured on the server.' : 'Agent driver'}${detail ? '\n' + detail : ''}\n(click to refresh)`;
     const note = this.agentNote;
@@ -140,10 +141,10 @@ export class ChatPanel {
     note.hidden = true;
     if (s.driver === 'off') {
       note.hidden = false;
-      note.append(icon('warn', 14), h('span', 'The agent is disabled on the server (AGENT_DRIVER=off). Charts, alerts and Laya keep working.'));
+      add(note, icon('warn', 14), h('span', 'The agent is disabled on the server (AGENT_DRIVER=off). Charts, alerts and Laya keep working.'));
     } else if (s.driver && !s.ready) {
       note.hidden = false;
-      note.append(icon('warn', 14), h('span', detail || (s.driver === 'claude-code'
+      add(note, icon('warn', 14), h('span', detail || (s.driver === 'claude-code'
         ? 'Claude is not signed in on the server. Run `claude` and /login there, or set CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`).'
         : 'The agent is not ready.')));
     }
@@ -233,7 +234,7 @@ export class ChatPanel {
     const charts = (ctx && ctx.charts) || [];
     const active = charts.find((c) => c.id === ctx.activeChartId) || charts[0];
     if (!active) return;
-    this.ctxChip.append(icon('target', 12), h('span', `Context: ${short(active.symbol)} ${active.tf || ''}${charts.length > 1 ? ` · ${charts.length} charts` : ''}`));
+    add(this.ctxChip, icon('target', 12), h('span', `Context: ${short(active.symbol)} ${active.tf || ''}${charts.length > 1 ? ` · ${charts.length} charts` : ''}`));
   }
 
   renderAll() {
@@ -341,7 +342,7 @@ export class ChatPanel {
         }
         case 'chart_command': {
           const cmd = evt.command || evt;
-          const ok = this.executeCommand(cmd, { source: 'stream' });
+          const ok = this.executeCommand(cmd, { source: 'stream', id: evt.commandId ?? cmd.commandId });
           const chip = [...asst.parts].reverse().find((p) => p.kind === 'chip' && p.tool === cmd.action && p.state === 'running');
           const label = (CMD_DONE[cmd.action] || (() => `Chart: ${cmd.action}`))(cmd);
           if (chip) { chip.state = ok ? 'done' : 'error'; chip.label = label; }
@@ -414,11 +415,11 @@ export class ChatPanel {
   // ------------------------------------------------------------------ chart commands
 
   /** Execute a ChartCommand once (commands arrive both via the SSE stream and the socket). */
-  executeCommand(cmd, { source } = {}) {
+  executeCommand(cmd, { source, id } = {}) {
     if (!cmd || !cmd.action) return false;
     const now = Date.now();
-    for (const [k, t] of this.handled) if (now - t > 60000) this.handled.delete(k);
-    const sig = commandSignature(cmd);
+    for (const [k, t] of this.handled) if (now - t > 120000) this.handled.delete(k);
+    const sig = commandSignature(cmd, id);
     if (this.handled.has(sig)) return true;
     this.handled.set(sig, now);
     try {
@@ -428,7 +429,7 @@ export class ChatPanel {
       }
       if (cmd.action === 'start_replay') this.app.showBottom?.('replay');
       if (cmd.action === 'set_layout') setTimeout(() => this.app.hub.sync(), 50);
-      if (source === 'socket') toast(`Agent: ${(CMD_DONE[cmd.action] || (() => cmd.action))(cmd)}`, 'info', 2000);
+      if (source === 'socket' && !this.streaming) toast(`Agent: ${(CMD_DONE[cmd.action] || (() => cmd.action))(cmd)}`, 'info', 2000);
       return true;
     } catch (err) {
       console.error('[chat] chart command failed', cmd, err);
