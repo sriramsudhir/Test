@@ -158,7 +158,7 @@ export class ReplayBar {
     if (!s.selecting) this.cut.hidden = true;
     this.root.classList.toggle('tv-rb-is-selecting', !!s.selecting && !s.active);
     this.selecting.hidden = !(s.selecting && !s.active);
-    this.controls.hidden = !s.active && !s.selecting ? true : !s.active && s.selecting;
+    this.controls.hidden = !s.active;
     this.trading.hidden = !s.active;
     if (s.selecting && s.active) {
       this.selectBtn.classList.add('tv-on');

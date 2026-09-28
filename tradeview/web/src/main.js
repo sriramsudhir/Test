@@ -1,14 +1,16 @@
 // TradeView app shell: top bar, drawing toolbar, chart layout, right sidebar (icon tabs), resizable bottom panel,
 // status bar, keyboard shortcuts, persisted UI state, alert alarm handling.
 import './styles/app.css';
-import { api, socket } from './api/client.js';
+import { api, socket, auth } from './api/client.js';
+import { checkSession, showLogin, logout } from './panels/Login.js';
+import { registerServiceWorker } from './panels/util/push.js';
 import * as LayoutModule from './layout/Layout.js';
 import * as ToolbarModule from './layout/Toolbar.js';
 import * as DrawingToolbarModule from './layout/DrawingToolbar.js';
 import { alarm } from './audio/alarm.js';
 import { requestNotificationPermission, notificationPermission, isFlashing } from './audio/notify.js';
 import { h, clear, icon, isEditableTarget } from './panels/util/dom.js';
-import { closeTopDialog, closeMenu, hasOpenDialog, toast } from './panels/util/dialog.js';
+import { closeTopDialog, closeMenu, hasOpenDialog, toast, popupMenu, openDialog } from './panels/util/dialog.js';
 import { load, save } from './panels/util/store.js';
 import { ChartHub, chartState } from './panels/util/chartHub.js';
 import { formatPrice, splitKey } from './panels/util/fmt.js';
@@ -61,6 +63,16 @@ const persistUi = () => save('ui', {
   bottomHeight: ui.bottomHeight,
   bottomMax: ui.bottomMax,
 });
+
+// ------------------------------------------------------------------------------------------------ auth gate (§13.3)
+
+const session = await checkSession();
+if (!session.authenticated) {
+  socket.pause();
+  await showLogin();
+  socket.resume();
+  Object.assign(session, await checkSession());
+}
 
 // ------------------------------------------------------------------------------------------------ DOM
 
@@ -183,7 +195,57 @@ els.topActions.append(
   topBtn('replay', 'Replay', 'Bar replay (Alt+R)', () => startReplay()),
   topBtn('code', 'Pine', 'Pine Editor', () => toggleBottom('pine')),
   topBtn('sparkles', 'Agent', 'Ask the agent', () => showSidebar('chat', true)),
+  h('button.top-btn.user-btn', { type: 'button', title: 'Account', 'aria-label': 'Account menu', onclick: (e) => userMenu(e.currentTarget) }, icon('user', 18)),
 );
+
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; });
+
+function userMenu(anchor) {
+  const items = [{ header: session.authEnabled ? `Signed in${session.user ? ' as ' + session.user : ''}` : 'Authentication disabled' }];
+  if (installPrompt) {
+    items.push({ label: 'Install TradeView app', icon: 'download', onClick: async () => { installPrompt.prompt(); await installPrompt.userChoice.catch(() => {}); installPrompt = null; } });
+  }
+  items.push(
+    { label: 'Push alerts on this device…', icon: 'bell', onClick: () => showSidebar('alerts', true) },
+    { label: 'Test alarm sound', icon: 'volume', onClick: async () => { await alarm.unlock(); alarm.play({ preset: 'siren', volume: 0.8, repeat: 1 }); } },
+    { label: 'Keyboard shortcuts', icon: 'gear', onClick: showShortcuts },
+  );
+  if (session.authEnabled) {
+    items.push({ separator: true }, { label: 'Log out', icon: 'logout', danger: true, onClick: doLogout });
+  }
+  popupMenu(anchor, items, { align: 'right' });
+}
+
+async function doLogout() {
+  await logout();
+  session.authenticated = false;
+  socket.pause();
+  alarm.stop();
+  await showLogin({ reason: 'You have been signed out.' });
+  afterLogin();
+}
+
+/** After a (re-)login: reconnect the socket and reload everything that came from the server. */
+function afterLogin() {
+  session.authenticated = true;
+  socket.resume();
+  const p = app.panels;
+  p.alerts?.load();
+  p.alertlog?.load();
+  p.watchlist?.refreshAll();
+  p.tester?.loadStrategies();
+  p.chat?.loadStatus();
+  app.statusBar?.pollHealth();
+  app.statusBar?.pollLaya();
+}
+
+auth.on('unauthorized', () => {
+  if (!session.authenticated && document.querySelector('.login-screen')) return;
+  session.authenticated = false;
+  socket.pause();
+  showLogin({ reason: 'Your session has expired. Please sign in again.' }).then(afterLogin);
+});
 
 // ------------------------------------------------------------------------------------------------ sidebar
 
@@ -380,7 +442,7 @@ function startReplay() {
 // ------------------------------------------------------------------------------------------------ keyboard
 
 function showShortcuts() {
-  import('./panels/util/dialog.js').then(({ openDialog }) => {
+  {
     const rows = [
       ['Alt + A', 'Create alert at the crosshair price'],
       ['Alt + R', 'Start bar replay'],
@@ -395,7 +457,7 @@ function showShortcuts() {
       className: 'dialog-sm',
       content: h('div.shortcuts', rows.map(([k, v]) => h('div.shortcut-row', h('kbd', k), h('span', v)))),
     });
-  });
+  }
 }
 
 document.addEventListener('keydown', (e) => {
@@ -503,5 +565,28 @@ restoreCharts();
 for (const ev of ['symbol', 'tf', 'chartType', 'active', 'charts']) hub.on(ev, () => setTimeout(persistCharts, 0));
 setInterval(persistCharts, 5000);
 window.addEventListener('beforeunload', () => { persistCharts(); persistUi(); });
+
+// ------------------------------------------------------------------------------------------------ PWA / deep links
+
+registerServiceWorker();
+function handleDeepLink(params) {
+  const sym = params.get('symbol');
+  const panel = params.get('panel');
+  if (sym && layout.active) layout.active.setSymbol?.(sym);
+  if (panel && SIDEBAR_TABS.some((t) => t.id === panel)) showSidebar(panel, true);
+  else if (panel && BOTTOM_TABS.some((t) => t.id === panel)) showBottom(panel);
+}
+const qs = new URLSearchParams(location.search);
+if (qs.has('symbol') || qs.has('panel')) {
+  handleDeepLink(qs);
+  history.replaceState(null, '', location.pathname);
+}
+navigator.serviceWorker?.addEventListener('message', (e) => {
+  const m = e.data || {};
+  if (m.type !== 'push-click') return;
+  const d = m.data || {};
+  if (d.event) app.alertCenter?.onAlert(d.event);
+  try { handleDeepLink(new URL(d.url || '/', location.origin).searchParams); } catch { /* ignore */ }
+});
 
 console.info('[tradeview] app shell ready');

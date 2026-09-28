@@ -8,6 +8,7 @@ import { askLaya } from '../laya/gate.js';
 import { runPine } from '../pine/runner.js';
 import { floorTime } from '../data/timeframes.js';
 import { tfToMs } from '../pine/util.js';
+import { notifyAlert } from '../notify/index.js';
 
 const EXPIRY_CHECK_MS = 15000;
 const DRAWING_TTL_MS = 5000;
@@ -17,13 +18,14 @@ const EVERY_TIME_COOLDOWN_MS = 1000;
 export class AlertEngine {
   /**
    * @param {object} ctx  server ctx (§11)
-   * @param {object} [deps] test seams: { runPine, askLaya, now }
+   * @param {object} [deps] test seams: { runPine, askLaya, now, notify }
    */
   constructor(ctx, deps = {}) {
     this.ctx = ctx;
     this.log = ctx.log || console;
     this.runPine = deps.runPine || runPine;
     this.askLaya = deps.askLaya || askLaya;
+    this.notify = deps.notify || notifyAlert;
     this.now = deps.now || (() => Date.now());
     /** @type {Map<string, object>} id -> alert (active only) */
     this.alerts = new Map();
@@ -340,6 +342,7 @@ export class AlertEngine {
         this.log.error?.({ err: err.message }, 'alert engine: could not persist event (broadcasting anyway)');
       }
       this._broadcast({ type: 'alert', event: stored });
+      this._notify(stored);
       const cur = this.alerts.get(alert.id) || alert;
       const updated = {
         ...cur,
@@ -384,6 +387,16 @@ export class AlertEngine {
   checkExpiry() {
     const now = this.now();
     for (const a of [...this.alerts.values()]) this._expired(a, now);
+  }
+
+  /** Web Push / Telegram: fire-and-forget, a failure never blocks or cancels the alert. */
+  _notify(event) {
+    try {
+      const p = Promise.resolve(this.notify(event)).catch((err) => this.log.warn?.({ err: err?.message }, 'alert engine: notification failed'));
+      this._track(p);
+    } catch (err) {
+      this.log.warn?.({ err: err?.message }, 'alert engine: notification failed');
+    }
   }
 
   _broadcast(msg) {
