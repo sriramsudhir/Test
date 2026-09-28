@@ -147,6 +147,39 @@ If Laya is unavailable, alerts still fire, and the event is marked with `laya: {
   this device" in the app. Set `VAPID_SUBJECT` to a `mailto:` address.
 - **Telegram**: set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`.
 
+## Testing
+
+```bash
+npm test                 # server unit tests (offline, fixtures only)
+npm run e2e              # end-to-end: real server + fake exchange + Chromium
+npm run e2e -- --prod    # the same against the production build (run `npm run build` first)
+npm run e2e:fake         # just the fake Delta Exchange (REST + WS on :8790) and fake laya-serve (:8791)
+```
+
+`npm run e2e` (`web/test/e2e/run.mjs`) needs no network access. It:
+
+1. starts a local fake Delta Exchange (`web/test/e2e/fake-delta.mjs`) and a fake `laya-serve`
+   (`web/test/e2e/fake-laya.mjs`) on free ports,
+2. runs the real `npm run backfill -- --symbols delta:BTCUSD --days 30 --tf all` against the fake into a temporary
+   database,
+3. boots the real server (`npm run dev`, or `npm start` with `--prod`) with `AUTH_PASSWORD=test123`,
+   `AGENT_DRIVER=off` and `LAYA_MODE=http`,
+4. drives Chromium through login, live candles, every timeframe kind (native, derived 12h/1W/1M, seconds), footprint,
+   symbol search, a Pine library indicator, the Pine Editor, a Strategy Tester backtest, a Laya-rejected and a
+   Laya-approved alert that fires end to end, drawings surviving a reload, the 4-chart layout and bar replay with
+   paper trading. It fails on any console or page error.
+
+Screenshots are written to `web/test/screenshots/e2e-*.png`. Options: `--only backfill,login,alert-laya-fire` runs a subset of steps (names as printed),
+`E2E_KEEP=1` leaves the server and fakes running afterwards. Playwright is not a project dependency: install it with
+`npm i -g playwright && npx playwright install chromium` (or point `PLAYWRIGHT_BROWSERS_PATH` at existing browsers).
+
+The fake exchange serves a deterministic year of 1m history for BTCUSD, ETHUSD and SOLUSD (plus XRP/BNB/DOGE), builds
+every other resolution from it, and streams random-walk trades several times per second over Delta's WebSocket
+protocol (`candlestick_*`, `all_trades`). Test control endpoints: `POST /control/price {symbol, price, pause?}` prints
+a trade at a forced price, `POST /control/pause {paused}` freezes the walk, `GET /control/state`. The fake Laya answers
+`POST /v1/systemone` and takes `POST /control/laya {p}` to set the decision probability. To point a normal server at
+them: `DELTA_REST=http://127.0.0.1:8790 DELTA_WS=ws://127.0.0.1:8790 LAYA_MODE=http LAYA_URL=http://127.0.0.1:8791`.
+
 ## Architecture
 
 ```

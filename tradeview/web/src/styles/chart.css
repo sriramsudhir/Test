@@ -398,7 +398,7 @@
 .tv-rb-play { color: var(--tv-text-strong); }
 .tv-rb-flat { padding: 0 10px; border: 1px solid var(--tv-border-strong); height: 28px; }
 .tv-rb-exit:hover { color: var(--tv-sell) !important; }
-.tv-rb-speed, .tv-rb-date, .tv-rb-qty, .tv-input {
+.tv-rb-speed, .tv-rb-date, .tv-input {
   height: 28px;
   padding: 0 6px;
   border: 1px solid var(--tv-border-strong);
@@ -409,9 +409,8 @@
   outline: none;
   color-scheme: dark;
 }
-.tv-rb-speed:focus, .tv-rb-date:focus, .tv-rb-qty:focus, .tv-input:focus { border-color: var(--tv-accent); }
+.tv-rb-speed:focus, .tv-rb-date:focus, .tv-input:focus { border-color: var(--tv-accent); }
 .tv-rb-date { width: 168px; }
-.tv-rb-qty { width: 70px; }
 .tv-rb-time { color: var(--tv-muted); font-variant-numeric: tabular-nums; padding: 0 4px; }
 .tv-rb-trade {
   height: 30px;
@@ -432,10 +431,6 @@
 .tv-rb-buy:hover { background: #1e53e5; }
 .tv-rb-sell { background: var(--tv-sell); }
 .tv-rb-sell:hover { background: #e0303f; }
-.tv-rb-pos { padding: 0 6px; color: var(--tv-text); font-variant-numeric: tabular-nums; }
-.tv-rb-pnl { display: inline-flex; gap: 12px; color: var(--tv-muted); font-variant-numeric: tabular-nums; }
-.tv-rb-pnl b { font-weight: 600; }
-.tv-rb-pnl small { font-size: 11px; }
 .tv-rb-hint { color: var(--tv-text); }
 .tv-rb-scissors { color: var(--tv-accent); display: inline-flex; }
 .tv-rb-flash .tv-rb-hint { color: var(--tv-warn); }

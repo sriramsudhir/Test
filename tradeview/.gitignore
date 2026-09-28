@@ -1,8 +1,10 @@
 node_modules/
 dist/
-data/
+/data/
 *.db
 *.db-*
 .env
 web/test/screenshots/
 .next/
+# The service worker must be committed (the parent repo ignores sw.* swap files).
+!/web/public/sw.js

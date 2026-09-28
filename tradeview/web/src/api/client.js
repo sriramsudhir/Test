@@ -290,7 +290,9 @@ class Socket extends Emitter {
   async _checkAuth() {
     try {
       const res = await fetch('/api/auth/me', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
-      if (res.status === 401) {
+      // The server answers 200 { authenticated:false } when the cookie is missing/expired (older builds used 401).
+      const data = res.ok ? await res.json().catch(() => null) : null;
+      if (res.status === 401 || (data && data.authenticated === false)) {
         this.pause();
         notifyUnauthorized('/ws');
       }

@@ -73,6 +73,7 @@ export class ReplayTradingPanel {
     const r = this.replay;
     this.fills = r && Array.isArray(r.fills) ? r.fills.slice().reverse() : [];
     this.state = r && typeof r.snapshot === 'function' ? r.snapshot() : {};
+    this.syncQty();
     if (r && typeof r.on === 'function') {
       const sub = (ev, fn) => { const off = r.on(ev, fn); if (typeof off === 'function') this.offs.push(off); else this.offs.push(() => r.off?.(ev, fn)); };
       sub('tick', (t) => { this.lastTick = t; this.renderStatus(); this.renderPositions(); this.renderPnl(); });
@@ -86,6 +87,11 @@ export class ReplayTradingPanel {
       });
     }
     this.render();
+  }
+
+  /** The chart's replay bar has quick Buy/Sell buttons that trade this panel's quantity. */
+  syncQty() {
+    if (this.replay && this.qty > 0) this.replay.defaultQty = this.qty;
   }
 
   // ---------------------------------------------------------------- state helpers
@@ -184,7 +190,7 @@ export class ReplayTradingPanel {
     clear(this.tradeEl);
     const active = this.isActive();
     const qty = h('input.input.num', { type: 'number', min: 0, step: 'any', value: String(this.qty), title: 'Order quantity' });
-    qty.addEventListener('input', () => { this.qty = Number(qty.value) || 0; save('replay.qty', this.qty); });
+    qty.addEventListener('input', () => { this.qty = Number(qty.value) || 0; save('replay.qty', this.qty); this.syncQty(); });
     const act = (fn, label) => () => {
       if (!this.replay) return;
       if (!this.isActive()) { toast('Start bar replay first', 'warn'); return; }

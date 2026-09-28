@@ -193,6 +193,15 @@ export class DeltaRest {
         lastErr = new DeltaError(`Delta ${path} failed (HTTP ${res.status}): ${errorText(body, text)}`, {
           status: res.status, code: body?.error?.code,
         });
+        // A JSON error from Delta itself (e.g. invalid_symbol) means the API is reachable: it must not mark the
+        // provider as down. Proxy/HTML errors and 5xx still count as failures.
+        if (body && body.success === false && res.status < 500) {
+          this.stats.errors++;
+          this.stats.lastOk = Date.now();
+          this.stats.consecutiveFailures = 0;
+          this.stats.lastError = { t: Date.now(), message: lastErr.message };
+          throw lastErr;
+        }
         break;
       }
       this.stats.lastOk = Date.now();

@@ -36,6 +36,14 @@ export function listLibrary() {
   return loadLibrary().map(({ source, ...meta }) => meta);
 }
 
+/** Short ids used by the web indicator catalog and the agent, mapped to library file ids. */
+export const LIBRARY_ALIASES = Object.freeze({
+  bb: 'bollinger', bbands: 'bollinger', stoch: 'stochastic', psar: 'parabolic_sar', sar: 'parabolic_sar',
+  adx: 'adx_dmi', dmi: 'adx_dmi', willr: 'williams_r',
+});
+
 export function getLibraryEntry(id) {
-  return loadLibrary().find((e) => e.id === id) || null;
+  const key = String(id ?? '').trim().toLowerCase().replace(/\.pine$/, '');
+  const lib = loadLibrary();
+  return lib.find((e) => e.id === key) || lib.find((e) => e.id === LIBRARY_ALIASES[key]) || null;
 }

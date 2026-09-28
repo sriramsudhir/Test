@@ -43,6 +43,9 @@ export class StatusBar {
     app.hub.on('active', () => this.renderChart());
     app.hub.on('symbol', () => this.renderChart());
     app.hub.on('tf', () => this.renderChart());
+    // A chart created by a layout change may become active before its symbol is set: refresh when it has loaded.
+    app.hub.on('loaded', ({ chart }) => { if (chart === app.hub.active) this.renderChart(); });
+    app.hub.on('charttype', () => this.renderChart());
 
     this.renderSocket();
     this.renderBybit();
@@ -82,9 +85,15 @@ export class StatusBar {
       if (v == null) return;
       this.feeds[k] = typeof v === 'object' ? (v.state || v.status || (v.connected ? 'connected' : v.ok === false ? 'down' : 'unknown')) : String(v);
     };
-    if (m.providers && typeof m.providers === 'object') for (const [k, v] of Object.entries(m.providers)) set(k, v);
+    // The /ws status message carries the per-provider stream state in `providers`; its top-level `bybit` field is
+    // the OVERALL feed state (name kept from §5), so it only counts when no per-provider map is present.
+    // /api/health has per-provider `delta` / `bybit` (REST + stream) and no `providers`.
+    if (m.providers && typeof m.providers === 'object') {
+      for (const [k, v] of Object.entries(m.providers)) set(k, v);
+    } else {
+      set('bybit', m.bybit);
+    }
     if (m.provider && (m.state || m.status)) set(m.provider, m.state || m.status);
-    set('bybit', m.bybit);
     set('delta', m.delta);
   }
 
@@ -93,9 +102,9 @@ export class StatusBar {
     const names = { delta: 'Delta', bybit: 'Bybit' };
     const tips = [];
     for (const [k, b] of Object.entries(this.feeds)) {
-      const cls = b === 'connected' || b === 'ok' ? 'ok' : b === 'reconnecting' || b === 'degraded' || b === 'connecting' ? 'warn' : b === 'unknown' || b === 'off' || b === 'disabled' ? 'idle' : 'bad';
+      const cls = b === 'connected' || b === 'ok' ? 'ok' : b === 'reconnecting' || b === 'degraded' || b === 'connecting' ? 'warn' : b === 'unknown' || b === 'off' || b === 'disabled' || b === 'idle' ? 'idle' : 'bad';
       add(this.bybitEl, h('span.feed', this.dot(cls), names[k] || k));
-      tips.push(`${names[k] || k}: ${b === 'down' ? 'offline (cached data)' : b}`);
+      tips.push(`${names[k] || k}: ${b === 'down' ? 'offline (cached data)' : b === 'idle' ? 'idle (not in use)' : b}`);
     }
     this.bybitEl.title = `Market data feeds\n${tips.join('\n')}`;
   }
@@ -108,10 +117,12 @@ export class StatusBar {
       if (l.error && !l.mode) { cls = 'bad'; text = 'Laya unreachable'; }
       else if (l.mode === 'off') { cls = 'idle'; text = 'Laya off'; }
       else if (l.ready) { cls = 'ok'; text = `Laya ${l.mode || ''}`.trim(); }
+      // Laya loads / connects lazily on the first gated alert: "idle" is not an error.
+      else if (l.state === 'idle' && !l.error) { cls = 'idle'; text = `Laya ${l.mode || ''} · idle`; }
       else { cls = 'warn'; text = l.loading ? 'Laya loading…' : `Laya ${l.mode || ''} not ready`; }
     }
     add(clear(this.layaEl), this.dot(cls), text);
-    this.layaEl.title = l ? `Laya decision engine\nmode: ${l.mode ?? '—'}\nmodel: ${l.model ?? '—'}${l.error ? '\n' + l.error : ''}` : 'Laya decision engine';
+    this.layaEl.title = l ? `Laya decision engine\nmode: ${l.mode ?? '—'}\nmodel: ${l.model ?? '—'}${l.state === 'idle' ? '\nstarts on the first Laya-gated alert' : ''}${l.error ? '\n' + l.error : ''}` : 'Laya decision engine';
   }
 
   renderServer() {

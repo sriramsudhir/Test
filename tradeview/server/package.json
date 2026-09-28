@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node --watch src/index.js",
+    "dev": "node --watch-path=src src/index.js",
     "start": "NODE_ENV=production node src/index.js",
     "backfill": "node scripts/backfill.js",
     "test": "node --test test/*.test.js"

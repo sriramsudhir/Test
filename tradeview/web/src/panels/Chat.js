@@ -136,6 +136,12 @@ export class ChatPanel {
     add(clear(this.agentEl), h(`span.dot.${cls}`), h('span', driver), s.model ? h('span.muted', ` · ${s.model}`) : null,
       h('span.muted', s.driver === 'off' ? ' · disabled' : s.ready ? ' · ready' : ' · not ready'));
     this.agentEl.title = `${s.driver === 'claude-code' ? 'Uses your Claude Pro/Max subscription via Claude Code on the server.' : s.driver === 'anthropic-api' ? 'Uses the Anthropic API key configured on the server.' : 'Agent driver'}${detail ? '\n' + detail : ''}\n(click to refresh)`;
+    // AGENT_DRIVER=off: nothing can answer, so lock the composer instead of letting every message fail.
+    const off = this.agentOff;
+    this.input.disabled = off;
+    this.input.placeholder = off ? 'The agent is disabled on this server' : 'Ask the agent…';
+    this.sendBtn.disabled = off && !this.streaming;
+    for (const b of this.list.querySelectorAll('.suggestion')) b.disabled = off;
     const note = this.agentNote;
     clear(note);
     note.hidden = true;
@@ -148,6 +154,11 @@ export class ChatPanel {
         ? 'Claude is not signed in on the server. Run `claude` and /login there, or set CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`).'
         : 'The agent is not ready.')));
     }
+  }
+
+  /** True when the server reports AGENT_DRIVER=off. */
+  get agentOff() {
+    return !!(this.agentStatus && this.agentStatus.driver === 'off');
   }
 
   /** Turn raw agent errors into a friendly message (usage limit, auth). */
@@ -247,7 +258,7 @@ export class ChatPanel {
         h('div.chat-welcome-icon', icon('sparkles', 28)),
         h('div.chat-welcome-title', 'TradeView agent'),
         h('div.chat-welcome-sub', 'I can read the market, draw on your charts, add indicators, run Pine backtests and set Laya-gated alerts.'),
-        h('div.suggestions', SUGGESTIONS.map((p) => h('button.suggestion', { type: 'button', onclick: () => this.send(p) }, p)))));
+        h('div.suggestions', SUGGESTIONS.map((p) => h('button.suggestion', { type: 'button', disabled: this.agentOff, onclick: () => this.send(p) }, p)))));
       return;
     }
     for (const m of this.messages) this.list.appendChild(this.renderMessage(m));
@@ -299,7 +310,7 @@ export class ChatPanel {
 
   async send(text) {
     const message = (text ?? this.input.value).trim();
-    if (!message || this.streaming) return;
+    if (!message || this.streaming || this.agentOff) return;
     if (text == null) { this.input.value = ''; this.autosize(); }
     if (!this.messages.length) clear(this.list);
 

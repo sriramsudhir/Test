@@ -59,6 +59,8 @@ async function loadSdk(loader) {
 function credentialSource(cfg = {}, env = process.env) {
   if (env.ANTHROPIC_API_KEY || cfg.anthropicApiKey) return 'ANTHROPIC_API_KEY (takes precedence over the subscription login)';
   if (env.CLAUDE_CODE_OAUTH_TOKEN || cfg.claudeCodeOauthToken) return 'CLAUDE_CODE_OAUTH_TOKEN';
+  if (env.ANTHROPIC_AUTH_TOKEN) return 'ANTHROPIC_AUTH_TOKEN';
+  if (env.CLAUDE_CODE_USE_BEDROCK === '1' || env.CLAUDE_CODE_USE_VERTEX === '1') return env.CLAUDE_CODE_USE_BEDROCK === '1' ? 'Amazon Bedrock' : 'Google Vertex AI';
   const dir = env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
   try {
     if (fs.existsSync(path.join(dir, '.credentials.json'))) return `claude CLI login (${dir})`;
@@ -106,7 +108,9 @@ export async function status(ctx, { loader } = {}) {
   if (state.limitedUntil > Date.now()) {
     return { driver: 'claude-code', ready: false, detail: `Claude usage limit reached, resets at ${fmtTime(state.limitedUntil)}`, limitedUntil: state.limitedUntil };
   }
-  if (!cred) {
+  // Credentials can also be provided in ways we cannot see (e.g. a host-managed ANTHROPIC_BASE_URL proxy): a query
+  // that already succeeded proves the driver works.
+  if (!cred && !(state.lastOkAt && (!state.lastErrorAt || state.lastOkAt > state.lastErrorAt))) {
     return {
       driver: 'claude-code', ready: false,
       detail: 'No Claude login found. Run `claude` then /login on the server, or set CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`).',
@@ -114,7 +118,7 @@ export async function status(ctx, { loader } = {}) {
   }
   return {
     driver: 'claude-code', ready: true,
-    detail: `Claude subscription via ${cred}`,
+    detail: cred ? `Claude subscription via ${cred}` : 'Claude credentials provided by the environment (last query succeeded)',
     model: ctx?.config?.claudeModel || process.env.CLAUDE_MODEL || null,
     ...(state.lastError ? { lastError: state.lastError, lastErrorAt: state.lastErrorAt } : {}),
     ...(state.lastOkAt ? { lastOkAt: state.lastOkAt } : {}),

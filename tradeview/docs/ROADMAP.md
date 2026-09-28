@@ -18,9 +18,9 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 - [x] web/ as Next.js App Router mounting existing modules; single-process server with Next handler
 
 ## Phase 2: integration
-- [ ] Wire everything; `npm run build` and `npm test` pass
-- [ ] End-to-end smoke test with a mock Bybit feed (headless browser): chart loads, agent draws, alert fires with sound
-- [ ] README complete; commit and push
+- [x] Wire everything; `npm run build` and `npm test` pass
+- [x] End-to-end smoke test with a mock Bybit feed (headless browser): chart loads, agent draws, alert fires with sound
+- [x] README complete; commit and push
 
 ## Phase 3: hardening
 - [ ] Code review pass (correctness), fix findings

@@ -482,6 +482,7 @@ export class ChartView extends Emitter {
   // ================================================================== loading
   async _load({ drawings = false } = {}) {
     const token = ++this._loadToken;
+    this._initialLoading = true;
     this._unsubscribe();
     this._candles = [];
     this._display = [];
@@ -503,6 +504,7 @@ export class ChartView extends Emitter {
       failed = e;
     }
     if (token !== this._loadToken || this._destroyed) return;
+    this._initialLoading = false;
     // merge anything that streamed in while loading
     const live = this._candles;
     this._candles = candles;
@@ -544,20 +546,30 @@ export class ChartView extends Emitter {
   }
 
   async _loadOlder() {
-    if (this._loadingOlder || this._exhausted || !this._candles.length || this.replay?.selecting) return;
+    // Not while the first page is loading: live klines may already have put a single bar into _candles.
+    if (this._loadingOlder || this._initialLoading || this._exhausted || !this._candles.length || this.replay?.selecting) return;
     this._loadingOlder = true;
     const token = this._loadToken;
     const first = this._candles[0].t;
     try {
       const res = await apiRequest(this.api, 'get', '/api/candles', { symbol: this.symbol, tf: this.tf, to: first - 1, limit: PAGE });
       if (token !== this._loadToken || this._destroyed) return;
-      const older = cleanCandles(unwrapList(res, 'candles')).filter((c) => c.t < first);
+      // Filter against the CURRENT first bar: the series may have changed while the request was in flight.
+      const curFirst = this._candles.length ? this._candles[0].t : first;
+      const older = cleanCandles(unwrapList(res, 'candles')).filter((c) => c.t < Math.min(first, curFirst));
       if (!older.length) {
         this._exhausted = true;
         return;
       }
       this._candles = older.concat(this._candles);
+      // Keep showing the same bars: LightweightCharts keeps the visible LOGICAL range (bar indices) on setData
+      // unless it is pinned to the right edge, so without this the view would jump back by the prepended bars.
+      const ts = this.chart.timeScale();
+      const lr = ts.getVisibleLogicalRange();
+      const before = this._display.length;
       this._rebuild();
+      const added = this._display.length - before;
+      if (lr && added > 0) ts.setVisibleLogicalRange({ from: lr.from + added, to: lr.to + added });
       if (this.chartType === 'footprint') this._fpEnsure();
       this.indicators.recomputeAll({ pine: true });
     } catch (e) {
@@ -1183,6 +1195,12 @@ export class ChartView extends Emitter {
     this.chart.timeScale().scrollToRealTime();
   }
 
+  /** Instant (not animated) scroll to the last bar: an animated scroll is cut short by the next setData/update. */
+  _jumpToLatest() {
+    const ts = this.chart.timeScale();
+    ts.scrollToPosition(ts.options().rightOffset ?? 8, false);
+  }
+
   setVisibleRange({ from, to }) {
     if (!this._display.length) return;
     this._applyingRange = true;
@@ -1315,15 +1333,16 @@ export class ChartView extends Emitter {
   _onReplayChange(o = {}) {
     if (o.exit) {
       this._rebuild();
-      this.chart.timeScale().scrollToRealTime();
+      this._jumpToLatest();
       this.indicators.recomputeAll({ pine: true });
     } else if (o.step === 1 && o.prevLen != null) {
       this._pushLast(o.prevLen);
       this.indicators.onReplay();
     } else {
       this._rebuild();
-      if (o.start) this.chart.timeScale().scrollToRealTime();
       this.indicators.onReplay();
+      // After the indicators are clipped to the replay bar, so the time scale ends at the replay bar.
+      if (o.start) this._jumpToLatest();
     }
     this.canvasHost.classList.toggle('tv-replay-active', !!this.replay.active);
     this._refreshLegend();

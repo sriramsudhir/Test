@@ -16,6 +16,8 @@
     "build": "npm run build -w web",
     "start": "npm run start -w server",
     "backfill": "npm run backfill -w server --",
-    "test": "npm test -w server"
+    "test": "npm test -w server",
+    "e2e:fake": "node web/test/e2e/fake-delta.mjs",
+    "e2e": "node web/test/e2e/run.mjs"
   }
 }

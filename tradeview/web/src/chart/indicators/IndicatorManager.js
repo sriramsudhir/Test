@@ -196,6 +196,11 @@ export class IndicatorManager {
   onReplay() {
     // fast path instantly, Pine debounced
     this.recomputeAll({ pine: false });
+    // Pine-only indicators have no instant path: re-render their last result clipped to the replay head so no
+    // "future" points stay on the chart (they would also stretch the time scale past the replay bar).
+    for (const rec of this.items.values()) {
+      if (rec.lastRes && !(rec.builtin && hasFastPath(rec.builtin))) this._render(rec, rec.lastRes);
+    }
     this._replayRecompute();
   }
   /** After the main series is recreated (chart type change) pane 0 series remain valid; nothing to do. */
@@ -307,9 +312,12 @@ export class IndicatorManager {
     const values = new Map();
     let rows = [];
     let lastT = -Infinity;
+    // In bar replay nothing after the replay bar may be drawn (results can come from a run on the full history).
+    const maxT = v.replay?.active && v.lastBar ? v.lastBar.t : Infinity;
     for (const d of data || []) {
       const t = toMs(d.t ?? d.time);
       if (t == null || t <= lastT) continue;
+      if (t > maxT) break;
       lastT = t;
       const val = d.value ?? d.v ?? d.y;
       rows.push({ t, value: val == null || Number.isNaN(+val) ? null : +val, color: d.color ? normalizeColor(d.color) : undefined });
@@ -335,6 +343,7 @@ export class IndicatorManager {
 
   _render(rec, res) {
     const chart = this.view.chart;
+    rec.lastRes = res;
     const overlay = res.meta?.overlay ?? rec.overlay ?? false;
     if (rec.overlay !== overlay && rec.series.size) this._clearSeries(rec);
     rec.overlay = overlay;
