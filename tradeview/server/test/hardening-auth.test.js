@@ -101,3 +101,18 @@ test('the /ws upgrade is refused without a session, also via /%77s', async () =>
     await server.stop();
   }
 });
+
+test('/api/health stays public but hides operational details from anonymous callers', async () => {
+  const server = await makeServer();
+  try {
+    const anon = (await server.app.inject({ method: 'GET', url: '/api/health' })).json();
+    assert.equal(anon.ok, true);
+    assert.equal(anon.details, undefined);
+    const login = await server.app.inject({ method: 'POST', url: '/api/auth/login', payload: { password: 'pw' } });
+    const cookie = login.headers['set-cookie'].split(';')[0];
+    const authed = (await server.app.inject({ method: 'GET', url: '/api/health', headers: { cookie } })).json();
+    assert.ok(authed.details && typeof authed.details.uptimeSec === 'number');
+  } finally {
+    await server.stop();
+  }
+});

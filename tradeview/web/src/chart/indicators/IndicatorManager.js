@@ -5,6 +5,9 @@ import { PLOT_PALETTE, withAlpha } from '../theme.js';
 import { apiRequest } from '../apiHelpers.js';
 import { uid, toMs, toSec, debounce, throttle, lowerIndex } from '../util.js';
 
+/** Bars the server evaluates per Pine run (server/src/pine/routes.js MAX_BARS). */
+export const PINE_MAX_BARS = 5000;
+
 /**
  * Indicators on a ChartView.
  *  - builtin ids → Pine source from GET /api/pine/library/:id, run through POST /api/pine/run
@@ -74,11 +77,13 @@ export class IndicatorManager {
     this._colorIdx = 0;
     this._barCloseRecompute = debounce(() => this.recomputeAll({ pine: true }), 900);
     this._replayRecompute = debounce(() => this.recomputeAll({ pine: true }), 350);
+    this._historyRecompute = debounce(() => this.recomputeAll({ pine: true }), 600);
     this._liveFast = throttle(() => this._recomputeFastLive(), 500);
   }
 
   destroy() {
     this._barCloseRecompute.cancel();
+    this._historyRecompute.cancel();
     this._replayRecompute.cancel();
     this._liveFast.cancel();
     for (const id of [...this.items.keys()]) this.remove(id, { silent: true });
@@ -180,11 +185,21 @@ export class IndicatorManager {
   }
   onDataReset() {
     this._barCloseRecompute.cancel();
+    this._historyRecompute.cancel();
     for (const rec of this.items.values()) {
       rec.mode = 'pending';
       rec.token++;
     }
     this.recomputeAll({ pine: true });
+  }
+  /**
+   * Older bars were prepended (scroll-back). Fast indicators update now; Pine runs are debounced (fast paging
+   * would fire one server run per page) and skipped once the server-side window is already full: /api/pine/run
+   * evaluates at most the newest PINE_MAX_BARS bars, so more history cannot change the result.
+   */
+  onHistoryPrepended(prevCount) {
+    this.recomputeAll({ pine: false });
+    if (prevCount < PINE_MAX_BARS) this._historyRecompute();
   }
   onBarClose() {
     this._barCloseRecompute();

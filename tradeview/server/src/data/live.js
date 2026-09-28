@@ -118,7 +118,17 @@ export class LiveHub extends EventEmitter {
     }
     this.refs.delete(rk);
     this._stop(channel, v.key, v.tf);
+    // Drop per-symbol state once nothing references the symbol any more (browsing many symbols must not
+    // accumulate state for the process lifetime).
+    if (!this._hasRefs(v.key)) this.syms.delete(v.key);
     return 0;
+  }
+
+  _hasRefs(key) {
+    const a = `trades|${key}`;
+    const b = `|${key}|`;
+    for (const rk of this.refs.keys()) if (rk === a || rk.includes(b)) return true;
+    return false;
   }
 
   refCount(channel, symbol, tf) {

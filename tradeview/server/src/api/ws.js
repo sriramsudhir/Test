@@ -173,6 +173,8 @@ export async function register(app, ctx) {
     hub.send(client, { type: 'status', bybit: st.bybit ?? 'connected', providers: st.providers });
 
     socket.on('message', (raw) => {
+      // After cleanup (error/close) a late message must not acquire LiveHub refs that nothing would release.
+      if (!hub.clients.has(client)) return;
       client.alive = true;
       let msg;
       try {

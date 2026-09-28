@@ -13,12 +13,16 @@ export { PineError } from './normalize.js';
 export const DEFAULT_TIMEOUT_MS = 15000;
 const POOL_SIZE = Math.max(1, Math.min(4, (os.availableParallelism?.() ?? os.cpus().length) - 1));
 const WORKER_URL = new URL('./worker.js', import.meta.url);
+/** Jobs waiting for a worker beyond this are refused instead of queueing without bound. */
+export const MAX_QUEUE = 64;
+/** Per-worker heap cap: a script that allocates without bound kills its worker, not the server. */
+const WORKER_HEAP_MB = 512;
 
 class PineWorker {
   constructor(pool) {
     this.pool = pool;
     this.job = null;
-    this.worker = new Worker(WORKER_URL);
+    this.worker = new Worker(WORKER_URL, { resourceLimits: { maxOldGenerationSizeMb: WORKER_HEAP_MB } });
     this.worker.unref();
     this.worker.on('message', (msg) => this._settle(msg));
     this.worker.on('error', (err) => this._crash(err));
@@ -63,7 +67,7 @@ class PineWorker {
   }
 }
 
-class PinePool {
+export class PinePool {
   constructor(size) {
     this.size = size;
     this.workers = new Set();
@@ -72,6 +76,9 @@ class PinePool {
     this.disabled = false;
   }
   exec(job, timeoutMs) {
+    if (this.queue.length >= MAX_QUEUE) {
+      return Promise.reject(new PineError('Pine engine is busy (too many queued scripts); try again shortly', { kind: 'busy' }));
+    }
     return new Promise((resolve, reject) => {
       this.queue.push({ id: ++this.seq, job, timeoutMs, resolve, reject });
       this._drain();
@@ -92,6 +99,7 @@ class PinePool {
     }
   }
   async close() {
+    for (const q of this.queue.splice(0)) q.reject(new PineError('Pine engine shut down', { kind: 'crash' }));
     const ws = [...this.workers];
     this.workers.clear();
     await Promise.all(ws.map((w) => w.worker.terminate().catch(() => {})));

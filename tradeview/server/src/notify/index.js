@@ -8,6 +8,41 @@ const KV_PUBLIC = 'vapid.publicKey';
 const KV_PRIVATE = 'vapid.privateKey';
 const PUSH_TTL_S = 3600;
 const TELEGRAM_TIMEOUT_MS = 10000;
+// A black-holed push endpoint must not leave a pending promise behind for every fired alert.
+const PUSH_TIMEOUT_MS = 15000;
+export const MAX_PUSH_SUBSCRIPTIONS = 50;
+
+/**
+ * Push endpoints are user-supplied URLs the server POSTs to on every alert: accept only https URLs to a public
+ * host (no loopback / private / link-local IP literals, no localhost or internal names), so the subscription
+ * route cannot be used to reach services inside the host's network.
+ * @returns {string|null} reason when rejected
+ */
+export function unsafePushEndpoint(endpoint) {
+  let u;
+  try {
+    u = new URL(endpoint);
+  } catch {
+    return 'subscription.endpoint is not a valid URL';
+  }
+  if (u.protocol !== 'https:') return 'subscription.endpoint must be an https URL';
+  if (endpoint.length > 2048) return 'subscription.endpoint is too long';
+  if (u.username || u.password) return 'subscription.endpoint must not contain credentials';
+  const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.$/, '');
+  if (host === 'localhost' || /\.(localhost|local|internal|lan|home|arpa)$/.test(host) || (!host.includes('.') && !host.includes(':'))) {
+    return 'subscription.endpoint must be a public host';
+  }
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    if (a === 0 || a === 10 || a === 127 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)
+      || (a === 100 && b >= 64 && b <= 127) || a >= 224) return 'subscription.endpoint must be a public host';
+  }
+  if (host.includes(':')) {
+    if (host === '::' || host === '::1' || /^(fc|fd|fe8|fe9|fea|feb)/.test(host) || host.startsWith('::ffff:')) return 'subscription.endpoint must be a public host';
+  }
+  return null;
+}
 
 // ---- repository adapters (tolerant of method naming) --------------------------------------------
 function kvGet(kv, key) {
@@ -110,7 +145,7 @@ export function createNotifier(ctx, deps = {}) {
     const body = JSON.stringify(payload);
     await Promise.all(list.map(async (sub) => {
       try {
-        await webpush.sendNotification(sub, body, { TTL: PUSH_TTL_S, urgency: 'high', topic: payload.tag.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32) || undefined });
+        await webpush.sendNotification(sub, body, { TTL: PUSH_TTL_S, urgency: 'high', timeout: PUSH_TIMEOUT_MS, topic: payload.tag.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32) || undefined });
         out.sent++;
       } catch (err) {
         if (err?.statusCode === 404 || err?.statusCode === 410) {
@@ -161,9 +196,19 @@ export function createNotifier(ctx, deps = {}) {
     /** Validate + store a PushSubscription JSON ({endpoint, keys:{p256dh, auth}}). */
     subscribe(sub) {
       if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint)) throw Object.assign(new Error('subscription.endpoint must be an https URL'), { statusCode: 400 });
-      if (!sub.keys || typeof sub.keys.p256dh !== 'string' || typeof sub.keys.auth !== 'string') throw Object.assign(new Error('subscription.keys.p256dh and keys.auth are required'), { statusCode: 400 });
+      if (!sub.keys || typeof sub.keys.p256dh !== 'string' || typeof sub.keys.auth !== 'string'
+        || sub.keys.p256dh.length > 512 || sub.keys.auth.length > 512) throw Object.assign(new Error('subscription.keys.p256dh and keys.auth are required'), { statusCode: 400 });
+      const bad = unsafePushEndpoint(sub.endpoint);
+      if (bad) throw Object.assign(new Error(bad), { statusCode: 400 });
       const clean = { endpoint: sub.endpoint, expirationTime: sub.expirationTime ?? null, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth } };
       pushSave(subs, clean);
+      // Bounded: drop the oldest subscriptions beyond the cap (each alert is pushed to every subscription).
+      try {
+        const all = pushList(subs);
+        for (const old of all.slice(0, Math.max(0, all.length - MAX_PUSH_SUBSCRIPTIONS))) if (old.endpoint !== clean.endpoint) pushDelete(subs, old.endpoint);
+      } catch {
+        /* listing unsupported */
+      }
       return clean;
     },
     unsubscribe(endpoint) {

@@ -39,6 +39,7 @@ const state = {
 
 /** In-memory cache of chat session -> SDK session id (also persisted in ctx.repos.chat as role 'meta'). */
 const sdkSessions = new Map();
+const MAX_CACHED_SESSIONS = 200;
 
 async function loadSdk(loader) {
   if (state.sdk && !loader) return state.sdk;
@@ -140,7 +141,10 @@ function findSdkSession(ctx, session) {
 
 function saveSdkSession(ctx, session, id) {
   if (!id || sdkSessions.get(session) === id) return;
+  sdkSessions.delete(session);
   sdkSessions.set(session, id);
+  // A cache over the stored 'meta' rows: bounded so client-chosen session ids cannot grow it forever.
+  while (sdkSessions.size > MAX_CACHED_SESSIONS) sdkSessions.delete(sdkSessions.keys().next().value);
   try {
     ctx.repos?.chat?.append?.(session, 'meta', { sdkSessionId: id, driver: 'claude-code' });
   } catch {

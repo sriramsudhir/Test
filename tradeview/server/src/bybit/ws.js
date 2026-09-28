@@ -45,6 +45,9 @@ export class BybitWs extends EventEmitter {
     this.reqSeq = 0;
     this.timers = { ping: null, reconnect: null, idle: null, pongWatch: null };
     this.lastMessageAt = 0;
+    // Backoff resets only after a connection stayed up this long (see delta/ws.js STABLE_MS).
+    this.stableMs = opts.stableMs ?? 30000;
+    this.openedAt = 0;
   }
 
   get connected() {
@@ -118,7 +121,7 @@ export class BybitWs extends EventEmitter {
 
   _onOpen(ws) {
     if (ws !== this.ws) return;
-    this.attempt = 0;
+    this.openedAt = Date.now();
     this.active.clear();
     this.lastMessageAt = Date.now();
     this._setStatus('connected');
@@ -176,6 +179,8 @@ export class BybitWs extends EventEmitter {
 
   _onClose(ws) {
     if (ws !== this.ws) return;
+    if (this.openedAt && Date.now() - this.openedAt >= this.stableMs) this.attempt = 0;
+    this.openedAt = 0;
     clearInterval(this.timers.ping);
     this.timers.ping = null;
     this.ws = null;

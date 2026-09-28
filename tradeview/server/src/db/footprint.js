@@ -15,6 +15,13 @@ export function createFootprintRepo(db) {
   );
   const selLast = db.prepare(`SELECT MAX(t) AS t FROM footprint WHERE symbol=? AND tf=?`);
   const selFirst = db.prepare(`SELECT MIN(t) AS t FROM footprint WHERE symbol=? AND tf=?`);
+  const delBefore = db.prepare(`DELETE FROM footprint WHERE symbol=? AND tf=? AND t < ?`);
+  // Distinct symbols via the primary key (skip-scan; a plain DISTINCT would walk every row).
+  const selSymbols = db.prepare(
+    `WITH RECURSIVE s(sym) AS (SELECT MIN(symbol) FROM footprint
+       UNION ALL SELECT (SELECT MIN(symbol) FROM footprint WHERE symbol > s.sym) FROM s WHERE s.sym IS NOT NULL)
+     SELECT sym FROM s WHERE sym IS NOT NULL`,
+  );
 
   const writeBars = db.transaction((symbol, tf, bars) => {
     let n = 0;
@@ -52,6 +59,21 @@ export function createFootprintRepo(db) {
     },
     firstTime(symbol, tf) {
       return selFirst.get(symbol, tf).t ?? null;
+    },
+    /** Symbols that have footprint rows. */
+    symbols() {
+      return selSymbols.all().map((r) => r.sym);
+    },
+    /**
+     * Delete bars older than `before`, at most `sliceMs` of history per call (keeps each statement short).
+     * @returns {{ deleted: number, done: boolean }}
+     */
+    pruneSlice(symbol, tf, before, sliceMs = 6 * 3600000) {
+      const first = selFirst.get(symbol, tf).t;
+      if (first == null || first >= before) return { deleted: 0, done: true };
+      const upTo = Math.min(before, first + sliceMs);
+      const deleted = delBefore.run(symbol, tf, upTo).changes;
+      return { deleted, done: upTo >= before };
     },
   };
 }

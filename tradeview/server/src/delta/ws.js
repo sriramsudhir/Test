@@ -15,6 +15,9 @@ import { chunk } from '../bybit/ws.js';
 const SILENCE_MS = 35000;
 const CLOSE_GRACE_MS = 3000;
 const MAX_SYMBOLS_PER_CHANNEL_MSG = 50;
+// The reconnect backoff resets only after a connection stayed up this long. Resetting on 'open' alone lets a peer
+// that accepts and immediately drops (rate limit, bad subscription, proxy) cause a reconnect every second forever.
+export const STABLE_MS = 30000;
 
 export class DeltaWs extends EventEmitter {
   /**
@@ -31,6 +34,8 @@ export class DeltaWs extends EventEmitter {
     this.maxBackoffMs = opts.maxBackoffMs ?? 30000;
     this.idleCloseMs = opts.idleCloseMs ?? 60000;
     this.checkMs = opts.checkMs ?? 1000;
+    this.stableMs = opts.stableMs ?? STABLE_MS;
+    this.openedAt = 0;
     this.now = opts.now || (() => Date.now());
     /** @type {Map<string, number>} Bybit-style topic -> refcount */
     this.refs = new Map();
@@ -113,7 +118,7 @@ export class DeltaWs extends EventEmitter {
 
   _onOpen(ws) {
     if (ws !== this.ws) return;
-    this.attempt = 0;
+    this.openedAt = this.now();
     this.lastMessageAt = this.now();
     this._setStatus('connected');
     this._raw({ type: 'enable_heartbeat' });
@@ -207,6 +212,8 @@ export class DeltaWs extends EventEmitter {
 
   _onClose(ws) {
     if (ws !== this.ws) return;
+    if (this.openedAt && this.now() - this.openedAt >= this.stableMs) this.attempt = 0;
+    this.openedAt = 0;
     clearInterval(this.timers.check);
     this.timers.check = null;
     this.ws = null;

@@ -246,7 +246,8 @@ ctx = {
   `getFootprint({symbol, tf, from, to}) -> Promise<FootprintBar[]>`, `listSymbols({group, q}) -> Promise<Symbol[]>`.
 - `LiveHub extends EventEmitter`: `acquire(channel, symbol, tf?)` / `release(channel, symbol, tf?)` (ref-counted Bybit
   subscriptions; channel = `kline|trades|footprint`), `lastPrice(symbol) -> number|undefined`.
-  Events: `'kline' ({symbol, tf, candle, closed})`, `'trades' ({symbol, trades})`, `'footprint' ({symbol, tf, bar})`,
+  Events: `'kline' ({symbol, tf, candle, closed})`, `'trades' ({symbol, trades, prevPrice})` (`prevPrice` = last price
+  before this batch, undefined for the first one), `'footprint' ({symbol, tf, bar})`,
   `'status' ({bybit})`.
 - `LayaService`: `status() -> {ready, mode, model}`, `decide(state, questions) -> Promise<{answers, usage?}|null>`
   (null when unavailable). Modes: `LAYA_MODE=local` (`@receptron/laya`, lazy dynamic import), `http` (`LAYA_URL`,

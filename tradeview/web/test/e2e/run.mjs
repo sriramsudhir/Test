@@ -525,6 +525,155 @@ async function main() {
       return `index ${s0.index} -> ${s2.index}, 1 paper trade closed`;
     });
 
+    // ---------------------------------------------------------------- hardening: XSS guards
+    await step('xss-guards', async () => {
+      const payload = 'delta:<img src=x onerror="window.__xss=1">';
+      // Agent chart commands (set_symbol) only accept symbol keys.
+      const cmd = await page.evaluate((p) => window.tradeview.layout.executeCommand({ action: 'set_symbol', symbol: p }).then(() => 'accepted', (e) => e.message), payload);
+      assert(/Invalid symbol/.test(cmd), `malicious set_symbol was not rejected: ${cmd}`);
+      assert((await chart('c.symbol')) === SYMBOL, 'symbol changed by a rejected command');
+      // Even if a bad symbol got in (old saved layout), the legend and toolbar render it as text.
+      const res = await page.evaluate(async (p) => {
+        const c = window.tradeview.layout.active;
+        const prev = c.symbol;
+        c.symbol = p;
+        c._refreshLegend();
+        window.tradeview.layout.toolbar?._renderState();
+        await new Promise((r) => setTimeout(r, 300));
+        const imgs = document.querySelectorAll('.tv-legend img, .tv-toolbar img, .tv-tb-symname img').length;
+        const text = document.querySelector('.tv-lg-sym')?.textContent || '';
+        c.symbol = prev;
+        c._refreshLegend();
+        window.tradeview.layout.toolbar?._renderState();
+        return { imgs, text, xss: window.__xss ?? null };
+      }, payload);
+      assert(res.imgs === 0 && res.xss === null, `symbol markup was rendered as HTML: ${JSON.stringify(res)}`);
+      assert(res.text.includes('<img'), `legend did not show the escaped text: ${res.text}`);
+      return 'set_symbol rejected, legend/toolbar escape symbol names';
+    });
+
+    // ---------------------------------------------------------------- hardening: deep scroll-back on 1m
+    await step('history-20k', async () => {
+      await setTf('1m', '1 minute');
+      await page.evaluate(() => window.tradeview.layout.active._jumpToLatest());
+      const reqs = [];
+      const onReq = (r) => { if (r.url().includes('/api/candles')) reqs.push(new URL(r.url()).searchParams); };
+      page.on('request', onReq);
+      const pine0 = traffic.pineRuns;
+      const pageMs = [];
+      try {
+        for (let i = 0; i < 20; i++) {
+          const n0 = await chart('c.candles.length');
+          if (n0 >= 20000) break;
+          const t0 = Date.now();
+          await page.evaluate(() => window.tradeview.layout.active.chart.timeScale().setVisibleLogicalRange({ from: 2, to: 300 }));
+          await waitChart(`c.candles.length > ${n0} && !c._loadingOlder`, 20000);
+          pageMs.push(Date.now() - t0);
+        }
+      } finally {
+        page.off('request', onReq);
+      }
+      const n = await chart('c.candles.length');
+      assert(n >= 20000, `only ${n} bars after paging`);
+      assert(reqs.length === pageMs.length, `${reqs.length} /api/candles requests for ${pageMs.length} pages (refetching?)`);
+      assert(reqs.every((q) => q.get('to') && Number(q.get('limit')) <= 2000 && !q.get('from')), `a page request was not an incremental "to=" page: ${reqs.map((q) => q.toString()).join(' | ')}`);
+      // Smoothness: pan across the loaded history and time the frames.
+      const frames = await page.evaluate(async () => {
+        const ts = window.tradeview.layout.active.chart.timeScale();
+        const deltas = [];
+        let last = performance.now();
+        for (let k = 0; k < 90; k++) {
+          ts.scrollToPosition(-k * 200, false);
+          await new Promise((r) => requestAnimationFrame(r));
+          const now = performance.now();
+          deltas.push(now - last);
+          last = now;
+        }
+        deltas.sort((a, b) => a - b);
+        return { p50: deltas[Math.floor(deltas.length / 2)], p95: deltas[Math.floor(deltas.length * 0.95)], max: deltas[deltas.length - 1] };
+      });
+      assert(frames.p95 < 120, `panning 20k bars is janky: ${JSON.stringify(frames)}`);
+      // Pine indicators are evaluated server-side on the newest 5000 bars: paging must not re-run them per page.
+      await sleep(900); // debounce window
+      const inds = await chart('c.listIndicators().filter((i) => i.status === "pine").length');
+      assert(traffic.pineRuns - pine0 <= 2 * Math.max(1, inds), `${traffic.pineRuns - pine0} Pine runs while paging ${pageMs.length} pages with ${inds} Pine indicators`);
+      const asc = await chart('c.candles.every((x, i) => i === 0 || x.t > c.candles[i - 1].t)');
+      assert(asc, 'candles not ascending after deep paging');
+      await page.evaluate(() => window.tradeview.layout.active._jumpToLatest());
+      pageMs.sort((a, b) => a - b);
+      return `${n} bars in ${pageMs.length} pages (page p50 ${pageMs[Math.floor(pageMs.length / 2)]} ms, max ${pageMs.at(-1)} ms), ${traffic.pineRuns - pine0} pine runs, pan frames p50 ${frames.p50.toFixed(1)} / p95 ${frames.p95.toFixed(1)} / max ${frames.max.toFixed(1)} ms`;
+    });
+
+    // ---------------------------------------------------------------- hardening: zoomed-out footprint
+    await step('footprint-zoomed-out', async () => {
+      await page.evaluate(() => window.tradeview.layout.active.setChartType('footprint'));
+      await waitChart(`c.chartType === 'footprint'`, 10000);
+      // Synthetic footprint for the last 3000 bars (Delta footprint only exists since recording started).
+      await page.evaluate(() => {
+        const c = window.tradeview.layout.active;
+        const bars = c.candles.slice(-3000);
+        for (const b of bars) {
+          if (c._fp.has(b.t)) continue;
+          // Worst case: a fine bucket (~800 levels per bar), as with FOOTPRINT_TICK_MULT=1 on higher timeframes.
+          const tick = Math.max((b.h - b.l) / 800, 1e-6);
+          const levels = [];
+          for (let i = 0; i < 800; i++) {
+            const p = b.l + i * tick;
+            levels.push({ p, bid: (i * 7) % 13, ask: (i * 11) % 17 });
+          }
+          const vol = levels.reduce((a, l) => a + l.bid + l.ask, 0);
+          c._fp.set(b.t, { t: b.t, levels, poc: levels[0]?.p, delta: 0, volume: vol, tick });
+        }
+        c._rebuild();
+        const proto = CanvasRenderingContext2D.prototype;
+        if (!proto.__fillTextCount) {
+          const orig = proto.fillText;
+          const origRect = proto.fillRect;
+          proto.__fillTextCount = true;
+          window.__fillText = 0;
+          window.__fillRect = 0;
+          proto.fillText = function (...a) { window.__fillText++; return orig.apply(this, a); };
+          proto.fillRect = function (...a) { window.__fillRect++; return origRect.apply(this, a); };
+        }
+      });
+      const measure = (bars) => page.evaluate(async (count) => {
+        const c = window.tradeview.layout.active;
+        const ts = c.chart.timeScale();
+        const n = c._display.length;
+        ts.setVisibleLogicalRange({ from: n - count, to: n + 2 });
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        const avgLevels = c._display.slice(-count).reduce((a, b) => a + (c._fp.get(b.t)?.levels.length || 0), 0) / count;
+        window.__fillText = 0;
+        window.__fillRect = 0;
+        const deltas = [];
+        let last = performance.now();
+        for (let k = 0; k < 30; k++) {
+          ts.scrollToPosition(-(k % 3), false);
+          await new Promise((r) => requestAnimationFrame(r));
+          const now = performance.now();
+          deltas.push(now - last);
+          last = now;
+        }
+        deltas.sort((a, b) => a - b);
+        return { count, spacing: ts.options().barSpacing, avgLevels, fillTextPerFrame: window.__fillText / 30, fillRectPerFrame: window.__fillRect / 30, p95: deltas[Math.floor(deltas.length * 0.95)] };
+      }, bars);
+      const heat = await measure(250);
+      await shot('17-footprint-zoomed-out');
+      const far = await measure(3000);
+      await page.evaluate(() => window.tradeview.layout.active.setChartType('candles'));
+      // Text per level would be ~2 x levels x bars (tens of thousands); axis labels are a few dozen.
+      for (const r of [heat, far]) {
+        assert(r.fillTextPerFrame < 300, `footprint drew text per level when zoomed out: ${JSON.stringify(r)}`);
+        assert(r.p95 < 120, `footprint frames too slow zoomed out: ${JSON.stringify(r)}`);
+      }
+      assert(heat.avgLevels >= 5, `synthetic footprint too thin: ${JSON.stringify(heat)}`);
+      assert(heat.spacing >= 3 && heat.fillRectPerFrame > heat.count * 5, `250 bars did not render heat cells: ${JSON.stringify(heat)}`);
+      // Heat rows are aggregated to pixel rows: bounded by bars x chart height, not bars x levels (200k).
+      assert(heat.fillRectPerFrame < heat.count * 300, `heat cells not aggregated: ${JSON.stringify(heat)}`);
+      const f = (r) => `${r.count} bars (${r.avgLevels.toFixed(0)} levels/bar, spacing ${r.spacing.toFixed(1)}px): ${r.fillTextPerFrame.toFixed(0)} fillText + ${r.fillRectPerFrame.toFixed(0)} fillRect/frame, p95 ${r.p95.toFixed(1)} ms`;
+      return `${f(heat)}; ${f(far)}`;
+    });
+
     // ---------------------------------------------------------------- status bar / agent off
     await step('status-and-agent', async () => {
       const text = await page.$eval('.statusbar', (e) => e.innerText.replace(/\s+/g, ' '));

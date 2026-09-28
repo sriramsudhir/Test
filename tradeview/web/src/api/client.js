@@ -252,7 +252,9 @@ class Socket extends Emitter {
       if (this.ws !== ws) return;
       opened = true;
       this._failedOpens = 0;
-      this.attempt = 0;
+      // The backoff resets only once the connection proved stable (see onclose): a server/proxy that accepts and
+      // immediately drops would otherwise be hammered every ~0.5 s.
+      this._openedAt = Date.now();
       this._setState('open');
       for (const s of this._subs.values()) {
         this._rawSend({ type: 'subscribe', channel: s.channel, symbol: s.symbol, ...(s.tf ? { tf: s.tf } : {}) });
@@ -277,6 +279,7 @@ class Socket extends Emitter {
       if (this.ws !== ws) return;
       clearInterval(this._pingTimer);
       this.ws = null;
+      if (opened && Date.now() - (this._openedAt || 0) >= 20000) this.attempt = 0;
       if (this._manualClose) { this._setState('idle'); return; }
       if (!opened && ++this._failedOpens >= 2) {
         // The upgrade was refused: check whether the session cookie is missing/expired.

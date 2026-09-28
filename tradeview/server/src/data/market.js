@@ -166,7 +166,9 @@ export class MarketData {
     const maxBars = Math.min(clampLimit(limit ?? 500), 2000);
     const fromT = Number.isFinite(from) ? from : 0;
     const tick = this.footprintTickFor(key);
-    const rows = this.repos.footprint.rows(key, tfId, { from: fromT, to: toT, maxBars: Number.isFinite(from) ? undefined : maxBars });
+    // Always bounded: the result keeps only the latest `maxBars` bars anyway, and an unbounded read of a year of
+    // 1m footprint (tens of millions of rows) would stall the server.
+    const rows = this.repos.footprint.rows(key, tfId, { from: fromT, to: toT, maxBars });
     let bars = rowsToBars(rows, tick);
 
     // Merge live accumulation (current/unpersisted bars).
@@ -234,12 +236,25 @@ export class MarketData {
     return this.instruments.list(f);
   }
 
-  /** Bring one symbol/tf up to date (used by gap filler and after WS reconnects). */
-  async refresh(key, tf) {
-    const state = this.repos.backfillState.get(key, tf);
-    const now = this.now();
-    const from = state ? state.oldest : addBars(now, tf, -(DEFAULT_LIMIT - 1));
-    await this.ensureRange(key, tf, from, now);
+  /**
+   * Bring one symbol/tf up to date with CLOSED bars (used by the gap filler and after WS reconnects). The forming
+   * bar is not fetched here: it comes from the live stream or the next chart request, so an up-to-date pair costs
+   * no REST call. Concurrent refreshes of one pair (reconnect storms) share one run.
+   */
+  refresh(key, tf) {
+    this.refreshing ??= new Map();
+    const id = `${key}|${tf}`;
+    const cur = this.refreshing.get(id);
+    if (cur) return cur;
+    const p = (async () => {
+      const state = this.repos.backfillState.get(key, tf);
+      const now = this.now();
+      const lastClosed = addBars(floorTime(now, tf), tf, -1);
+      const from = state ? state.oldest : addBars(now, tf, -(DEFAULT_LIMIT - 1));
+      await this.ensureRange(key, tf, Math.min(from, lastClosed), lastClosed);
+    })().finally(() => this.refreshing.delete(id));
+    this.refreshing.set(id, p);
+    return p;
   }
 }
 

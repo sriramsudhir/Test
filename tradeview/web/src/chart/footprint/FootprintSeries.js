@@ -84,6 +84,9 @@ export function toFootprintItem(candle, fp) {
   return item;
 }
 
+/** Pixel height of an aggregated heat row when levels are thinner than this. */
+const HEAT_ROW_PX = 2;
+
 class FootprintRenderer {
   constructor() {
     this._data = null;
@@ -160,6 +163,49 @@ class FootprintRenderer {
     maxSide ||= 1;
     maxAbsDelta ||= 1;
 
+    if (!textMode && cellH < HEAT_ROW_PX) {
+      // Zoomed out: many levels share a pixel row. Aggregate them into HEAT_ROW_PX rows so the cost per bar is
+      // bounded by its pixel height, not by its level count (thousands of sub-pixel fillRects per bar otherwise).
+      this._drawHeatRows(ctx, levels, tick, cx, cw, p2c, opt, mode, mediaSize);
+    } else {
+      this._drawLevels(ctx, levels, tick, cx, cw, cellH, textMode, p2c, opt, mode, mediaSize, maxVol, maxSide, maxAbsDelta);
+    }
+    this._drawPocAndSummary(ctx, d, levels, tick, cx, cw, cellH, textMode, xL, w, yL, p2c, opt);
+  }
+
+  _drawHeatRows(ctx, levels, tick, cx, cw, p2c, opt, mode, mediaSize) {
+    const n = levels.length;
+    // price -> y is linear unless the scale is logarithmic: check at three points and interpolate if so.
+    const p0 = levels[0].p;
+    const p1 = levels[n - 1].p + tick;
+    const y0 = p2c(p0);
+    const y1 = p2c(p1);
+    const ym = p2c((p0 + p1) / 2);
+    const linear = y0 != null && y1 != null && ym != null && Math.abs((y0 + y1) / 2 - ym) < 0.5;
+    const k = linear && p1 !== p0 ? (y1 - y0) / (p1 - p0) : 0;
+    const H = mediaSize.height;
+    const rows = new Map();
+    for (let i = 0; i < n; i++) {
+      const l = levels[i];
+      const y = linear ? y0 + (l.p + tick / 2 - p0) * k : p2c(l.p + tick / 2);
+      if (y == null || y < -HEAT_ROW_PX || y > H + HEAT_ROW_PX) continue;
+      const row = Math.floor(y / HEAT_ROW_PX);
+      let r = rows.get(row);
+      if (!r) rows.set(row, (r = { total: 0, delta: 0 }));
+      r.total += l.bid + l.ask;
+      r.delta += l.ask - l.bid;
+    }
+    let max = 0;
+    for (const r of rows.values()) if (r.total > max) max = r.total;
+    max ||= 1;
+    for (const [row, r] of rows) {
+      const intensity = r.total / max;
+      ctx.fillStyle = withAlpha(r.delta >= 0 ? opt.upColor : opt.downColor, 0.12 + 0.78 * intensity);
+      ctx.fillRect(cx, row * HEAT_ROW_PX, mode === 'profile' ? Math.max(1, cw * intensity) : cw, HEAT_ROW_PX);
+    }
+  }
+
+  _drawLevels(ctx, levels, tick, cx, cw, cellH, textMode, p2c, opt, mode, mediaSize, maxVol, maxSide, maxAbsDelta) {
     const ratio = opt.imbalanceRatio > 0 ? opt.imbalanceRatio : 3;
     const fontSize = Math.max(9, Math.min(12, Math.floor(cellH * 0.72)));
     if (textMode) {
@@ -241,6 +287,9 @@ class FootprintRenderer {
       }
     }
 
+  }
+
+  _drawPocAndSummary(ctx, d, levels, tick, cx, cw, cellH, textMode, xL, w, yL, p2c, opt) {
     // POC
     if (opt.showPoc && d.poc != null) {
       const yTop = p2c(d.poc + tick);

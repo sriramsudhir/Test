@@ -334,7 +334,7 @@ test('StreamRouter + LiveHub: delta trades and klines flow through the same hub'
   const got = [];
   hub.on('trades', (e) => got.push(e));
   delta.emit('message', { category: 'delta', topic: 'publicTrade.BTCUSD', data: [{ T: 5, S: 'Buy', v: '2', p: '100' }] });
-  assert.deepEqual(got, [{ symbol: 'delta:BTCUSD', trades: [{ t: 5, p: 100, q: 2, side: 'Buy' }] }]);
+  assert.deepEqual(got, [{ symbol: 'delta:BTCUSD', trades: [{ t: 5, p: 100, q: 2, side: 'Buy' }], prevPrice: undefined }]);
   assert.deepEqual(streams.statuses(), { delta: 'connected', bybit: 'idle' });
   hub.stop();
 });

@@ -7,7 +7,7 @@ import { dbHealthy } from '../db/index.js';
  */
 export async function register(app, ctx) {
   const started = Date.now();
-  app.get('/api/health', async () => {
+  app.get('/api/health', async (req) => {
     const db = dbHealthy(ctx.db);
     const restHealth = ctx.providers?.rest?.healthByProvider ?? { bybit: ctx.bybit?.rest?.health ?? 'unknown' };
     const live = ctx.live?.status?.() ?? {};
@@ -34,7 +34,9 @@ export async function register(app, ctx) {
       db,
       laya,
       auth: { enabled: !!ctx.auth?.enabled },
-      details: {
+      // Operational details (recorded symbols, REST stats, socket counts) only for a signed-in user: the route is
+      // public for uptime checks, so anonymous callers get the summary above.
+      ...(ctx.auth?.enabled && !ctx.auth.isAuthenticated(req) ? {} : { details: {
         rest: restHealth,
         restStats: ctx.providers?.rest?.stats ?? ctx.bybit?.rest?.stats,
         streams,
@@ -44,7 +46,7 @@ export async function register(app, ctx) {
         instrumentsSource: ctx.bybit?.instruments?.source,
         sockets: ctx.sockets?.size ?? 0,
         uptimeSec: Math.round((Date.now() - started) / 1000),
-      },
+      } }),
     };
   });
 }

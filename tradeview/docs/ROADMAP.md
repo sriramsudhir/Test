@@ -23,6 +23,6 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 - [x] README complete; commit and push
 
 ## Phase 3: hardening
-- [ ] Code review pass (correctness), fix findings
-- [ ] Performance: 1m history over 1 year per symbol (≈525k bars) loads in pages; footprint rendering at zoom-out
+- [x] Code review pass (correctness), fix findings
+- [x] Performance: 1m history over 1 year per symbol (≈525k bars) loads in pages; footprint rendering at zoom-out
 - [x] docs/DEPLOY.md: run 24/7 with pm2/systemd, HTTPS options, `claude setup-token` (no containers)

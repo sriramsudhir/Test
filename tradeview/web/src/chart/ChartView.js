@@ -54,6 +54,8 @@ export function normalizeChartType(t) {
 }
 
 const PAGE = 2000;
+/** Footprint bars per /api/footprint request (server default; each bar carries every price level). */
+const FP_PAGE = 500;
 export const DEFAULT_SYMBOL = 'delta:BTCUSD';
 
 /** Provider + market label from a symbol key prefix (§1, §13.1). */
@@ -561,6 +563,7 @@ export class ChartView extends Emitter {
         this._exhausted = true;
         return;
       }
+      const prevCount = this._candles.length;
       this._candles = older.concat(this._candles);
       // Keep showing the same bars: LightweightCharts keeps the visible LOGICAL range (bar indices) on setData
       // unless it is pinned to the right edge, so without this the view would jump back by the prepended bars.
@@ -571,7 +574,7 @@ export class ChartView extends Emitter {
       const added = this._display.length - before;
       if (lr && added > 0) ts.setVisibleLogicalRange({ from: lr.from + added, to: lr.to + added });
       if (this.chartType === 'footprint') this._fpEnsure();
-      this.indicators.recomputeAll({ pine: true });
+      this.indicators.onHistoryPrepended(prevCount);
     } catch (e) {
       console.warn('[chart] older history failed', e.message);
     } finally {
@@ -623,20 +626,30 @@ export class ChartView extends Emitter {
     from = from ?? this._candles[Math.max(0, n - 300)].t;
     const token = this._loadToken;
     this._fpPending = true;
+    this._fpInflight = true;
     try {
-      const res = await apiRequest(this.api, 'get', '/api/footprint', { symbol: this.symbol, tf: this.tf, from, to });
+      const res = await apiRequest(this.api, 'get', '/api/footprint', { symbol: this.symbol, tf: this.tf, from, to, limit: FP_PAGE });
       if (token !== this._loadToken || this._destroyed) return;
-      for (const b of unwrapList(res, 'bars')) {
+      const got = unwrapList(res, 'bars');
+      let oldest = Infinity;
+      for (const b of got) {
         const t = toMs(b.t);
-        if (t != null) this._fp.set(t, b);
+        if (t == null) continue;
+        this._fp.set(t, b);
+        if (t < oldest) oldest = t;
       }
-      this._fpLoadedFrom = Math.min(this._fpLoadedFrom, from);
+      // The server returns at most FP_PAGE bars (the newest of the range): when capped, only what was returned is
+      // covered and the next visible-range check pages further back (no holes, no unbounded requests).
+      const capped = got.length >= FP_PAGE && oldest > from;
+      this._fpLoadedFrom = Math.min(this._fpLoadedFrom, capped ? oldest : from);
+      if (capped) this._fpEnsure();
       if (this.chartType === 'footprint') this._rebuild();
       this.vpvr.invalidate();
     } catch (e) {
       console.warn('[chart] footprint load failed', e.message);
       this._fpLoadedFrom = Math.min(this._fpLoadedFrom, from);
     } finally {
+      this._fpInflight = false;
       if (token === this._loadToken) {
         this._fpPending = false;
         this._updateFpHint();
@@ -646,6 +659,10 @@ export class ChartView extends Emitter {
 
   _ensureFootprintVisible() {
     if (this.chartType !== 'footprint' || !this._display.length) return;
+    if (this._fpInflight) {
+      this._fpEnsure(); // one footprint request at a time; re-check once it lands
+      return;
+    }
     const r = this.chart.timeScale().getVisibleLogicalRange();
     if (!r) return;
     const i = clamp(Math.floor(r.from), 0, this._display.length - 1);

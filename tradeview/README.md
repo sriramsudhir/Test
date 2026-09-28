@@ -214,6 +214,9 @@ All settings are environment variables and are documented in [.env.example](.env
 | `DEFAULT_SYMBOLS` | Delta majors | watchlist and backfill default |
 | `RECORD_SYMBOLS` | = default symbols | 24/7 trade recording for footprint |
 | `TRADES_RETENTION_DAYS` | 30 | raw trade retention |
+| `FOOTPRINT_RETENTION_DAYS` | 90 | recorded 1m/3m/5m footprint retention (15m–1h kept; 0 = keep all) |
+| `ALERT_EVENTS_MAX` | 10000 | fired-alert history kept (newest first) |
+| `LAYA_GATE_TIMEOUT_MS` | 30000 | an alert waits at most this long for Laya, then fires as "Laya skipped" |
 | `AGENT_DRIVER` | claude-code | `claude-code`, `anthropic-api` or `off` |
 | `LAYA_MODE` | local | `local`, `http` or `off` |
 | `DB_PATH` | ./data/tradeview.db | SQLite file |

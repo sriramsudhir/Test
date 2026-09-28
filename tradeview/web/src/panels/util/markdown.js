@@ -15,24 +15,29 @@ function safeUrl(url) {
 /** Inline formatting on an already-escaped string. */
 function inline(s) {
   const codes = [];
+  // Generated anchor markup is held out of the string while emphasis runs: otherwise `_`/`*`/`~` in URLs or in
+  // `target="_blank"` get <em>/<strong> spliced into attribute values and tags end up mis-nested.
+  const held = [];
+  const hold = (html) => { held.push(html); return `\u0001${held.length - 1}\u0001`; };
   // Protect inline code spans first.
   s = s.replace(/`([^`\n]+)`/g, (_, c) => { codes.push(c); return `\u0000${codes.length - 1}\u0000`; });
   // Links [text](url)
   s = s.replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g, (m, text, url) => {
     const u = safeUrl(url);
-    return u ? `<a href="${u}" target="_blank" rel="noopener noreferrer">${text}</a>` : text;
+    return u ? `${hold(`<a href="${u}" target="_blank" rel="noopener noreferrer">`)}${text}${hold('</a>')}` : text;
   });
   // Bare URLs (not already inside an href attribute or anchor text)
-  s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, (m, pre, url) => {
+  s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)\u0001]+)/g, (m, pre, url) => {
     const u = safeUrl(url);
-    return u ? `${pre}<a href="${u}" target="_blank" rel="noopener noreferrer">${url}</a>` : m;
+    return u ? `${pre}${hold(`<a href="${u}" target="_blank" rel="noopener noreferrer">${url}</a>`)}` : m;
   });
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
   s = s.replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g, '$1<em>$2</em>');
   s = s.replace(/(^|[^_\w])_([^_\n]+)_(?!\w)/g, '$1<em>$2</em>');
   s = s.replace(/~~([^~\n]+)~~/g, '<del>$1</del>');
-  s = s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${codes[Number(i)]}</code>`);
+  s = s.replace(/\u0000(\d+)\u0000/g, (_, i) => `<code>${codes[Number(i)] ?? ''}</code>`);
+  s = s.replace(/\u0001(\d+)\u0001/g, (_, i) => held[Number(i)] ?? '');
   return s;
 }
 
@@ -45,7 +50,8 @@ const splitRow = (line) => {
 };
 
 export function renderMarkdown(src) {
-  const lines = escapeHtml(String(src ?? '')).replace(/\r\n?/g, '\n').split('\n');
+  // \u0000 / \u0001 are placeholder markers in inline(): never accept them from the input.
+  const lines = escapeHtml(String(src ?? '').replace(/[\u0000\u0001]/g, '')).replace(/\r\n?/g, '\n').split('\n');
   const out = [];
   let i = 0;
   let para = [];

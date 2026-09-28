@@ -87,6 +87,15 @@ const config = {
   recordSymbols: list('RECORD_SYMBOLS', defaultSymbols),
   /** Raw recorded trades older than this are pruned. */
   tradesRetentionDays: int('TRADES_RETENTION_DAYS', 30),
+  /**
+   * Recorded footprint bars on the fine timeframes (1m, 3m, 5m) older than this are pruned (0 = keep forever).
+   * 15m..1h footprint is always kept. A year of 1m footprint is roughly 1 GB per actively traded symbol.
+   */
+  footprintRetentionDays: int('FOOTPRINT_RETENTION_DAYS', 90),
+  /** Fired-alert history keeps the newest N events. */
+  alertEventsMax: int('ALERT_EVENTS_MAX', 10000),
+  /** Max time the Laya gate may take before an alert fires anyway (marked laya.skipped). */
+  layaGateTimeoutMs: int('LAYA_GATE_TIMEOUT_MS', 30000),
   backfillDays: int('BACKFILL_DAYS', 365),
   /** 'auto' or a positive integer multiplier applied to tickSize for footprint buckets. */
   footprintTickMult: str('FOOTPRINT_TICK_MULT', 'auto'),
@@ -150,6 +159,8 @@ Object.assign(config, {
   DEFAULT_SYMBOLS: config.defaultSymbols,
   RECORD_SYMBOLS: config.recordSymbols,
   TRADES_RETENTION_DAYS: config.tradesRetentionDays,
+  FOOTPRINT_RETENTION_DAYS: config.footprintRetentionDays,
+  ALERT_EVENTS_MAX: config.alertEventsMax,
   BACKFILL_DAYS: config.backfillDays,
   FOOTPRINT_TICK_MULT: config.footprintTickMult,
   CLAUDE_MODEL: config.claudeModel,

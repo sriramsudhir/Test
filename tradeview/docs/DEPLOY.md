@@ -9,7 +9,8 @@ stays on: a small VPS, a home server or an always-on PC. No Docker is needed.
 - Linux, macOS or Windows with **Node.js 20+** (22 LTS recommended).
 - **4 GB RAM** or more if you use Laya locally (the model needs about 2 GB), 1 GB otherwise.
 - About 5 GB of disk: the Laya model is about 1.7 GB, plus the SQLite database (a year of 1m candles for 6 symbols is a few hundred MB, and recorded
-  trades grow with `TRADES_RETENTION_DAYS`).
+  trades grow with `TRADES_RETENTION_DAYS`). Recorded 1m/3m/5m footprint is the largest table (roughly 1 GB per actively traded symbol and year),
+  so it is pruned after `FOOTPRINT_RETENTION_DAYS` (default 90); 15m–1h footprint is kept. Pruning runs hourly in small batches.
 - If you are in India and use Delta India, host the machine in a region where Delta India's API is reachable.
 
 ## 2. Install
@@ -111,6 +112,8 @@ Browsers only allow push notifications and service workers over HTTPS (or on loc
 - or **Cloudflare Tunnel** (`cloudflared tunnel --url http://localhost:3000`) with no open ports at all.
 
 Set `TRUST_PROXY=true` in `.env` when behind a proxy, so secure cookies and client IPs work.
+Large API responses are gzip-compressed by the server itself, so the proxy does not need to compress `/api`.
+`/api/health` stays public for uptime checks but only returns operational details to a signed-in browser.
 
 ## 8. Alerts reaching you when no tab is open
 

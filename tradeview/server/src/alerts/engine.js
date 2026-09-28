@@ -102,7 +102,6 @@ export class AlertEngine {
       Promise.allSettled([...this.pending]),
       new Promise((resolve) => {
         timer = setTimeout(resolve, this.stopWaitMs);
-        timer.unref?.();
       }),
     ]);
     clearTimeout(timer);
@@ -195,9 +194,10 @@ export class AlertEngine {
       s = { prev: undefined, prevT: undefined, prevClose: undefined, lastFiredAt: 0, lastFiredBar: undefined, rejectedBar: undefined, busy: false };
       // Runtime state is not persisted: seed the trigger gate from the stored alert so a restart (or a reload)
       // does not fire once_per_bar again in a bar that already fired, or bypass the every_time cooldown.
+      // ('once' is excluded: a triggered once-alert that is active again was re-armed by the user.)
       const a = this.alerts.get(id);
       const last = Number(a?.lastTriggered);
-      if (Number.isFinite(last) && last > 0) {
+      if (a && a.trigger !== 'once' && Number.isFinite(last) && last > 0) {
         s.lastFiredAt = Math.min(last, this.now());
         s.lastFiredBar = this._barTime(last, a.tf);
       }
@@ -357,7 +357,6 @@ export class AlertEngine {
             }),
             new Promise((resolve) => {
               deadline = setTimeout(() => resolve({ skipped: true, reason: `laya timed out after ${this.layaDeadlineMs} ms` }), this.layaDeadlineMs);
-              deadline.unref?.();
             }),
           ]);
         } catch (err) {

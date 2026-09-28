@@ -5,6 +5,8 @@
 //   node src/index.js --no-web   API only (or WEB=off)
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
+import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import Fastify from 'fastify';
 import websocket from '@fastify/websocket';
@@ -25,6 +27,26 @@ import * as wsRoutes from './api/ws.js';
 import { createSocketHub } from './api/ws.js';
 
 const SRC_DIR = path.dirname(fileURLToPath(import.meta.url));
+const gzip = promisify(zlib.gzip);
+/** JSON responses at least this large are gzipped when the client accepts it (candle pages shrink ~9x). */
+export const COMPRESS_MIN_BYTES = 8 * 1024;
+
+/**
+ * onSend hook: gzip large JSON API responses. Streams / hijacked replies (SSE chat, Next.js) are not touched.
+ * No dependency: node:zlib on the libuv threadpool, level 4 (about 1 ms for a 2000-bar page).
+ */
+export async function compressJson(req, reply, payload) {
+  if (payload == null || reply.getHeader('content-encoding')) return payload;
+  if (typeof payload !== 'string' && !Buffer.isBuffer(payload)) return payload;
+  if (Buffer.byteLength(payload) < COMPRESS_MIN_BYTES) return payload;
+  if (!/json/i.test(String(reply.getHeader('content-type') || ''))) return payload;
+  if (!/\bgzip\b/i.test(String(req.headers['accept-encoding'] || ''))) return payload;
+  const out = await gzip(payload, { level: 4 });
+  reply.header('content-encoding', 'gzip');
+  reply.header('vary', 'accept-encoding');
+  reply.removeHeader('content-length');
+  return out;
+}
 
 /** Other teams' route modules, registered when present (guarded so the server boots without them). */
 const OPTIONAL_ROUTES = [
@@ -203,6 +225,8 @@ export async function buildServer(opts = {}) {
     if (mod) await registerRoutes(app, ctx, rel, mod);
   }
 
+  app.addHook('onSend', compressJson);
+
   app.setErrorHandler((err, req, reply) => {
     const status = err.statusCode && err.statusCode >= 400 ? err.statusCode : 500;
     if (status >= 500) req.log.error({ err }, 'request failed');
@@ -281,11 +305,12 @@ export async function buildServer(opts = {}) {
     }
   };
 
+  const background = new AbortController();
   const startBackground = () => {
     instruments.load().catch((err) => log.warn(`instrument load failed: ${err.message}`));
     if (opts.record !== false) recorder.start(cfg.recordSymbols);
     if (cfg.gapfillOnStart && opts.gapfill !== false) {
-      runGapfill(ctx).catch((err) => log.warn(`gapfill failed: ${err.message}`));
+      runGapfill(ctx, { signal: background.signal }).catch((err) => log.warn(`gapfill failed: ${err.message}`));
     }
   };
 
@@ -293,6 +318,7 @@ export async function buildServer(opts = {}) {
   const stop = async () => {
     if (closing) return closing;
     closing = (async () => {
+      background.abort(); // stop the startup gap-fill before the DB closes
       for (const e of engines.reverse()) {
         try {
           await e.owner.stop?.();
@@ -308,6 +334,12 @@ export async function buildServer(opts = {}) {
       recorder.stop();
       live.stop();
       await app.close();
+      try {
+        const { closePinePool } = await import('./pine/runner.js');
+        await closePinePool();
+      } catch {
+        /* pine module unavailable */
+      }
       try {
         await web?.close();
       } catch {
