@@ -337,3 +337,27 @@ ctx = {
   pattern and `requireInteraction: true`, a "Enable push alerts on this device" button, PWA `manifest.webmanifest`.
 - Deployment files (lead does these at integration): Dockerfile, docker-compose.yml (app + Caddy auto-HTTPS), systemd/pm2
   alternative, volume for SQLite + Laya cache, docs/DEPLOY.md.
+
+## 14. Change set 3 — Next.js, single process, no containers (supersedes §0 layout, §12 bootstrap and §13.3 deployment files)
+
+- `web/` is a **Next.js 16 App Router** app (plain JS, `.js`/`.jsx`, no TypeScript), React 19. The existing framework-agnostic
+  modules in `web/src/**` (chart, layout, replay, panels, api, audio) are kept as-is and mounted from React:
+  - `web/app/layout.jsx` (html/body, metadata, manifest link, global CSS imports: `../src/styles/*.css`),
+  - `web/app/page.jsx` = `'use client'` component that on mount does `const { mountApp } = await import('../src/main.js')`
+    and calls `mountApp(rootEl)`; returns a cleanup. No SSR of chart code (everything touching window/canvas loads in effects).
+  - `web/next.config.mjs`: `reactStrictMode: false` (avoid double mount of imperative charts), `output` default,
+    transpile `lightweight-charts`/`monaco-editor` if needed. Monaco: load via dynamic `import('monaco-editor')` in the browser
+    only, with workers created by `new Worker(new URL('monaco-editor/esm/vs/editor/editor.worker.js', import.meta.url), {type:'module'})`
+    in `self.MonacoEnvironment.getWorker`; import Monaco CSS in layout if required. If Monaco cannot be bundled cleanly, fall back
+    to loading it from `https://cdn.jsdelivr.net/npm/monaco-editor@0.57.0/min/vs` via its AMD loader.
+  - `web/public/*` (sw.js, manifest, icons) served by Next as static files.
+  - `web/index.html` and `web/vite.config.js` are removed (vite stays only as a devDependency for `web/test` demo pages).
+- **One process, one port** (`PORT`, default 3000): `server/src/index.js` creates Fastify AND the Next request handler
+  (`import next from 'next'; const nextApp = next({ dev: !production, dir: <abs path to web> }); await nextApp.prepare();
+  const handle = nextApp.getRequestHandler();`) and registers a catch-all `app.all('/*')` (after all /api and /ws routes) that
+  does `reply.hijack(); handle(req.raw, reply.raw)`. WebSocket upgrades for `/ws` go to @fastify/websocket; other upgrade
+  requests (Next dev HMR `/_next/webpack-hmr`) must be passed to `nextApp.getUpgradeHandler()` in dev. Same-origin means
+  no CORS and the auth cookie just works.
+- Scripts: root `npm run dev` → server in dev (Next dev inside), `npm run build` → `next build` in web, `npm start` →
+  production server (serves the built Next app). No Docker/Caddy. 24/7 hosting = `pm2 start npm --name tradeview -- start`
+  (or systemd) on the user's machine/VPS, documented in docs/DEPLOY.md.

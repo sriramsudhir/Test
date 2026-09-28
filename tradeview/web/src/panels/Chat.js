@@ -79,11 +79,15 @@ export class ChatPanel {
     this.input = h('textarea.chat-input', { rows: 1, placeholder: 'Ask the agent… (Enter to send, Shift+Enter for newline)' });
     this.sendBtn = h('button.chat-send', { type: 'button', title: 'Send' }, icon('send', 18));
     this.ctxChip = h('div.chat-context');
+    this.agentEl = h('button.agent-status', { type: 'button', title: 'Agent status (click to refresh)', onclick: () => this.loadStatus() });
+    this.agentNote = h('div.agent-note', { hidden: true });
     el.append(
       h('div.panel-header', h('div.chat-head-title', icon('sparkles', 16), this.titleEl),
         h('div.panel-actions',
           iconButton('history', 'Conversations', (e) => this.sessionMenu(e.currentTarget)),
           iconButton('plus', 'New chat', () => this.newSession(true)))),
+      h('div.agent-bar', this.agentEl),
+      this.agentNote,
       this.list,
       h('div.chat-compose', this.ctxChip, h('div.chat-input-row', this.input, this.sendBtn)));
 
@@ -101,6 +105,59 @@ export class ChatPanel {
     app.hub.on('tf', () => this.renderContext());
     this.renderAll();
     this.renderContext();
+    this.agentStatus = null;
+    this.loadStatus();
+    setInterval(() => this.loadStatus(), 60000);
+  }
+
+  // ------------------------------------------------------------------ agent status (§13.2)
+
+  async loadStatus() {
+    try {
+      this.agentStatus = await this.api.get('/api/agent/status');
+    } catch (err) {
+      this.agentStatus = { driver: null, ready: false, detail: err.status === 404 ? 'Agent status unavailable' : `Server unreachable: ${err.message}` };
+    }
+    this.renderStatus();
+  }
+
+  renderStatus() {
+    const s = this.agentStatus || {};
+    const names = { 'claude-code': 'Claude subscription', 'anthropic-api': 'Anthropic API', off: 'Agent off' };
+    const driver = names[s.driver] || s.driver || 'Agent';
+    const cls = s.driver === 'off' ? 'idle' : s.ready ? 'ok' : 'warn';
+    const detail = typeof s.detail === 'string' ? s.detail : s.detail ? JSON.stringify(s.detail) : '';
+    clear(this.agentEl).append(h(`span.dot.${cls}`), h('span', driver), s.model ? h('span.muted', ` · ${s.model}`) : null,
+      h('span.muted', s.driver === 'off' ? ' · disabled' : s.ready ? ' · ready' : ' · not ready'));
+    this.agentEl.title = `${s.driver === 'claude-code' ? 'Uses your Claude Pro/Max subscription via Claude Code on the server.' : s.driver === 'anthropic-api' ? 'Uses the Anthropic API key configured on the server.' : 'Agent driver'}${detail ? '\n' + detail : ''}\n(click to refresh)`;
+    const note = this.agentNote;
+    clear(note);
+    note.hidden = true;
+    if (s.driver === 'off') {
+      note.hidden = false;
+      note.append(icon('warn', 14), h('span', 'The agent is disabled on the server (AGENT_DRIVER=off). Charts, alerts and Laya keep working.'));
+    } else if (s.driver && !s.ready) {
+      note.hidden = false;
+      note.append(icon('warn', 14), h('span', detail || (s.driver === 'claude-code'
+        ? 'Claude is not signed in on the server. Run `claude` and /login there, or set CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`).'
+        : 'The agent is not ready.')));
+    }
+  }
+
+  /** Turn raw agent errors into a friendly message (usage limit, auth). */
+  friendlyError(message) {
+    const m = String(message || '');
+    if (/usage limit|limit reached|rate.?limit|too many requests|\b429\b|quota/i.test(m)) {
+      const reset = /resets?\s*(at|in|on)?\s*([^.;\n]+)/i.exec(m);
+      const epoch = /\|(\d{10})\b/.exec(m); // Claude Code format: "Claude AI usage limit reached|<unix seconds>"
+      const when = reset ? ` — resets ${reset[1] || 'at'} ${reset[2].trim()}`
+        : epoch ? ` — resets at ${new Date(Number(epoch[1]) * 1000).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
+      return { kind: 'limit', text: `Claude usage limit reached${when}. Charts, alerts and Laya keep working; try the agent again later.` };
+    }
+    if (/not (logged|signed) in|authenticat|oauth|invalid api key|401|login/i.test(m)) {
+      return { kind: 'auth', text: `Claude is not signed in on the server. Run \`claude\` → /login on the server or set CLAUDE_CODE_OAUTH_TOKEN. (${m})` };
+    }
+    return { kind: 'error', text: m || 'The agent reported an error' };
   }
 
   // ------------------------------------------------------------------ sessions
@@ -217,7 +274,7 @@ export class ChatPanel {
           p.state === 'running' ? h('span.spinner') : icon(p.state === 'error' ? 'warn' : 'check', 13),
           h('span', p.label + (p.state === 'running' ? '…' : ''))));
       } else if (p.kind === 'error') {
-        body.appendChild(h('div.msg-error', icon('warn', 14), h('span', p.text)));
+        body.appendChild(h(`div.msg-error${p.variant && p.variant !== 'error' ? '.' + p.variant : ''}`, icon(p.variant === 'limit' ? 'clock' : 'warn', 14), h('span', p.text)));
       }
     }
     if (m.streaming && !m.parts.length) body.appendChild(h('div.typing', h('span'), h('span'), h('span')));
@@ -299,9 +356,15 @@ export class ChatPanel {
           if (evt.result) this.app.showBacktestResult?.(evt.result, evt.request);
           break;
         }
-        case 'error':
+        case 'error': {
           finishChips();
-          asst.parts.push({ kind: 'error', text: evt.message || 'The agent reported an error' });
+          const f = this.friendlyError(evt.message);
+          asst.parts.push({ kind: 'error', text: f.text, variant: f.kind });
+          if (f.kind !== 'error') this.loadStatus();
+          break;
+        }
+        case 'status':
+          if (evt.status) { this.agentStatus = evt.status; this.renderStatus(); }
           break;
         case 'done':
           finishChips();
@@ -318,7 +381,8 @@ export class ChatPanel {
       if (err && err.name === 'AbortError') {
         asst.parts.push({ kind: 'error', text: 'Stopped.' });
       } else {
-        asst.parts.push({ kind: 'error', text: `Request failed: ${err.message}` });
+        const f = this.friendlyError(err.message);
+        asst.parts.push({ kind: 'error', text: f.kind === 'error' ? `Request failed: ${err.message}` : f.text, variant: f.kind });
       }
     } finally {
       finishChips();

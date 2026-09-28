@@ -47,8 +47,8 @@ export function validateAlert(input, { existing, createdBy, defaultThreshold = 0
     if (input.sound) a.sound = { ...(existing.sound || {}), ...input.sound };
   }
 
-  if (typeof a.symbol !== 'string' || !/^(spot|linear|inverse):[A-Z0-9]+$/.test(a.symbol)) {
-    throw new ValidationError('symbol must be a key like "linear:BTCUSDT"');
+  if (typeof a.symbol !== 'string' || !/^(delta|spot|linear|inverse):[A-Z0-9_.-]+$/i.test(a.symbol)) {
+    throw new ValidationError('symbol must be a key like "delta:BTCUSD" or "linear:BTCUSDT"');
   }
   a.tf = a.tf ?? '1m';
   if (!isTf(a.tf)) throw new ValidationError(`tf '${a.tf}' is not a valid timeframe`);

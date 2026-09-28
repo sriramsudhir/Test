@@ -3,7 +3,7 @@
 import { createChart, AreaSeries, HistogramSeries, LineSeries, ColorType, LineStyle } from 'lightweight-charts';
 import { h, clear, icon } from './util/dom.js';
 import { toast } from './util/dialog.js';
-import { formatNum, formatPct, formatPrice, formatDateTime, formatSigned, splitKey, TIMEFRAMES, toDateInput, toMs } from './util/fmt.js';
+import { formatNum, formatPct, formatPrice, formatDateTime, formatSigned, splitKey, TIMEFRAMES, toDateInput, toMs, DEFAULT_SYMBOL } from './util/fmt.js';
 import { chartState } from './util/chartHub.js';
 import { load, save } from './util/store.js';
 import { symbolInfo } from './SymbolSearch.js';
@@ -67,7 +67,7 @@ export class StrategyTesterPanel {
       strategy: saved.strategy || 'builtin:ema_cross',
       params: saved.params || {},
       sync: saved.sync !== false,
-      symbol: saved.symbol || 'linear:BTCUSDT',
+      symbol: saved.symbol || DEFAULT_SYMBOL,
       tf: saved.tf || '1h',
       from: toDateInput(now - 182 * 86400000),
       to: toDateInput(now),

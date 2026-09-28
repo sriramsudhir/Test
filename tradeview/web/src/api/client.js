@@ -30,8 +30,46 @@ function buildUrl(path, params) {
   return url;
 }
 
+class Emitter {
+  constructor() { this._handlers = new Map(); }
+  on(type, fn) {
+    if (!this._handlers.has(type)) this._handlers.set(type, new Set());
+    this._handlers.get(type).add(fn);
+    return () => this.off(type, fn);
+  }
+  once(type, fn) {
+    const off = this.on(type, (...a) => { off(); fn(...a); });
+    return off;
+  }
+  off(type, fn) {
+    const set = this._handlers.get(type);
+    if (set) set.delete(fn);
+  }
+  emit(type, ...args) {
+    const set = this._handlers.get(type);
+    if (!set) return;
+    for (const fn of [...set]) {
+      try { fn(...args); } catch (err) { console.error(`[socket] handler for "${type}" failed`, err); }
+    }
+  }
+}
+
+/**
+ * Auth events (§13.3): auth.on('unauthorized', fn) fires when any /api call (other than /api/auth/*) returns 401
+ * or the WebSocket is rejected; the shell shows the login screen. auth.on('login', fn) after a successful login.
+ */
+export const auth = new Emitter();
+let unauthorizedAt = 0;
+function notifyUnauthorized(path) {
+  if (String(path).includes('/api/auth/') || String(path).startsWith('/auth/')) return;
+  const now = Date.now();
+  if (now - unauthorizedAt < 1000) return;
+  unauthorizedAt = now;
+  auth.emit('unauthorized', { path });
+}
+
 async function request(method, path, { params, body, signal, headers } = {}) {
-  const init = { method, headers: { Accept: 'application/json', ...(headers || {}) }, signal };
+  const init = { method, headers: { Accept: 'application/json', ...(headers || {}) }, signal, credentials: 'same-origin' };
   if (body !== undefined) {
     init.headers['Content-Type'] = 'application/json';
     init.body = JSON.stringify(body);
@@ -48,6 +86,7 @@ async function request(method, path, { params, body, signal, headers } = {}) {
   if (text) {
     try { data = JSON.parse(text); } catch { data = text; }
   }
+  if (res.status === 401) notifyUnauthorized(path);
   if (!res.ok) {
     const msg = (data && typeof data === 'object' && (data.error || data.message)) || res.statusText || `HTTP ${res.status}`;
     throw new ApiError(typeof msg === 'string' ? msg : JSON.stringify(msg), res.status, data);
@@ -129,11 +168,13 @@ export const api = {
         headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
         body: JSON.stringify(body ?? {}),
         signal: opts.signal,
+        credentials: 'same-origin',
       });
     } catch (err) {
       if (err && err.name === 'AbortError') throw err;
       throw new ApiError(`Network error: ${err && err.message ? err.message : err}`, 0, null);
     }
+    if (res.status === 401) notifyUnauthorized(path);
     if (!res.ok) {
       let data = null;
       try { data = await res.json(); } catch { /* not json */ }
@@ -155,30 +196,6 @@ export const api = {
 // Socket
 // ---------------------------------------------------------------------------------------------
 
-class Emitter {
-  constructor() { this._handlers = new Map(); }
-  on(type, fn) {
-    if (!this._handlers.has(type)) this._handlers.set(type, new Set());
-    this._handlers.get(type).add(fn);
-    return () => this.off(type, fn);
-  }
-  once(type, fn) {
-    const off = this.on(type, (...a) => { off(); fn(...a); });
-    return off;
-  }
-  off(type, fn) {
-    const set = this._handlers.get(type);
-    if (set) set.delete(fn);
-  }
-  emit(type, ...args) {
-    const set = this._handlers.get(type);
-    if (!set) return;
-    for (const fn of [...set]) {
-      try { fn(...args); } catch (err) { console.error(`[socket] handler for "${type}" failed`, err); }
-    }
-  }
-}
-
 const subKey = (channel, symbol, tf) => `${channel}|${symbol || ''}|${tf || ''}`;
 
 class Socket extends Emitter {
@@ -196,6 +213,8 @@ class Socket extends Emitter {
     this._reconnectTimer = null;
     this._pingTimer = null;
     this._manualClose = false;
+    this._paused = false;
+    this._failedOpens = 0;
     this.url = null;
   }
 
@@ -215,7 +234,7 @@ class Socket extends Emitter {
   connect(url) {
     if (url) this.url = url;
     if (this.ws && (this.ws.readyState === 0 || this.ws.readyState === 1)) return this;
-    if (typeof WebSocket === 'undefined') return this;
+    if (typeof WebSocket === 'undefined' || this._paused) return this;
     this._manualClose = false;
     clearTimeout(this._reconnectTimer);
     this._setState(this.attempt > 0 ? 'reconnecting' : 'connecting');
@@ -228,8 +247,11 @@ class Socket extends Emitter {
       return this;
     }
     this.ws = ws;
+    let opened = false;
     ws.onopen = () => {
       if (this.ws !== ws) return;
+      opened = true;
+      this._failedOpens = 0;
       this.attempt = 0;
       this._setState('open');
       for (const s of this._subs.values()) {
@@ -256,12 +278,42 @@ class Socket extends Emitter {
       clearInterval(this._pingTimer);
       this.ws = null;
       if (this._manualClose) { this._setState('idle'); return; }
+      if (!opened && ++this._failedOpens >= 2) {
+        // The upgrade was refused: check whether the session cookie is missing/expired.
+        this._checkAuth();
+      }
       this._scheduleReconnect();
     };
     return this;
   }
 
+  async _checkAuth() {
+    try {
+      const res = await fetch('/api/auth/me', { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+      if (res.status === 401) {
+        this.pause();
+        notifyUnauthorized('/ws');
+      }
+    } catch { /* server unreachable: keep retrying */ }
+  }
+
+  /** Stop reconnecting (e.g. while logged out). */
+  pause() {
+    this._paused = true;
+    clearTimeout(this._reconnectTimer);
+    this._setState('idle');
+  }
+
+  /** Resume after pause() (e.g. after login). */
+  resume() {
+    this._paused = false;
+    this._failedOpens = 0;
+    this.attempt = 0;
+    this.reconnect();
+  }
+
   _scheduleReconnect() {
+    if (this._paused) return;
     this.attempt += 1;
     this._setState('reconnecting');
     const base = Math.min(15000, 500 * 2 ** Math.min(this.attempt - 1, 5));
@@ -349,4 +401,4 @@ if (typeof window !== 'undefined') {
   window.addEventListener('online', () => { if (!socket.connected) socket.reconnect(); });
 }
 
-export default { api, socket };
+export default { api, socket, auth };

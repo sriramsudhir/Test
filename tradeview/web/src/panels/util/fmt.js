@@ -84,8 +84,25 @@ export function splitKey(key) {
 }
 
 export function categoryLabel(cat) {
-  return { linear: 'PERP', inverse: 'INV', spot: 'SPOT' }[cat] || String(cat || '').toUpperCase();
+  return {
+    linear: 'PERP', inverse: 'INV', spot: 'SPOT', delta: 'DELTA',
+    perpetual_futures: 'PERP', futures: 'FUT', call_options: 'CALL', put_options: 'PUT', move_options: 'MOVE',
+  }[cat] || String(cat || '').toUpperCase();
 }
+
+/** Market-data provider for a symbol key (§13.1): `delta:*` -> 'delta', Bybit categories -> 'bybit'. */
+export function providerOf(key) {
+  const { category } = splitKey(key);
+  return category === 'delta' ? 'delta' : 'bybit';
+}
+
+/** Short badge text for a symbol key, e.g. 'DELTA' or 'PERP' / 'SPOT' for Bybit. */
+export function symbolTag(key) {
+  const { category } = splitKey(key);
+  return category === 'delta' ? 'DELTA' : categoryLabel(category);
+}
+
+export const DEFAULT_SYMBOL = 'delta:BTCUSD';
 
 export const TIMEFRAMES = ['1s', '5s', '15s', '30s', '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1D', '1W', '1M'];
 

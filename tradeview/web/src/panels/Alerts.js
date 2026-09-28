@@ -1,11 +1,12 @@
 // Alerts panel: list/create/edit/delete alerts (§6), alert lines on charts, drag-to-move alert lines.
 import { h, clear, icon, iconButton } from './util/dom.js';
 import { openDialog, toast, confirmDialog, popupMenu } from './util/dialog.js';
-import { formatPrice, formatDateTime, formatTimeAgo, splitKey, categoryLabel, TIMEFRAMES, toDateTimeInput } from './util/fmt.js';
+import { formatPrice, formatDateTime, formatTimeAgo, splitKey, categoryLabel, TIMEFRAMES, toDateTimeInput, DEFAULT_SYMBOL } from './util/fmt.js';
 import { chartState, chartDrawings } from './util/chartHub.js';
 import { alarm, ALARM_PRESETS } from '../audio/alarm.js';
 import { symbolInfo } from './SymbolSearch.js';
 import { load, save } from './util/store.js';
+import { pushSupport, enablePush, disablePush, currentSubscription } from './util/push.js';
 
 export const PRICE_OPS = [
   { id: 'crosses', label: 'Crossing' },
@@ -65,14 +66,17 @@ export class AlertsPanel {
     el.classList.add('panel', 'alerts-panel');
     this.tabs = h('div.tabs.tabs-sm');
     this.list = h('div.panel-body.alert-list');
+    this.pushEl = h('div.push-row');
     el.append(
       h('div.panel-header',
         h('div.panel-title', 'Alerts'),
         h('div.panel-actions',
           iconButton('refresh', 'Reload alerts', () => this.load()),
           h('button.btn.btn-primary.btn-sm', { type: 'button', title: 'Create alert (Alt+A)', onclick: () => this.createAtCrosshair() }, icon('plus', 14), 'Create'))),
+      this.pushEl,
       this.tabs,
       this.list);
+    this.renderPush();
 
     socket.on('alert_update', (m) => { if (m.alert) this.upsert(m.alert); });
     socket.on('alert', (m) => {
@@ -114,6 +118,45 @@ export class AlertsPanel {
 
     this.renderTabs();
     this.load();
+  }
+
+  // ------------------------------------------------------------------ web push (§13.3)
+
+  async renderPush(busy = false) {
+    const el = this.pushEl;
+    const sup = pushSupport();
+    const sub = sup.supported ? await currentSubscription() : null;
+    clear(el);
+    if (busy) {
+      el.append(h('span.spinner'), h('span.muted', 'Setting up push alerts…'));
+      return;
+    }
+    if (!sup.supported) {
+      el.classList.add('muted-row');
+      el.append(icon('bell', 14), h('span.push-text', sup.reason));
+      return;
+    }
+    el.classList.remove('muted-row');
+    if (sub && Notification.permission === 'granted') {
+      el.append(icon('check', 14, 'ok'), h('span.push-text', 'Push alerts are on for this device — alerts reach you even with the tab closed.'),
+        h('button.btn.btn-ghost.btn-xs', { type: 'button', onclick: async () => {
+          const r = await disablePush(this.api);
+          toast(r.message, r.ok ? 'info' : 'error');
+          this.renderPush();
+        } }, 'Disable'));
+      return;
+    }
+    if (sup.permission === 'denied') {
+      el.append(icon('warn', 14), h('span.push-text', 'Notifications are blocked for this site. Allow them in the site settings to get push alerts.'));
+      return;
+    }
+    el.append(
+      h('button.btn.btn-sm.push-btn', { type: 'button', onclick: async () => {
+        this.renderPush(true);
+        const r = await enablePush(this.api);
+        toast(r.message, r.ok ? 'success' : 'warn', r.ok ? 3000 : 8000);
+        this.renderPush();
+      } }, icon('bell', 14), 'Enable push alerts on this device'));
   }
 
   // ------------------------------------------------------------------ data
@@ -270,7 +313,7 @@ export class AlertsPanel {
     const lastSound = load('alerts.lastSound', { preset: 'siren', volume: 0.9, repeat: 5, loop: true });
     const cond = base.condition || { kind: 'price', op: 'crosses', value: defaults.price ?? '' };
     const st = {
-      symbol: base.symbol || defaults.symbol || 'linear:BTCUSDT',
+      symbol: base.symbol || defaults.symbol || DEFAULT_SYMBOL,
       tf: base.tf || defaults.tf || '1h',
       kind: cond.kind || 'price',
       op: cond.op || 'crosses',

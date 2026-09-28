@@ -18,7 +18,7 @@ const STRATEGY_IDS = [...listStrategies().map((s) => s.id), ...listLibrary().fil
 
 const SYMBOL = {
   type: 'string',
-  description: 'Symbol key "{category}:{SYMBOL}", category is spot | linear | inverse. Example: "linear:BTCUSDT" (USDT perpetual), "spot:ETHUSDT".',
+  description: 'Symbol key "{provider/category}:{SYMBOL}". Delta Exchange (default provider): "delta:BTCUSD", "delta:ETHUSD". Bybit: "linear:BTCUSDT" (USDT perpetual), "spot:ETHUSDT", "inverse:BTCUSD".',
 };
 const TF = { type: 'string', enum: TIMEFRAME_IDS, description: 'Timeframe id. Minutes: 1m..30m, hours: 1h..12h, 1D day, 1W week, 1M month; 1s..30s are live-only second charts.' };
 const TIME_MS = (what) => ({ type: 'integer', description: `${what} as a unix timestamp in MILLISECONDS UTC (e.g. 1735689600000 = 2025-01-01T00:00:00Z).` });

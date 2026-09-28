@@ -1,13 +1,16 @@
 // Chat routes (§7): POST /api/chat streams server-sent events
 //   data: {"type":"text","delta":"..."} | {"type":"tool",name,input} | {"type":"chart_command",command}
 //       | {"type":"alert_created",alert} | {"type":"done"} | {"type":"error",message}
-// plus GET /api/chat/history?session= and DELETE /api/chat/:session.
-import { runChat, agentConfigured } from './loop.js';
+// plus GET /api/chat/history?session=, DELETE /api/chat/:session and GET /api/agent/status (§13.2).
+import { runChat, agentStatus } from './loop.js';
+import { forgetSession } from './drivers/claudeCode.js';
 
 const HEARTBEAT_MS = 15000;
 const MAX_MESSAGE_CHARS = 20000;
 
 export async function register(app, ctx) {
+  app.get('/api/agent/status', async () => agentStatus(ctx));
+
   app.post('/api/chat', async (req, reply) => {
     const b = req.body || {};
     const session = typeof b.session === 'string' && b.session.trim() ? b.session.trim().slice(0, 200) : null;
@@ -74,13 +77,16 @@ export async function register(app, ctx) {
         const text = blocks.filter((x) => x.type === 'text').map((x) => x.text).join('');
         const tools = blocks.filter((x) => x.type === 'tool_use').map((x) => ({ name: x.name, input: x.input }));
         if (text || tools.length) messages.push({ role: 'assistant', text, tools, t: r.t });
+      } else if (r.role === 'tool_calls' && Array.isArray(r.content)) {
+        messages.push({ role: 'assistant', text: '', tools: r.content, t: r.t });
       }
     }
-    return { session, configured: agentConfigured(ctx), messages };
+    return { session, agent: await agentStatus(ctx), messages };
   });
 
   app.delete('/api/chat/:session', async (req) => {
     const n = ctx.repos?.chat?.clear?.(req.params.session) ?? 0;
+    forgetSession(req.params.session);
     return { ok: true, deleted: n };
   });
 }

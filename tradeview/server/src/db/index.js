@@ -9,7 +9,9 @@ import { createAlertsRepo } from './alerts.js';
 import { createAlertEventsRepo } from './alertEvents.js';
 import { createDrawingsRepo } from './drawings.js';
 import { createChatRepo } from './chat.js';
-import { createMetaRepo } from './meta.js';
+import { createKvRepo, createMetaRepo } from './kv.js';
+import { createPushRepo } from './push.js';
+import { createTradesRepo } from './trades.js';
 
 export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS candles(
@@ -34,10 +36,18 @@ CREATE INDEX IF NOT EXISTS drawings_symbol ON drawings(symbol);
 CREATE TABLE IF NOT EXISTS chat_messages(
   id INTEGER PRIMARY KEY AUTOINCREMENT, session TEXT, role TEXT, json TEXT, t INTEGER);
 CREATE INDEX IF NOT EXISTS chat_messages_session ON chat_messages(session, id);
--- Additive helper table (not in the core contract): small key/value cache, e.g. the instrument list
--- so symbols are still listed when Bybit is unreachable.
-CREATE TABLE IF NOT EXISTS meta(
-  key TEXT PRIMARY KEY, json TEXT, t INTEGER);
+-- §13.3: generic key/value store (VAPID keys, caches such as the instrument list, session secret).
+CREATE TABLE IF NOT EXISTS kv(
+  key TEXT PRIMARY KEY, value TEXT);
+-- §13.3: Web Push subscriptions.
+CREATE TABLE IF NOT EXISTS push_subscriptions(
+  endpoint TEXT PRIMARY KEY, json TEXT);
+-- §13.1: raw live trades recorded 24/7 for RECORD_SYMBOLS (pruned after TRADES_RETENTION_DAYS).
+-- side: 1 = Buy (aggressive buyer), -1 = Sell.
+CREATE TABLE IF NOT EXISTS trades(
+  symbol TEXT NOT NULL, t INTEGER NOT NULL, p REAL NOT NULL, q REAL NOT NULL, side INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS trades_symbol_t ON trades(symbol, t);
+CREATE INDEX IF NOT EXISTS trades_t ON trades(t);
 `;
 
 /**
@@ -71,6 +81,10 @@ export function createRepos(db) {
     alertEvents: createAlertEventsRepo(db),
     drawings: createDrawingsRepo(db),
     chat: createChatRepo(db),
+    kv: createKvRepo(db),
+    push: createPushRepo(db),
+    trades: createTradesRepo(db),
+    // JSON helper over kv (used for caches: instrument list, turnover ranking, footprint tick sizes).
     meta: createMetaRepo(db),
   };
 }

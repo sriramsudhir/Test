@@ -1,0 +1,22 @@
+{
+  "name": "TradeView",
+  "short_name": "TradeView",
+  "description": "Self-hosted charting, Pine Script, Laya-gated alerts and a Claude trading agent.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#131722",
+  "theme_color": "#131722",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Alerts", "url": "/?panel=alerts", "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "Agent", "url": "/?panel=chat", "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }] }
+  ]
+}

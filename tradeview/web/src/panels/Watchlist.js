@@ -7,7 +7,8 @@ import { symbolInfo } from './SymbolSearch.js';
 import { chartState } from './util/chartHub.js';
 
 const DEFAULT_GROUPS = [
-  { name: 'Crypto', collapsed: false, symbols: ['linear:BTCUSDT', 'linear:ETHUSDT', 'linear:SOLUSDT', 'linear:XRPUSDT', 'linear:DOGEUSDT', 'spot:BTCUSDT'] },
+  { name: 'Delta', collapsed: false, symbols: ['delta:BTCUSD', 'delta:ETHUSD', 'delta:SOLUSD', 'delta:XRPUSD', 'delta:DOGEUSD', 'delta:BNBUSD'] },
+  { name: 'Bybit', collapsed: false, symbols: ['linear:BTCUSDT', 'linear:ETHUSDT', 'spot:BTCUSDT'] },
   { name: 'Commodities', collapsed: false, symbols: ['linear:XAUTUSDT', 'spot:PAXGUSDT'] },
   { name: 'Forex', collapsed: false, symbols: ['spot:EURUSDT'] },
 ];
@@ -19,7 +20,7 @@ export class WatchlistPanel {
     this.api = api;
     this.socket = socket;
     this.app = app;
-    this.groups = load('watchlist', null) || structuredClone(DEFAULT_GROUPS);
+    this.groups = load('watchlist.v2', null) || structuredClone(DEFAULT_GROUPS);
     this.quotes = new Map(); // key -> { last, ref, prevLast, t }
     this.rows = new Map(); // key -> row elements
     this.subs = new Map(); // key -> unsubscribe
@@ -52,7 +53,7 @@ export class WatchlistPanel {
     this.refreshAll();
   }
 
-  persist() { save('watchlist', this.groups); }
+  persist() { save('watchlist.v2', this.groups); }
 
   allKeys() {
     return [...new Set(this.groups.flatMap((g) => g.symbols))];

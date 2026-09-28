@@ -8,7 +8,7 @@ import { h, clear, icon, debounce } from './util/dom.js';
 import { popupMenu, promptDialog, confirmDialog, toast } from './util/dialog.js';
 import { load, save } from './util/store.js';
 import { chartState } from './util/chartHub.js';
-import { formatTimeAgo } from './util/fmt.js';
+import { formatTimeAgo, DEFAULT_SYMBOL } from './util/fmt.js';
 
 if (!self.MonacoEnvironment) {
   self.MonacoEnvironment = { getWorker: () => new EditorWorker() };
@@ -174,7 +174,7 @@ export class PineEditorPanel {
     if (!source.trim()) { this.showError('The script is empty'); return null; }
     this.setStatus('Compiling…', 'busy');
     try {
-      const res = await this.api.post('/api/pine/run', { symbol: st.symbol || 'linear:BTCUSDT', tf: st.tf || '1h', source, limit: 500 });
+      const res = await this.api.post('/api/pine/run', { symbol: st.symbol || DEFAULT_SYMBOL, tf: st.tf || '1h', source, limit: 500 });
       if (res && res.error) { this.showError(res.error, res.line, res.column); return null; }
       monaco.editor.setModelMarkers(this.model, 'pine', []);
       for (const w of (res && res.warnings) || []) this.log('warn', typeof w === 'string' ? w : w.message || JSON.stringify(w));

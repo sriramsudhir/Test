@@ -4,13 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "demo:vite": "vite test"
   },
   "dependencies": {
     "lightweight-charts": "^5.2.1",
-    "monaco-editor": "^0.57.0"
+    "monaco-editor": "^0.57.0",
+    "next": "^16.3.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "vite": "^8.3.1"
