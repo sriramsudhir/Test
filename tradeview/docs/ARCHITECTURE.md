@@ -280,3 +280,60 @@ ctx = {
 - `web/src/audio/alarm.js`: `alarm.play({preset, volume, repeat, loop})`, `alarm.stop()`, `alarm.unlock()` (call on first
   user gesture), presets synthesised with WebAudio (no audio files needed): loud siren/klaxon/bell/beep.
 - Panels are plain classes `new XPanel(el, { layout, api, socket })` in `web/src/panels/`.
+
+## 13. Change set 2 (user requirements update) — supersedes earlier sections where they conflict
+
+### 13.1 Delta Exchange is the PRIMARY market-data provider (Bybit stays as a second provider)
+- Provider abstraction: `server/src/providers/{index.js,delta/,bybit/}` style (the data team may keep `bybit/` in place and add
+  `delta/` alongside); `providers/index.js` routes by symbol-key prefix.
+- Symbol keys: `delta:BTCUSD` (Delta), `linear:BTCUSDT` / `spot:BTCUSDT` (Bybit, unchanged). Default symbols and the default
+  chart symbol are Delta's (e.g. `delta:BTCUSD`, `delta:ETHUSD`, `delta:SOLUSD`, ...). `/api/symbols` returns both providers,
+  with `provider: "delta"|"bybit"` on each row, and a `provider` filter param.
+- Delta REST: base `DELTA_REST` default `https://api.india.delta.exchange` (`DELTA_REGION=india|global`; global =
+  `https://api.delta.exchange`). Public market data needs NO auth.
+  - `GET /v2/history/candles?resolution=&symbol=&start=&end=` (start/end unix SECONDS; result `{success, result:[{time(sec),open,high,low,close,volume}]}`;
+    page by time windows of <= 2000 candles; results may be unordered → sort ascending).
+    Native resolutions: 1m 3m 5m 15m 30m 1h 2h 4h 6h 1d 1w (also 7d, 30d, 2w). Derive 12h from 6h, 1M from 1d, seconds tfs from trades.
+  - `GET /v2/products` (paginated with `page_size` and `after` cursor from `meta.after`; fields `symbol`, `contract_type`
+    e.g. perpetual_futures/futures/call_options/put_options/spot, `tick_size`, `underlying_asset.symbol`, `quoting_asset.symbol`, `state`).
+    Default listing: live perpetual_futures + spot; options hidden behind a filter.
+  - `GET /v2/tickers?contract_types=perpetual_futures`, `GET /v2/trades/{symbol}`.
+  - Be defensive about field shapes (log and skip unknown rows) — the exact schemas could not be verified from this container.
+- Delta WS: `DELTA_WS` default `wss://socket.india.delta.exchange` (global `wss://socket.delta.exchange`). Subscribe:
+  `{"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]},{"name":"all_trades","symbols":["BTCUSD"]}]}}`;
+  channels `candlestick_{res}`, `all_trades`, `v2/ticker`. Heartbeat: send `{"type":"enable_heartbeat"}` and reconnect if no message for 35s.
+- Footprint for Delta: no public trade dumps exist, so the 24/7 server RECORDS live `all_trades` for every symbol in
+  `RECORD_SYMBOLS` (default = default symbols) into footprint (and a raw `trades` table, pruned after `TRADES_RETENTION_DAYS`,
+  default 30), so footprint history accumulates from first start. Bybit symbols keep the public.bybit.com dump backfill.
+- `DELTA_API_KEY` / `DELTA_API_SECRET` are optional config placeholders only (NOT needed for market data). Never log them,
+  never commit real values.
+
+### 13.2 Claude agent without an API key — Claude Code subscription driver
+- `AGENT_DRIVER=claude-code` (DEFAULT) | `anthropic-api` | `off`.
+- `claude-code` driver uses `@anthropic-ai/claude-agent-sdk` (installed) `query()` with an in-process SDK MCP server
+  (`createSdkMcpServer` + `tool()`) exposing the §7 tools; restrict built-in tools (no Bash/Edit/Write/Read/WebFetch — only our
+  MCP tools, via allowedTools / disallowedTools / tools options per the SDK typings), `permissionMode` that never blocks,
+  `maxTurns` ~12, stream partial text to the SSE. Auth comes from the user's Claude Pro/Max login: on the server either the
+  `claude` CLI has been logged in (`claude` → /login) or `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) is set.
+  If `ANTHROPIC_API_KEY` is set it takes precedence (SDK behaviour) — document it.
+- Conversation continuity: keep the SDK session id per chat session (resume option) and also store messages in ctx.repos.chat.
+- `anthropic-api` driver = the §7 Messages API loop (used only if `ANTHROPIC_API_KEY` set and `AGENT_DRIVER=anthropic-api`).
+- Usage-limit / auth errors from the subscription must surface as a clear chat error ("Claude usage limit reached, resets at …"
+  when available). Alerts NEVER depend on Claude: the alert engine + Laya keep working 24/7 even when Claude is unavailable.
+- `GET /api/agent/status` → `{ driver, ready, detail }`.
+
+### 13.3 24/7 web deployment
+- Site authentication (the app will be on the public internet): `AUTH_PASSWORD` (or `AUTH_PASSWORD_HASH` scrypt) +
+  `SESSION_SECRET`. `POST /api/auth/login {password}` → httpOnly, secure (in production), sameSite=lax signed cookie, 30d;
+  `POST /api/auth/logout`; `GET /api/auth/me`. Every `/api/*` (except auth + health) and `/ws` require the cookie. Login
+  rate-limited (5/min/IP). If AUTH_PASSWORD unset, auth disabled with a loud startup warning. Implemented in
+  `server/src/auth/` by the data team; the login page `web/src/panels/Login.js` by the shell team (main.js shows it on 401).
+- Alerts when no browser tab is open: Web Push (`web-push`, installed). Server `server/src/notify/` (intelligence team):
+  VAPID keys auto-generated on first start and stored in DB `kv(key TEXT PRIMARY KEY, value TEXT)` table (data team adds the
+  table + a `repos.kv` get/set), `GET /api/push/vapid`, `POST /api/push/subscribe`, `DELETE /api/push/subscribe`, table
+  `push_subscriptions(endpoint TEXT PRIMARY KEY, json TEXT)` (data team adds it + `repos.push`); alert engine sends a push
+  on every fired alert (urgent TTL, `requireInteraction`). Optional Telegram: `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` →
+  sendMessage on each alert. Web side (shell team): `web/public/sw.js` service worker showing the notification with vibrate
+  pattern and `requireInteraction: true`, a "Enable push alerts on this device" button, PWA `manifest.webmanifest`.
+- Deployment files (lead does these at integration): Dockerfile, docker-compose.yml (app + Caddy auto-HTTPS), systemd/pm2
+  alternative, volume for SQLite + Laya cache, docs/DEPLOY.md.
