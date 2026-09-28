@@ -50,29 +50,34 @@ export class DataWindowPanel {
     if (d.price != null) rows.push(['Crosshair', formatPrice(d.price, tick)]);
     this.body.appendChild(h('div.dw-section', h('div.dw-head', splitKey(st.symbol).symbol), ...rows.map(([k, v, cls]) => h('div.dw-row', h('span.dw-k', k), h(`span.dw-v${cls ? '.' + cls : ''}`, v)))));
 
-    // Indicator values: the crosshair payload may carry { [indicatorId|name]: number | {plot: number} }.
-    const vals = d.indicators;
-    const inds = chartIndicators(chart);
-    if (vals && typeof vals === 'object' && Object.keys(vals).length) {
-      const byId = new Map(inds.map((i) => [String(i.id), i]));
-      for (const [id, v] of Object.entries(vals)) {
-        const ind = byId.get(String(id));
-        const name = ind ? ind.title || ind.name || ind.builtin || id : id;
-        const section = h('div.dw-section', h('div.dw-head', name));
-        if (v && typeof v === 'object') {
-          for (const [plot, pv] of Object.entries(v)) section.appendChild(h('div.dw-row', h('span.dw-k', plot), h('span.dw-v', fmtVal(pv, tick))));
-        } else {
-          section.appendChild(h('div.dw-row', h('span.dw-k', 'Value'), h('span.dw-v', fmtVal(v, tick))));
+    // Indicator values at the crosshair bar (ChartView.indicators.valuesAt), else from the crosshair payload.
+    const t = d.time ?? (c && c.t);
+    let rowsInd = null;
+    try { if (t != null && chart.indicators && typeof chart.indicators.valuesAt === 'function') rowsInd = chart.indicators.valuesAt(t); } catch { /* ignore */ }
+    if (Array.isArray(rowsInd) && rowsInd.length) {
+      for (const ind of rowsInd) {
+        const section = h('div.dw-section', h('div.dw-head', ind.title || ind.id, ind.visible === false ? h('span.muted', ' (hidden)') : null));
+        for (const v of ind.values || []) {
+          const k = h('span.dw-k', v.color ? h('span.dw-swatch', { style: { background: v.color } }) : null, v.name);
+          section.appendChild(h('div.dw-row', k, h('span.dw-v', fmtVal(v.value, tick))));
         }
+        if (ind.error) section.appendChild(h('div.dw-row.error', ind.error));
         this.body.appendChild(section);
       }
-    } else if (inds.length) {
-      const section = h('div.dw-section', h('div.dw-head', 'Indicators'));
-      for (const i of inds) {
-        const v = i.values || i.last || i.value;
-        section.appendChild(h('div.dw-row', h('span.dw-k', i.title || i.name || i.builtin || i.id), h('span.dw-v', v == null ? '—' : typeof v === 'object' ? Object.values(v).map((x) => fmtVal(x, tick)).join(' / ') : fmtVal(v, tick))));
+    } else if (d.indicators && typeof d.indicators === 'object' && Object.keys(d.indicators).length) {
+      for (const [id, v] of Object.entries(d.indicators)) {
+        const section = h('div.dw-section', h('div.dw-head', id));
+        if (v && typeof v === 'object') for (const [plot, pv] of Object.entries(v)) section.appendChild(h('div.dw-row', h('span.dw-k', plot), h('span.dw-v', fmtVal(pv, tick))));
+        else section.appendChild(h('div.dw-row', h('span.dw-k', 'Value'), h('span.dw-v', fmtVal(v, tick))));
+        this.body.appendChild(section);
       }
-      this.body.appendChild(section);
+    } else {
+      const inds = chartIndicators(chart);
+      if (inds.length) {
+        const section = h('div.dw-section', h('div.dw-head', 'Indicators'));
+        for (const i of inds) section.appendChild(h('div.dw-row', h('span.dw-k', i.title || i.name || i.builtin || i.id), h('span.dw-v', '—')));
+        this.body.appendChild(section);
+      }
     }
     if (!d.time && !c) this.body.appendChild(h('div.muted.small.dw-hint', 'Move the crosshair over the chart to inspect bars.'));
   }

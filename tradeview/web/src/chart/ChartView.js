@@ -1,4 +1,3 @@
-import '../styles/chart.css';
 import {
   createChart,
   CandlestickSeries,

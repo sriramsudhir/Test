@@ -265,7 +265,7 @@ test('engine: Laya gate passes -> fires with laya result attached', async () => 
   );
   await trades(99, 101);
   assert.equal(layaCalls.length, 1);
-  assert.equal(layaCalls[0].questions.decision.question, 'Breakout holds?');
+  assert.equal(layaCalls[0].questions.decision.instructions, 'Breakout holds?');
   assert.equal(layaCalls[0].state.alert.level, 100);
   assert.equal(layaCalls[0].state.price, 101);
   const ev = ctx.repos._events[0];

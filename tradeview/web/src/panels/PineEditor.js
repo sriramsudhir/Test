@@ -1,18 +1,12 @@
 // Pine Editor panel: Monaco with Pine Script v6 highlighting, built-in library, local scripts,
 // "Add to chart" (validated via POST /api/pine/run, errors shown as line markers) and "Run backtest".
-import * as monaco from 'monaco-editor/editor.js';
-import 'monaco-editor/features/register.all.js';
-import EditorWorker from 'monaco-editor/editor/editor.worker.js?worker';
+import { loadMonaco } from './monacoLoader.js';
 import { registerPine, PINE_LANGUAGE_ID, PINE_THEME, PINE_TEMPLATES } from './pineLanguage.js';
 import { h, clear, icon, debounce } from './util/dom.js';
 import { popupMenu, promptDialog, confirmDialog, toast } from './util/dialog.js';
 import { load, save } from './util/store.js';
 import { chartState } from './util/chartHub.js';
 import { formatTimeAgo, DEFAULT_SYMBOL } from './util/fmt.js';
-
-if (!self.MonacoEnvironment) {
-  self.MonacoEnvironment = { getWorker: () => new EditorWorker() };
-}
 
 const isStrategy = (src) => /^\s*strategy\s*\(/m.test(src || '');
 const titleOf = (src) => /^\s*(?:indicator|strategy|library)\s*\(\s*(?:title\s*=\s*)?["']([^"']+)["']/m.exec(src || '')?.[1];
@@ -60,8 +54,43 @@ export class PineEditorPanel {
         this.addBtn),
       h('div.pine-main', this.host, this.console));
 
+    // Monaco loads asynchronously on first show (activate()); until then the source lives in pendingSource.
+    this.monaco = null;
+    this.editor = null;
+    this.model = null;
+    this.loading = null;
+    this.pendingSource = (current && current.source) || PINE_TEMPLATES.indicator;
+    this.host.appendChild(h('div.panel-loading', h('span.spinner.lg'), 'Loading editor…'));
+    this.autosaveDebounced = debounce(() => this.autosave(), 600);
+
+    this.addBtn.addEventListener('click', () => this.addToChart());
+    this.testBtn.addEventListener('click', () => this.runBacktest());
+    this.updateButtons();
+    this.log('info', 'Pine Script v6 · Ctrl+Enter adds the script to the active chart, Ctrl+S saves it.');
+  }
+
+  /** Load Monaco (once) and create the editor. Called when the Pine tab is shown. */
+  activate() {
+    if (this.editor) { this.layoutEditor(); return Promise.resolve(this.editor); }
+    if (!this.loading) {
+      this.loading = loadMonaco()
+        .then((monaco) => this.initEditor(monaco))
+        .catch((err) => {
+          this.loading = null;
+          clear(this.host).appendChild(h('div.empty.error', `Could not load the code editor: ${err.message}`,
+            h('button.btn.btn-sm', { type: 'button', onclick: () => this.activate() }, 'Retry')));
+          return null;
+        });
+    }
+    return this.loading;
+  }
+
+  initEditor(monaco) {
+    if (this.editor) return this.editor;
+    this.monaco = monaco;
     registerPine(monaco);
-    this.model = monaco.editor.createModel((current && current.source) || PINE_TEMPLATES.indicator, PINE_LANGUAGE_ID);
+    clear(this.host);
+    this.model = monaco.editor.createModel(this.pendingSource, PINE_LANGUAGE_ID);
     this.editor = monaco.editor.create(this.host, {
       model: this.model,
       theme: PINE_THEME,
@@ -90,27 +119,28 @@ export class PineEditorPanel {
       this.updateButtons();
       this.autosaveDebounced();
     });
-    this.autosaveDebounced = debounce(() => this.autosave(), 600);
-
-    this.addBtn.addEventListener('click', () => this.addToChart());
-    this.testBtn.addEventListener('click', () => this.runBacktest());
-    this.updateButtons();
-    this.log('info', 'Pine Script v6 · Ctrl+Enter adds the script to the active chart, Ctrl+S saves it.');
+    if (this.pendingMarker) { this.showError(...this.pendingMarker); this.pendingMarker = null; }
+    return this.editor;
   }
 
-  getSource() { return this.model.getValue(); }
+  destroy() {
+    try { this.editor?.dispose(); this.model?.dispose(); } catch { /* ignore */ }
+  }
+
+  getSource() { return this.model ? this.model.getValue() : this.pendingSource; }
 
   setSource(source, name) {
-    this.model.setValue(source || '');
+    if (this.model) this.model.setValue(source || '');
+    else this.pendingSource = source || '';
     if (name) { this.name = name; this.nameInput.value = name; }
     this.dirty = false;
     this.dirtyDot.classList.remove('on');
     this.autosave();
     this.updateButtons();
-    this.editor.focus();
+    this.editor?.focus();
   }
 
-  layoutEditor() { try { this.editor.layout(); } catch { /* ignore */ } }
+  layoutEditor() { try { this.editor?.layout(); } catch { /* ignore */ } }
 
   autosave() { save('pine.current', { name: this.name, source: this.getSource() }); }
 
@@ -131,6 +161,7 @@ export class PineEditorPanel {
     if (pos) {
       row.classList.add('clickable');
       row.addEventListener('click', () => {
+        if (!this.editor) return;
         this.editor.revealLineInCenter(pos.line);
         this.editor.setPosition({ lineNumber: pos.line, column: pos.column || 1 });
         this.editor.focus();
@@ -148,6 +179,13 @@ export class PineEditorPanel {
 
   showError(message, line, column) {
     const pos = line ? { line: Number(line), column: Number(column) || 1 } : parseErrorPosition(message);
+    const monaco = this.monaco;
+    if (!monaco || !this.model) {
+      this.pendingMarker = [message, line, column];
+      this.log('error', pos ? `Line ${pos.line}: ${message}` : String(message), pos);
+      this.setStatus('Error', 'error');
+      return;
+    }
     const markers = [];
     if (pos && pos.line >= 1 && pos.line <= this.model.getLineCount()) {
       const lineLen = this.model.getLineMaxColumn(pos.line);
@@ -176,7 +214,7 @@ export class PineEditorPanel {
     try {
       const res = await this.api.post('/api/pine/run', { symbol: st.symbol || DEFAULT_SYMBOL, tf: st.tf || '1h', source, limit: 500 });
       if (res && res.error) { this.showError(res.error, res.line, res.column); return null; }
-      monaco.editor.setModelMarkers(this.model, 'pine', []);
+      if (this.monaco && this.model) this.monaco.editor.setModelMarkers(this.model, 'pine', []);
       for (const w of (res && res.warnings) || []) this.log('warn', typeof w === 'string' ? w : w.message || JSON.stringify(w));
       return res || {};
     } catch (err) {

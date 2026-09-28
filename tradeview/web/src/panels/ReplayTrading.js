@@ -70,8 +70,9 @@ export class ReplayTradingPanel {
     this.offs = [];
     this.chart = chart || null;
     this.replay = chart ? chart.replay || null : null;
-    this.fills = [];
     const r = this.replay;
+    this.fills = r && Array.isArray(r.fills) ? r.fills.slice().reverse() : [];
+    this.state = r && typeof r.snapshot === 'function' ? r.snapshot() : {};
     if (r && typeof r.on === 'function') {
       const sub = (ev, fn) => { const off = r.on(ev, fn); if (typeof off === 'function') this.offs.push(off); else this.offs.push(() => r.off?.(ev, fn)); };
       sub('tick', (t) => { this.lastTick = t; this.renderStatus(); this.renderPositions(); this.renderPnl(); });

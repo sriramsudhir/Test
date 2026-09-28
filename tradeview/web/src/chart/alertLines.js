@@ -10,7 +10,9 @@ const COLOR = '#ff9800';
 const PAUSED = '#787b86';
 const EMPTY = Object.freeze([]);
 
-const BELL = new Path2D('M6 1.2c-2 0-3.3 1.5-3.3 3.4v2.3L1.6 8.6h8.8L9.3 6.9V4.6C9.3 2.7 8 1.2 6 1.2zM4.7 9.6a1.3 1.3 0 0 0 2.6 0z');
+const BELL_PATH = 'M6 1.2c-2 0-3.3 1.5-3.3 3.4v2.3L1.6 8.6h8.8L9.3 6.9V4.6C9.3 2.7 8 1.2 6 1.2zM4.7 9.6a1.3 1.3 0 0 0 2.6 0z';
+let _bell = null;
+const bell = () => (_bell ||= new Path2D(BELL_PATH)); // created lazily: no canvas APIs at import time
 
 class AxisLabel {
   constructor(y, text, color) {
@@ -74,7 +76,7 @@ class Renderer {
           ctx.save();
           ctx.translate(bx + 5, by + 3);
           ctx.fillStyle = '#131722';
-          ctx.fill(BELL);
+          ctx.fill(bell());
           ctx.restore();
           ctx.fillStyle = '#131722';
           ctx.textAlign = 'left';

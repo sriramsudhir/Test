@@ -6,7 +6,7 @@
 import { parseArgs } from 'node:util';
 import config from '../src/config.js';
 import { initDb } from '../src/db/index.js';
-import { BybitRest } from '../src/bybit/rest.js';
+import { createProviders } from '../src/providers/index.js';
 import { Instruments } from '../src/bybit/instruments.js';
 import { MarketData } from '../src/data/market.js';
 import { Backfiller, resolveSymbols, parseTfList } from '../src/data/backfill.js';
@@ -15,13 +15,15 @@ const HELP = `TradeView backfill
 
 Usage: npm run backfill -- [options]
 
-  --symbols <list>     Comma list: keys (linear:BTCUSDT, spot:ETHUSDT), groups (crypto, forex, commodities),
-                       top:N, or "default" (DEFAULT_SYMBOLS). Default: default
+  --symbols <list>     Comma list of: keys (delta:BTCUSD, linear:BTCUSDT, spot:ETHUSDT), "delta" (all Delta
+                       perpetuals), delta:top:N, Bybit groups (crypto, forex, commodities), top:N (Bybit),
+                       or "default" (DEFAULT_SYMBOLS, Delta majors). Default: default
   --days <n>           History depth in days. Default: ${config.backfillDays}
   --tf <all|list>      "all" (13 native Bybit timeframes) or a comma list, e.g. 1m,5m,1h,1D. Default: all
-  --footprint          Also build footprint history (1m..1h) from public.bybit.com daily trade dumps
+  --footprint          Also build footprint history (1m..1h) from public.bybit.com daily trade dumps (Bybit symbols;
+                       Delta footprint is recorded live by the server for RECORD_SYMBOLS)
   --concurrency <n>    Symbols processed in parallel (requests share one rate limiter). Default: 2
-  --rate <n>           REST requests per second. Default: RATE_LIMIT (${config.rateLimit})
+  --rate <n>           Bybit REST requests per second. Default: RATE_LIMIT (${config.rateLimit})
   --quiet              Only print per-timeframe results and the summary
   -h, --help           Show this help
 `;
@@ -67,7 +69,7 @@ async function main() {
     error: (m) => console.error(`error: ${m}`),
   };
   const { db, repos } = initDb(config.dbPath);
-  const rest = new BybitRest({ baseUrl: config.bybitRest, rateLimit: rate, log });
+  const { rest } = createProviders({ config: { ...config, rateLimit: rate }, log });
   const instruments = new Instruments({ rest, repos, log });
   const market = new MarketData({ repos, rest, instruments, log, config });
   const backfiller = new Backfiller({ repos, rest, instruments, market, config, log });
@@ -115,6 +117,9 @@ async function main() {
         case 'fp_progress':
           if (args.quiet) return;
           console.log(`  [${e.key} footprint] ${e.day} ${e.phase === 'missing' ? 'no dump' : 'ok'}  (${e.daysDone} days, ${fmtNum(e.trades)} trades)`);
+          break;
+        case 'fp_skip':
+          console.log(`  [${e.key} footprint] skipped: ${e.reason}`);
           break;
         case 'fp_done':
           console.log(`  [${e.key} footprint] done: ${e.daysDone} days, ${fmtNum(e.trades)} trades, bucket ${e.tick}`);

@@ -8,7 +8,7 @@ import { askLaya } from '../laya/gate.js';
 import { runPine } from '../pine/runner.js';
 import { floorTime } from '../data/timeframes.js';
 import { tfToMs } from '../pine/util.js';
-import { notifyAlert } from '../notify/index.js';
+import { notifyAlert, getNotifier, start as startNotifier } from '../notify/index.js';
 
 const EXPIRY_CHECK_MS = 15000;
 const DRAWING_TTL_MS = 5000;
@@ -26,6 +26,7 @@ export class AlertEngine {
     this.runPine = deps.runPine || runPine;
     this.askLaya = deps.askLaya || askLaya;
     this.notify = deps.notify || notifyAlert;
+    this.ownNotifier = !deps.notify;
     this.now = deps.now || (() => Date.now());
     /** @type {Map<string, object>} id -> alert (active only) */
     this.alerts = new Map();
@@ -43,6 +44,14 @@ export class AlertEngine {
   start() {
     if (this.running) return;
     this.running = true;
+    // Make sure Web Push / Telegram are initialised even if index.js did not start notify/ itself.
+    if (this.ownNotifier && !getNotifier()) {
+      try {
+        startNotifier(this.ctx);
+      } catch (err) {
+        this.log.warn?.({ err: err.message }, 'alert engine: notifier init failed (alerts still broadcast)');
+      }
+    }
     const live = this.ctx.live;
     live?.on?.('trades', this._onTrades);
     live?.on?.('kline', this._onKline);

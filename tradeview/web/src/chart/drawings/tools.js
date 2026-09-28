@@ -17,7 +17,12 @@ import { distToSegment, extendSegment, pointInRect, setDash, line, arrowHead, la
  */
 
 const TOL = 6;
-const measureCtx = typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null;
+let _measureCtx = null;
+/** Lazily created offscreen context for text measurement (no DOM access at import time). */
+function measureCtx() {
+  if (!_measureCtx && typeof document !== 'undefined') _measureCtx = document.createElement('canvas').getContext('2d');
+  return _measureCtx;
+}
 
 const baseStyle = (color = '#2962ff', extra = {}) => ({ color, width: 2, lineStyle: 'solid', ...extra });
 
@@ -558,9 +563,10 @@ function textBox(r) {
   const size = r.style.fontSize || 14;
   const lines = String(r.style.text || 'Text').split('\n');
   let w = 40;
-  if (measureCtx) {
-    measureCtx.font = fontOf(size);
-    w = Math.max(...lines.map((l) => measureCtx.measureText(l).width));
+  const mctx = measureCtx();
+  if (mctx) {
+    mctx.font = fontOf(size);
+    w = Math.max(...lines.map((l) => mctx.measureText(l).width));
   }
   const pad = r.style.bg ? 6 : 2;
   return { x: r.pts[0].x - pad, y: r.pts[0].y - pad, w: w + pad * 2, h: lines.length * size * 1.3 + pad * 2 - size * 0.3, pad, size, lines };

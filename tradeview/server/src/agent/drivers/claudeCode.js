@@ -56,9 +56,9 @@ async function loadSdk(loader) {
   }
 }
 
-function credentialSource(env = process.env) {
-  if (env.ANTHROPIC_API_KEY) return 'ANTHROPIC_API_KEY (takes precedence over the subscription login)';
-  if (env.CLAUDE_CODE_OAUTH_TOKEN) return 'CLAUDE_CODE_OAUTH_TOKEN';
+function credentialSource(cfg = {}, env = process.env) {
+  if (env.ANTHROPIC_API_KEY || cfg.anthropicApiKey) return 'ANTHROPIC_API_KEY (takes precedence over the subscription login)';
+  if (env.CLAUDE_CODE_OAUTH_TOKEN || cfg.claudeCodeOauthToken) return 'CLAUDE_CODE_OAUTH_TOKEN';
   const dir = env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
   try {
     if (fs.existsSync(path.join(dir, '.credentials.json'))) return `claude CLI login (${dir})`;
@@ -101,7 +101,7 @@ function recordError(msg, resetsAt) {
 /** GET /api/agent/status for this driver. */
 export async function status(ctx, { loader } = {}) {
   const sdk = await loadSdk(loader);
-  const cred = credentialSource();
+  const cred = credentialSource(ctx?.config || {});
   if (!sdk) return { driver: 'claude-code', ready: false, detail: `Claude Agent SDK unavailable: ${state.sdkError}` };
   if (state.limitedUntil > Date.now()) {
     return { driver: 'claude-code', ready: false, detail: `Claude usage limit reached, resets at ${fmtTime(state.limitedUntil)}`, limitedUntil: state.limitedUntil };

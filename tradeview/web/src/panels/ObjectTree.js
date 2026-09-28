@@ -22,6 +22,8 @@ export class ObjectTreePanel {
     this.render();
   }
 
+  destroy() { clearInterval(this.timer); }
+
   scheduleRender() {
     if (this._raf) return;
     this._raf = requestAnimationFrame(() => { this._raf = null; this.render(); });

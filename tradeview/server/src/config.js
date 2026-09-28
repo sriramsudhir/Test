@@ -53,10 +53,13 @@ const config = {
   env: str('NODE_ENV', 'development'),
   isProd: str('NODE_ENV', 'development') === 'production',
   host: str('HOST', '0.0.0.0'),
-  port: int('PORT', 8787),
+  port: int('PORT', 3000),
   logLevel: str('LOG_LEVEL', 'info'),
   rootDir: ROOT_DIR,
-  webDist: path.join(ROOT_DIR, 'web', 'dist'),
+  /** Next.js app directory (served in-process, ARCHITECTURE §14). */
+  webDir: path.join(ROOT_DIR, 'web'),
+  /** WEB=off (or --no-web) boots the API alone. */
+  webEnabled: !['off', '0', 'false'].includes(str('WEB', 'on').toLowerCase()) && !process.argv.includes('--no-web'),
   // ':memory:' is kept as is; relative paths are resolved against the tradeview/ root.
   dbPath: dbPath === ':memory:' ? dbPath : path.resolve(ROOT_DIR, dbPath),
 
@@ -98,7 +101,6 @@ const config = {
   layaUrl: str('LAYA_URL', 'http://127.0.0.1:8000').replace(/\/+$/, ''),
   layaThreshold: num('LAYA_THRESHOLD', 0.6),
 
-  corsOrigins: list('CORS_ORIGINS', ['http://localhost:5173', 'http://127.0.0.1:5173']),
   /** Fastify trustProxy. Set TRUST_PROXY=true (or hop count / CIDR list) behind a reverse proxy such as Caddy. */
   trustProxy: parseTrustProxy(env.TRUST_PROXY),
   /** Site auth is enabled when AUTH_PASSWORD or AUTH_PASSWORD_HASH is set. */

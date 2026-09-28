@@ -162,8 +162,8 @@ test('questions and decision evaluation', () => {
   const q = buildQuestions('Breakout continues?');
   assert.deepEqual(Object.keys(q), ['decision', 'direction', 'confidence']);
   assert.equal(q.decision.type, 'noul');
-  assert.deepEqual(q.direction.choices, ['bullish', 'bearish', 'neutral']);
-  assert.deepEqual(q.confidence.scale, ['low', 'medium', 'high']);
+  assert.deepEqual(Object.keys(q.direction.criteria), ['bullish', 'bearish', 'neutral']);
+  assert.deepEqual(q.confidence.criteria, ['low', 'medium', 'high']);
   assert.equal(answerProbability({ noul: 0.7 }), 0.7);
   assert.equal(answerProbability(0.3), 0.3);
   assert.equal(answerProbability({ probabilities: { true: 0.9, false: 0.1 } }), 0.9);
@@ -184,7 +184,7 @@ test('askLaya gathers candles/footprint from ctx.market and evaluates the thresh
   assert.equal(out.skipped, false);
   assert.equal(out.passed, true);
   assert.equal(out.p, 0.8);
-  assert.equal(got.questions.decision.question, 'Q?');
+  assert.equal(got.questions.decision.instructions, 'Q?');
   assert.equal(got.state.footprint.delta, -3);
   const off = await askLaya({ laya: { status: () => ({ mode: 'off' }), decide: async () => null } }, { symbol: 's', tf: '1m' });
   assert.equal(off.skipped, true);

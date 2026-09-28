@@ -67,27 +67,10 @@ export function createLayaService(ctx = {}, deps = {}) {
     return loading;
   }
 
-  /** Convert our plain question descriptors to the library's builders when it exposes them. */
-  function toLocalQuestions(questions) {
-    if (!mod) return questions;
-    const out = {};
-    for (const [name, q] of Object.entries(questions || {})) {
-      try {
-        if (q?.type === 'noul' && typeof mod.noul === 'function') out[name] = mod.noul(q.question);
-        else if (q?.type === 'choice' && typeof mod.choice === 'function') out[name] = mod.choice(q.question, q.choices);
-        else if (q?.type === 'score' && typeof mod.score === 'function') out[name] = mod.score(q.question, q.scale);
-        else out[name] = q;
-      } catch {
-        out[name] = q;
-      }
-    }
-    return out;
-  }
-
   async function decideLocal(state, questions) {
     const inst = await loadLocal();
     if (!inst) return null;
-    return withTimeout(Promise.resolve(inst.systemOne(state, toLocalQuestions(questions))), timeoutMs);
+    return withTimeout(Promise.resolve(inst.systemOne(state, questions)), timeoutMs);
   }
 
   async function decideHttp(state, questions) {

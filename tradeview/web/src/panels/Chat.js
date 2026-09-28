@@ -107,7 +107,12 @@ export class ChatPanel {
     this.renderContext();
     this.agentStatus = null;
     this.loadStatus();
-    setInterval(() => this.loadStatus(), 60000);
+    this.statusTimer = setInterval(() => this.loadStatus(), 60000);
+  }
+
+  destroy() {
+    clearInterval(this.statusTimer);
+    this.stop();
   }
 
   // ------------------------------------------------------------------ agent status (§13.2)

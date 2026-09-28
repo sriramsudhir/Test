@@ -3,6 +3,7 @@ import { getNotifier, start } from './index.js';
 
 export async function register(app, ctx) {
   const n = () => getNotifier() || start(ctx);
+  n(); // initialise VAPID keys at startup
 
   app.get('/api/push/vapid', async (req, reply) => {
     try {

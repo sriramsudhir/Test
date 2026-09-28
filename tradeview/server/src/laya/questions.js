@@ -86,20 +86,26 @@ function alertLevel(alert, px) {
 
 /**
  * The typed question set of §6:
- * { decision: noul(question), direction: choice{bullish,bearish,neutral}, confidence: score[low,medium,high] }
+ * { decision: noul, direction: choice{bullish,bearish,neutral}, confidence: score[low,medium,high] }
+ * in the Laya / Jev system_one schema ({ type, instructions, criteria }).
  */
 export function buildQuestions(question = DEFAULT_QUESTION) {
+  // Laya / Jev `system_one` question schema: { type, instructions, criteria }.
   return {
-    decision: { type: 'noul', question: question || DEFAULT_QUESTION },
+    decision: {
+      type: 'noul',
+      instructions: question || DEFAULT_QUESTION,
+      criteria: { true: 'the setup is valid and the move is likely to follow through', false: 'the setup is likely to fail or reverse' },
+    },
     direction: {
       type: 'choice',
-      question: 'What is the most likely direction of the next several bars?',
-      choices: ['bullish', 'bearish', 'neutral'],
+      instructions: 'What is the most likely direction of the next several bars?',
+      criteria: { bullish: 'price likely to rise', bearish: 'price likely to fall', neutral: 'no clear direction' },
     },
     confidence: {
       type: 'score',
-      question: 'How confident is this assessment given the data?',
-      scale: ['low', 'medium', 'high'],
+      instructions: 'How confident is this assessment given the data?',
+      criteria: ['low', 'medium', 'high'],
     },
   };
 }

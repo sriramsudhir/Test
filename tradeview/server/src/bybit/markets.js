@@ -2,7 +2,8 @@
 // Extend GROUP_RULES to reclassify instruments; first matching rule wins, default group is `crypto`.
 
 export const GROUPS = Object.freeze(['crypto', 'forex', 'commodities']);
-export const CATEGORIES = Object.freeze(['linear', 'spot', 'inverse']);
+// `delta` = Delta Exchange (primary provider, §13.1); the others are Bybit v5 categories.
+export const CATEGORIES = Object.freeze(['delta', 'linear', 'spot', 'inverse']);
 
 const FIAT = [
   'EUR', 'GBP', 'JPY', 'AUD', 'CAD', 'CHF', 'NZD', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'TRY', 'ZAR',
@@ -46,7 +47,7 @@ export function classify(inst) {
 
 /**
  * Parse a symbol key. Bare symbols default to `linear`.
- * @param {string} key e.g. "linear:BTCUSDT" or "BTCUSDT"
+ * @param {string} key e.g. "delta:BTCUSD", "linear:BTCUSDT" or "BTCUSDT"
  * @returns {{ category: string, symbol: string, key: string }}
  */
 export function parseSymbolKey(key) {

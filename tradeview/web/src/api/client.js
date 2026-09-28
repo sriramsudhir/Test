@@ -396,9 +396,8 @@ class Socket extends Emitter {
 export const socket = new Socket();
 
 if (typeof window !== 'undefined') {
-  // Connect lazily on the next tick so importers can attach handlers first.
-  queueMicrotask(() => { if (socket.state === 'idle') socket.connect(); });
-  window.addEventListener('online', () => { if (!socket.connected) socket.reconnect(); });
+  // No auto-connect: the shell connects after the auth check (socket.resume()); subscribe()/send() also connect lazily.
+  window.addEventListener('online', () => { if (!socket.connected && !socket._paused) socket.reconnect(); });
 }
 
 export default { api, socket, auth };

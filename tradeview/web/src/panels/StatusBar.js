@@ -29,7 +29,7 @@ export class StatusBar {
 
     socket.on('connection', () => this.renderSocket());
     socket.on('status', (m) => { this.mergeFeeds(m); this.renderBybit(); });
-    alarm.on('state', () => this.renderSound());
+    this.offs = [alarm.on('state', () => this.renderSound())];
     this.soundEl.addEventListener('click', async () => {
       if (alarm.playing) { alarm.stop(); return; }
       await alarm.unlock();
@@ -51,11 +51,18 @@ export class StatusBar {
     this.renderLaya();
     this.renderServer();
     this.tickClock();
-    setInterval(() => this.tickClock(), 1000);
     this.pollHealth();
     this.pollLaya();
-    setInterval(() => this.pollHealth(), 15000);
-    setInterval(() => this.pollLaya(), 30000);
+    this.timers = [
+      setInterval(() => this.tickClock(), 1000),
+      setInterval(() => this.pollHealth(), 15000),
+      setInterval(() => this.pollLaya(), 30000),
+    ];
+  }
+
+  destroy() {
+    for (const t of this.timers) clearInterval(t);
+    for (const off of this.offs) off();
   }
 
   dot(state) { return h(`span.dot.${state}`); }

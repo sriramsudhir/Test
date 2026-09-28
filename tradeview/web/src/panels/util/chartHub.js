@@ -7,12 +7,12 @@
 // hub.on('symbol'|'tf'|'price'|'drawing'|'replay'|'indicator', fn({chart, data}))
 // hub.onChart(fn(chart))                  called for every chart now and in the future; fn may return a cleanup
 
-const CHART_EVENTS = ['symbol', 'tf', 'price', 'drawing', 'replay', 'indicator', 'indicators', 'chartType', 'alertmove', 'tool'];
+const CHART_EVENTS = ['symbol', 'tf', 'price', 'drawing', 'replay', 'indicator', 'indicators', 'chartType', 'charttype', 'alertmove', 'tool', 'symbol-search', 'loaded'];
 
 /** Normalise a ChartView 'crosshair' payload into { time, price, candle, indicators, point }. */
 export function normaliseCrosshair(p) {
   if (!p || typeof p !== 'object') return { time: null, price: null, candle: null, indicators: null };
-  const candle = p.candle || p.bar || p.ohlc || p.ohlcv || (p.data && p.data.o != null ? p.data : null) || null;
+  const candle = p.candle || p.bar || p.ohlc || p.ohlcv || (p.data && p.data.o != null ? p.data : null) || (p.hover && p.hover.bar) || null;
   const c = candle
     ? {
         t: candle.t ?? candle.time ?? p.time ?? p.t ?? null,
@@ -93,7 +93,8 @@ export class ChartHub {
           } catch { /* chart does not support this event */ }
         };
         sub('crosshair', (p) => {
-          const n = normaliseCrosshair(p);
+          // ChartView keeps the hovered bar in _hoverBar; use it when the event carries no candle.
+          const n = normaliseCrosshair(p && !p.candle && chart._hoverBar ? { ...p, hover: chart._hoverBar } : p);
           this.crosshair.set(chart, n);
           this.emit('crosshair', { chart, ...n });
         });
