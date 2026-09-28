@@ -1,0 +1,11 @@
+// @category Trend
+// @description Directional Movement Index: +DI, -DI and ADX.
+//@version=6
+indicator("ADX / DMI", shorttitle="DMI", overlay=false)
+diLen = input.int(14, "DI Length", minval=1)
+adxLen = input.int(14, "ADX Smoothing", minval=1)
+[diPlus, diMinus, adx] = ta.dmi(diLen, adxLen)
+plot(adx, "ADX", color=color.red, linewidth=2)
+plot(diPlus, "+DI", color=color.blue)
+plot(diMinus, "-DI", color=color.orange)
+hline(25, "Trend", color=color.gray)

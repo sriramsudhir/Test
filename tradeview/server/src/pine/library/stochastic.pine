@@ -1,0 +1,13 @@
+// @category Momentum
+// @description Stochastic oscillator %K and %D.
+//@version=6
+indicator("Stochastic", shorttitle="Stoch", overlay=false)
+kLen = input.int(14, "%K Length", minval=1)
+kSmooth = input.int(1, "%K Smoothing", minval=1)
+dLen = input.int(3, "%D Smoothing", minval=1)
+k = ta.sma(ta.stoch(close, high, low, kLen), kSmooth)
+d = ta.sma(k, dLen)
+plot(k, "%K", color=color.blue)
+plot(d, "%D", color=color.orange)
+hline(80, "Upper", color=color.gray)
+hline(20, "Lower", color=color.gray)

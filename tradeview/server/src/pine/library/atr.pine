@@ -1,0 +1,6 @@
+// @category Volatility
+// @description Average True Range (RMA smoothed).
+//@version=6
+indicator("Average True Range", shorttitle="ATR", overlay=false)
+len = input.int(14, "Length", minval=1)
+plot(ta.atr(len), "ATR", color=color.red)

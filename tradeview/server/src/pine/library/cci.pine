@@ -1,0 +1,10 @@
+// @category Momentum
+// @description Commodity Channel Index.
+//@version=6
+indicator("Commodity Channel Index", shorttitle="CCI", overlay=false)
+len = input.int(20, "Length", minval=1)
+src = input.source(hlc3, "Source")
+plot(ta.cci(src, len), "CCI", color=color.teal)
+hline(100, "Upper", color=color.gray)
+hline(0, "Middle", color=color.gray)
+hline(-100, "Lower", color=color.gray)

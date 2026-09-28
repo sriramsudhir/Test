@@ -1,0 +1,16 @@
+// @category Momentum
+// @description Stochastic applied to RSI.
+//@version=6
+indicator("Stochastic RSI", shorttitle="Stoch RSI", overlay=false)
+smoothK = input.int(3, "K", minval=1)
+smoothD = input.int(3, "D", minval=1)
+lenRsi = input.int(14, "RSI Length", minval=1)
+lenStoch = input.int(14, "Stochastic Length", minval=1)
+src = input.source(close, "Source")
+rsi1 = ta.rsi(src, lenRsi)
+k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, lenStoch), smoothK)
+d = ta.sma(k, smoothD)
+plot(k, "K", color=color.blue)
+plot(d, "D", color=color.orange)
+hline(80, "Upper", color=color.gray)
+hline(20, "Lower", color=color.gray)

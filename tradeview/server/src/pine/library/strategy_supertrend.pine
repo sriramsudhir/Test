@@ -1,0 +1,19 @@
+// @category Strategies
+// @description Supertrend trend-following strategy: long in up-trend, short in down-trend.
+//@version=6
+strategy("Supertrend Strategy", shorttitle="ST Strat", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.05)
+atrLen = input.int(10, "ATR Length", minval=1)
+factor = input.float(3.0, "Factor", minval=0.01)
+[st, dir] = ta.supertrend(factor, atrLen)
+flipUp = ta.change(dir) < 0
+flipDown = ta.change(dir) > 0
+if flipUp
+    strategy.entry("Long", strategy.long)
+if flipDown
+    strategy.entry("Short", strategy.short)
+plot(dir < 0 ? st : na, "Up Trend", color=color.green, style=plot.style_linebr)
+plot(dir > 0 ? st : na, "Down Trend", color=color.red, style=plot.style_linebr)
+plot(flipUp ? 1 : 0, "long_entry", display=display.none)
+plot(flipDown ? 1 : 0, "long_exit", display=display.none)
+plot(flipDown ? 1 : 0, "short_entry", display=display.none)
+plot(flipUp ? 1 : 0, "short_exit", display=display.none)

@@ -9,6 +9,11 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 - [ ] Web chart core: ChartView, chart types incl. footprint, drawings, indicators, multi-layout, bar replay + paper trading
 - [ ] Web app shell: panels (watchlist, alerts, chat agent, Pine editor, strategy tester, replay trading), loud alarms
 
+## Phase 1b: change set 2 (ARCHITECTURE §13)
+- [ ] Delta Exchange primary provider + 24/7 trade recording for footprint
+- [ ] Claude Code subscription driver (Agent SDK, CLAUDE_CODE_OAUTH_TOKEN), agent status
+- [ ] Site login, Web Push + Telegram alerts, PWA service worker
+
 ## Phase 2: integration
 - [ ] Wire everything; `npm run build` and `npm test` pass
 - [ ] End-to-end smoke test with a mock Bybit feed (headless browser): chart loads, agent draws, alert fires with sound
@@ -17,4 +22,4 @@ Tick items off as they land on branch `claude/tradingview-clone-bybit-vlgtuj`.
 ## Phase 3: hardening
 - [ ] Code review pass (correctness), fix findings
 - [ ] Performance: 1m history over 1 year per symbol (≈525k bars) loads in pages; footprint rendering at zoom-out
-- [ ] Docker image (server serves built web)
+- [ ] Docker image + docker-compose with Caddy HTTPS, systemd alternative, docs/DEPLOY.md (24/7 VPS guide incl. `claude setup-token`)

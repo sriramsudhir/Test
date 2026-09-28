@@ -1,0 +1,7 @@
+// @category Moving Averages
+// @description Simple moving average of the chosen source.
+//@version=6
+indicator("Simple Moving Average", shorttitle="SMA", overlay=true)
+len = input.int(20, "Length", minval=1)
+src = input.source(close, "Source")
+plot(ta.sma(src, len), "SMA", color=color.orange, linewidth=2)

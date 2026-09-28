@@ -1,0 +1,13 @@
+// @category Volume
+// @description Money Flow Index (volume-weighted RSI).
+//@version=6
+indicator("Money Flow Index", shorttitle="MFI", overlay=false)
+len = input.int(14, "Length", minval=1)
+src = hlc3
+mf = src * volume
+up = math.sum(ta.change(src) > 0 ? mf : 0, len)
+dn = math.sum(ta.change(src) < 0 ? mf : 0, len)
+mfiVal = dn == 0 ? 100 : 100 - 100 / (1 + up / dn)
+plot(mfiVal, "MFI", color=color.purple)
+hline(80, "Overbought", color=color.red)
+hline(20, "Oversold", color=color.green)

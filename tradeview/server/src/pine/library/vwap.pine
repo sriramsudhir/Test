@@ -1,0 +1,23 @@
+// @category Volume
+// @description Session-anchored volume weighted average price (resets every UTC day) with optional standard deviation bands.
+//@version=6
+indicator("VWAP", shorttitle="VWAP", overlay=true)
+mult = input.float(1.0, "Band Multiplier", minval=0)
+src = hlc3
+newDay = ta.change(time("D")) != 0
+var float sumPV = 0.0
+var float sumV = 0.0
+var float sumP2V = 0.0
+if newDay or bar_index == 0
+    sumPV := 0.0
+    sumV := 0.0
+    sumP2V := 0.0
+sumPV += src * volume
+sumV += volume
+sumP2V += src * src * volume
+vw = sumV > 0 ? sumPV / sumV : src
+variance = sumV > 0 ? math.max(sumP2V / sumV - vw * vw, 0) : 0
+dev = math.sqrt(variance)
+plot(vw, "VWAP", color=color.fuchsia, linewidth=2)
+plot(vw + mult * dev, "Upper", color=color.new(color.green, 30))
+plot(vw - mult * dev, "Lower", color=color.new(color.green, 30))
