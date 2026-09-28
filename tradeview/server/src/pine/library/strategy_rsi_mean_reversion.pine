@@ -1,0 +1,22 @@
+// @category Strategies
+// @description Long-only RSI mean reversion: buy when RSI crosses up through oversold, exit when it reaches the exit level; fixed stop loss.
+//@version=6
+strategy("RSI Mean Reversion", shorttitle="RSI MR", overlay=false, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.05)
+len = input.int(14, "RSI Length", minval=1)
+oversold = input.float(30, "Oversold")
+exitLevel = input.float(55, "Exit Level")
+stopPct = input.float(3.0, "Stop Loss %", minval=0.1)
+r = ta.rsi(close, len)
+longSig = ta.crossover(r, oversold)
+exitSig = ta.crossover(r, exitLevel)
+if longSig and strategy.position_size == 0
+    strategy.entry("Long", strategy.long)
+if exitSig
+    strategy.close("Long")
+if strategy.position_size > 0
+    strategy.exit("Stop", "Long", stop=strategy.position_avg_price * (1 - stopPct / 100))
+plot(r, "RSI", color=color.purple)
+hline(oversold, "Oversold", color=color.green)
+hline(exitLevel, "Exit", color=color.gray)
+plot(longSig ? 1 : 0, "long_entry", display=display.none)
+plot(exitSig ? 1 : 0, "long_exit", display=display.none)

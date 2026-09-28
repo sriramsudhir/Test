@@ -1,0 +1,11 @@
+// @category Momentum
+// @description Williams %R.
+//@version=6
+indicator("Williams %R", shorttitle="%R", overlay=false)
+len = input.int(14, "Length", minval=1)
+hh = ta.highest(high, len)
+ll = ta.lowest(low, len)
+wr = hh == ll ? 0 : 100 * (close - hh) / (hh - ll)
+plot(wr, "%R", color=color.purple)
+hline(-20, "Overbought", color=color.gray)
+hline(-80, "Oversold", color=color.gray)

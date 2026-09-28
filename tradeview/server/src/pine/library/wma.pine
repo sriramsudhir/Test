@@ -1,0 +1,7 @@
+// @category Moving Averages
+// @description Linearly weighted moving average.
+//@version=6
+indicator("Weighted Moving Average", shorttitle="WMA", overlay=true)
+len = input.int(20, "Length", minval=1)
+src = input.source(close, "Source")
+plot(ta.wma(src, len), "WMA", color=color.purple, linewidth=2)

@@ -1,0 +1,7 @@
+// @category Volume
+// @description On Balance Volume.
+//@version=6
+indicator("On Balance Volume", shorttitle="OBV", overlay=false)
+obvVal = ta.cum(math.sign(ta.change(close)) * volume)
+plot(obvVal, "OBV", color=color.blue)
+plot(ta.ema(obvVal, 20), "OBV EMA", color=color.orange)

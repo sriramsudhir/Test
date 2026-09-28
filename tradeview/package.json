@@ -1,0 +1,23 @@
+{
+  "name": "tradeview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Self-hosted TradingView-style platform: Bybit data, PineTS, Claude agent, Laya decision alerts",
+  "workspaces": [
+    "server",
+    "web"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npm run dev -w server",
+    "build": "npm run build -w web",
+    "start": "npm run start -w server",
+    "backfill": "npm run backfill -w server --",
+    "test": "npm test -w server",
+    "e2e:fake": "node web/test/e2e/fake-delta.mjs",
+    "e2e": "node web/test/e2e/run.mjs"
+  }
+}

@@ -1,0 +1,11 @@
+// @category Trend
+// @description Supertrend: ATR trailing stop that flips with trend direction.
+//@version=6
+indicator("Supertrend", shorttitle="ST", overlay=true)
+atrLen = input.int(10, "ATR Length", minval=1)
+factor = input.float(3.0, "Factor", minval=0.01)
+[st, dir] = ta.supertrend(factor, atrLen)
+plot(dir < 0 ? st : na, "Up Trend", color=color.green, style=plot.style_linebr, linewidth=2)
+plot(dir > 0 ? st : na, "Down Trend", color=color.red, style=plot.style_linebr, linewidth=2)
+plotshape(ta.change(dir) < 0, "Buy", shape.triangleup, location.belowbar, color.green)
+plotshape(ta.change(dir) > 0, "Sell", shape.triangledown, location.abovebar, color.red)

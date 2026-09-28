@@ -1,0 +1,11 @@
+// @category Volatility
+// @description Donchian Channels: highest high / lowest low over N bars.
+//@version=6
+indicator("Donchian Channels", shorttitle="DC", overlay=true)
+len = input.int(20, "Length", minval=1)
+upper = ta.highest(high, len)
+lower = ta.lowest(low, len)
+plot((upper + lower) / 2, "Basis", color=color.orange)
+u = plot(upper, "Upper", color=color.blue)
+l = plot(lower, "Lower", color=color.blue)
+fill(u, l, color=color.new(color.blue, 92), title="Background")

@@ -1,0 +1,7 @@
+// @category Volume
+// @description Volume histogram coloured by candle direction, with a moving average.
+//@version=6
+indicator("Volume", shorttitle="Vol", overlay=false, format=format.volume)
+maLen = input.int(20, "MA Length", minval=1)
+plot(volume, "Volume", style=plot.style_columns, color=close >= open ? color.new(color.teal, 40) : color.new(color.red, 40))
+plot(ta.sma(volume, maLen), "Volume MA", color=color.blue)

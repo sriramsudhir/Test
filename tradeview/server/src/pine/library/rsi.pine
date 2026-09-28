@@ -1,0 +1,13 @@
+// @category Momentum
+// @description Relative Strength Index with 70/30 levels and an SMA signal line.
+//@version=6
+indicator("Relative Strength Index", shorttitle="RSI", overlay=false)
+len = input.int(14, "Length", minval=1)
+maLen = input.int(14, "MA Length", minval=1)
+src = input.source(close, "Source")
+r = ta.rsi(src, len)
+plot(r, "RSI", color=color.purple, linewidth=2)
+plot(ta.sma(r, maLen), "RSI MA", color=color.yellow)
+hline(70, "Overbought", color=color.red)
+hline(50, "Middle", color=color.gray)
+hline(30, "Oversold", color=color.green)

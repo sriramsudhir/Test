@@ -1,0 +1,22 @@
+// @category Strategies
+// @description Long/short EMA crossover strategy (always in the market).
+//@version=6
+strategy("EMA Cross Strategy", shorttitle="EMA X", overlay=true, initial_capital=10000, default_qty_type=strategy.percent_of_equity, default_qty_value=100, commission_type=strategy.commission.percent, commission_value=0.05)
+fastLen = input.int(9, "Fast EMA", minval=1)
+slowLen = input.int(21, "Slow EMA", minval=1)
+fast = ta.ema(close, fastLen)
+slow = ta.ema(close, slowLen)
+longSig = ta.crossover(fast, slow)
+shortSig = ta.crossunder(fast, slow)
+if longSig
+    strategy.entry("Long", strategy.long)
+if shortSig
+    strategy.entry("Short", strategy.short)
+plot(fast, "Fast EMA", color=color.teal)
+plot(slow, "Slow EMA", color=color.orange)
+plot(longSig ? 1 : 0, "long_entry", display=display.none)
+plot(shortSig ? 1 : 0, "long_exit", display=display.none)
+plot(shortSig ? 1 : 0, "short_entry", display=display.none)
+plot(longSig ? 1 : 0, "short_exit", display=display.none)
+alertcondition(longSig, "EMA cross up", "Fast EMA crossed above slow EMA")
+alertcondition(shortSig, "EMA cross down", "Fast EMA crossed below slow EMA")

@@ -1,0 +1,19 @@
+// @category Trend
+// @description Ichimoku Kinko Hyo (Tenkan, Kijun, Senkou A/B, Chikou).
+//@version=6
+indicator("Ichimoku Cloud", shorttitle="Ichimoku", overlay=true)
+convLen = input.int(9, "Conversion Line Length", minval=1)
+baseLen = input.int(26, "Base Line Length", minval=1)
+spanBLen = input.int(52, "Leading Span B Length", minval=1)
+disp = input.int(26, "Displacement", minval=1)
+donchian(len) => math.avg(ta.lowest(low, len), ta.highest(high, len))
+conv = donchian(convLen)
+base = donchian(baseLen)
+spanA = math.avg(conv, base)
+spanB = donchian(spanBLen)
+plot(conv, "Tenkan", color=color.blue)
+plot(base, "Kijun", color=color.maroon)
+plot(close, "Chikou", color=color.green, offset=-(disp - 1))
+a = plot(spanA[disp - 1], "Senkou A", color=color.new(color.green, 40))
+b = plot(spanB[disp - 1], "Senkou B", color=color.new(color.red, 40))
+fill(a, b, color=color.new(color.gray, 90), title="Kumo")

@@ -1,0 +1,8 @@
+// @category Trend
+// @description Parabolic Stop And Reverse.
+//@version=6
+indicator("Parabolic SAR", shorttitle="SAR", overlay=true)
+start = input.float(0.02, "Start")
+inc = input.float(0.02, "Increment")
+maxv = input.float(0.2, "Maximum")
+plot(ta.sar(start, inc, maxv), "SAR", style=plot.style_cross, color=color.blue)

@@ -1,0 +1,7 @@
+// @category Moving Averages
+// @description Exponential moving average of the chosen source.
+//@version=6
+indicator("Exponential Moving Average", shorttitle="EMA", overlay=true)
+len = input.int(20, "Length", minval=1)
+src = input.source(close, "Source")
+plot(ta.ema(src, len), "EMA", color=color.blue, linewidth=2)
