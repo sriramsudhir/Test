@@ -1,6 +1,13 @@
 /** Misc helpers: time normalisation, ids, socket listener disposal, DOM. */
 
 /** Accept ms, seconds, ISO strings or Date and return ms UTC. */
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+/** Escape text for interpolation into innerHTML (symbols, provider labels and drawing styles are data). */
+export const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ESC[c]);
+
+/** Symbol key ("delta:BTCUSD") or bare exchange symbol ("BTCUSDT"), same rule as the server's parseSymbolKey. */
+export const SYMBOL_KEY_RE = /^(?:[a-z]+:)?[A-Za-z0-9][A-Za-z0-9_.-]{1,39}$/i;
+
 export function toMs(t) {
   if (t == null || t === '') return null;
   if (t instanceof Date) return t.getTime();

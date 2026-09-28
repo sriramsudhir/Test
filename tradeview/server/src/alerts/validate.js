@@ -47,7 +47,7 @@ export function validateAlert(input, { existing, createdBy, defaultThreshold = 0
     if (input.sound) a.sound = { ...(existing.sound || {}), ...input.sound };
   }
 
-  if (typeof a.symbol !== 'string' || !/^(delta|spot|linear|inverse):[A-Z0-9_.-]+$/i.test(a.symbol)) {
+  if (typeof a.symbol !== 'string' || !/^(delta|spot|linear|inverse):[A-Z0-9][A-Z0-9_.-]{1,39}$/i.test(a.symbol)) {
     throw new ValidationError('symbol must be a key like "delta:BTCUSD" or "linear:BTCUSDT"');
   }
   a.tf = a.tf ?? '1m';
@@ -70,10 +70,13 @@ export function validateAlert(input, { existing, createdBy, defaultThreshold = 0
   } else if (c.kind === 'indicator') {
     if (typeof c.source !== 'string' || !c.source.trim()) throw new ValidationError('condition.source (Pine script) is required');
     if (c.source.length > 100000) throw new ValidationError('condition.source is too large');
+    if (c.inputs && JSON.stringify(c.inputs).length > 20000) throw new ValidationError('condition.inputs is too large');
     a.condition = { kind: 'indicator', source: c.source, ...(c.inputs && typeof c.inputs === 'object' ? { inputs: c.inputs } : {}) };
   } else if (c.kind === 'drawing') {
     if (!c.drawingId && !c.drawing) throw new ValidationError('condition.drawingId is required');
     if (!PRICE_OPS.includes(c.op)) throw new ValidationError(`condition.op must be one of ${PRICE_OPS.join(', ')}`);
+    if (c.drawing && JSON.stringify(c.drawing).length > 20000) throw new ValidationError('condition.drawing is too large');
+    if (c.drawingId && String(c.drawingId).length > 200) throw new ValidationError('condition.drawingId is too long');
     a.condition = {
       kind: 'drawing', op: c.op,
       ...(c.drawingId ? { drawingId: String(c.drawingId) } : {}),
@@ -102,7 +105,7 @@ export function validateAlert(input, { existing, createdBy, defaultThreshold = 0
   const threshold = toNum(l.threshold);
   a.laya = {
     enabled: l.enabled ?? a.createdBy === 'agent',
-    question: typeof l.question === 'string' && l.question.trim() ? l.question.trim() : DEFAULT_LAYA_QUESTION,
+    question: typeof l.question === 'string' && l.question.trim() ? l.question.trim().slice(0, 500) : DEFAULT_LAYA_QUESTION,
     threshold: fin(threshold) ? Math.min(1, Math.max(0, threshold)) : defaultThreshold,
   };
   a.laya.enabled = !!a.laya.enabled;

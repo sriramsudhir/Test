@@ -8,6 +8,9 @@ export function validateInput(schema, value, path = 'input') {
   return errs;
 }
 
+/** Upper bound for strings without an explicit maxLength. */
+export const DEFAULT_MAX_STRING = 2000;
+
 function typeOf(v) {
   if (v === null) return 'null';
   if (Array.isArray(v)) return 'array';
@@ -26,6 +29,12 @@ function check(s, v, path, errs) {
     }
   }
   if (s.enum && !s.enum.includes(v)) errs.push(`${path} must be one of ${s.enum.join(', ')}`);
+  if (typeof v === 'string') {
+    // Every string is bounded (tool inputs come from the model, which may be steered by prompt injection).
+    const max = s.maxLength ?? DEFAULT_MAX_STRING;
+    if (v.length > max) errs.push(`${path} is too long (max ${max} characters)`);
+    else if (s.pattern && !new RegExp(s.pattern).test(v)) errs.push(`${path} has an invalid format`);
+  }
   if (typeof v === 'number') {
     if (!Number.isFinite(v)) errs.push(`${path} must be finite`);
     if (s.minimum !== undefined && v < s.minimum) errs.push(`${path} must be >= ${s.minimum}`);

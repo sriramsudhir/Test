@@ -45,6 +45,9 @@ export function classify(inst) {
   return 'crypto';
 }
 
+/** Exchange symbol (after the category prefix). */
+export const SYMBOL_RE = /^[A-Z0-9][A-Z0-9_.-]{1,39}$/;
+
 /**
  * Parse a symbol key. Bare symbols default to `linear`.
  * @param {string} key e.g. "delta:BTCUSD", "linear:BTCUSDT" or "BTCUSDT"
@@ -62,7 +65,9 @@ export function parseSymbolKey(key) {
   }
   symbol = symbol.toUpperCase();
   if (!CATEGORIES.includes(category)) throw new Error(`Unknown category "${category}" in symbol ${key}`);
-  if (!/^[A-Z0-9_.\-]{2,40}$/.test(symbol)) throw new Error(`Invalid symbol: ${key}`);
+  // Must start with a letter/digit: symbols end up as URL path segments (Delta `/v2/trades/{symbol}`, Bybit dump
+  // paths), so `..`-style values must never pass.
+  if (!SYMBOL_RE.test(symbol)) throw new Error(`Invalid symbol: ${key}`);
   return { category, symbol, key: `${category}:${symbol}` };
 }
 

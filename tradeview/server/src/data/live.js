@@ -321,8 +321,10 @@ export class LiveHub extends EventEmitter {
     const s = this._sym(key);
     const trades = parseWsTrades(data);
     if (!trades.length) return;
+    // prevPrice = last price seen BEFORE this batch (lastPrice is already the batch's last trade when listeners run).
+    const prevPrice = s.lastPrice;
     s.lastPrice = trades[trades.length - 1].p;
-    this.emit('trades', { symbol: key, trades });
+    this.emit('trades', { symbol: key, trades, prevPrice });
     const now = this.now();
 
     for (const [tf, sec] of s.seconds) {

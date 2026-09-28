@@ -2,7 +2,7 @@ import { ICONS, layoutIcon } from './icons.js';
 import { showMenu, closeMenu, menuItem, menuHeader, menuSep } from './menu.js';
 import { TIMEFRAMES, TF_GROUP_LABELS, tfLabel } from '../chart/timeframes.js';
 import { CHART_TYPES } from '../chart/ChartView.js';
-import { el } from '../chart/util.js';
+import { el, escapeHtml } from '../chart/util.js';
 
 const FAV_KEY = 'tv.favTimeframes';
 const DEFAULT_FAVS = ['1m', '5m', '15m', '1h', '4h', '1D'];
@@ -118,7 +118,7 @@ export class Toolbar {
     const c = this.chart;
     if (!c) return;
     const bare = c.symbol.includes(':') ? c.symbol.split(':')[1] : c.symbol;
-    this.symBtn.innerHTML = `${ICONS.search}<span class="tv-tb-symname">${bare}</span>`;
+    this.symBtn.innerHTML = `${ICONS.search}<span class="tv-tb-symname">${escapeHtml(bare)}</span>`;
     this.tfFavs.innerHTML = '';
     const favs = this.favs.includes(c.tf) ? this.favs : [...this.favs];
     for (const tf of favs) {

@@ -18,11 +18,13 @@ const STRATEGY_IDS = [...listStrategies().map((s) => s.id), ...listLibrary().fil
 
 const SYMBOL = {
   type: 'string',
+  maxLength: 60,
+  pattern: '^((delta|linear|spot|inverse):)?[A-Za-z0-9][A-Za-z0-9_.-]{1,39}$',
   description: 'Symbol key "{provider/category}:{SYMBOL}". Delta Exchange (default provider): "delta:BTCUSD", "delta:ETHUSD". Bybit: "linear:BTCUSDT" (USDT perpetual), "spot:ETHUSDT", "inverse:BTCUSD".',
 };
 const TF = { type: 'string', enum: TIMEFRAME_IDS, description: 'Timeframe id. Minutes: 1m..30m, hours: 1h..12h, 1D day, 1W week, 1M month; 1s..30s are live-only second charts.' };
 const TIME_MS = (what) => ({ type: 'integer', description: `${what} as a unix timestamp in MILLISECONDS UTC (e.g. 1735689600000 = 2025-01-01T00:00:00Z).` });
-const CHART_ID = { type: 'string', description: 'Target chart id from the chart context. Omit to act on the active chart.' };
+const CHART_ID = { type: 'string', maxLength: 64, description: 'Target chart id from the chart context. Omit to act on the active chart.' };
 const POINT = {
   type: 'object',
   properties: {
@@ -77,7 +79,7 @@ const DEFS = [
         symbol: SYMBOL,
         tf: TF,
         builtin: { type: 'string', enum: LIBRARY_IDS, description: 'Built-in library script id (alternative to source).' },
-        source: { type: 'string', description: 'Pine Script source (must contain indicator(...) or strategy(...)).' },
+        source: { type: 'string', maxLength: 100000, description: 'Pine Script source (must contain indicator(...) or strategy(...)).' },
         inputs: { type: 'object', description: 'Input overrides keyed by input title, e.g. {"Length": 50}.' },
         limit: { type: 'integer', minimum: 50, maximum: 5000, description: 'Bars of history to run on (default 1000).' },
       },
@@ -106,7 +108,7 @@ const DEFS = [
           },
           required: ['id'],
         },
-        source: { type: 'string', description: 'Pine strategy source (alternative to strategy).' },
+        source: { type: 'string', maxLength: 100000, description: 'Pine strategy source (alternative to strategy).' },
         capital: { type: 'number', description: 'Initial capital (default 10000).' },
         commission: { type: 'number', description: 'Commission percent per side (default 0.05).' },
         slippage: { type: 'number', description: 'Slippage in ticks per fill (default 0).' },
@@ -176,7 +178,7 @@ const DEFS = [
       properties: {
         chartId: CHART_ID,
         builtin: { type: 'string', enum: LIBRARY_IDS },
-        source: { type: 'string', description: 'Custom Pine Script source.' },
+        source: { type: 'string', maxLength: 100000, description: 'Custom Pine Script source.' },
         inputs: { type: 'object', description: 'Input overrides keyed by input title, e.g. {"Length": 50}.' },
       },
     },
@@ -249,7 +251,7 @@ const DEFS = [
             op: { type: 'string', enum: PRICE_OPS },
             value: { type: 'number', description: 'Price level (price conditions).' },
             value2: { type: 'number', description: 'Second price for enters_channel / exits_channel.' },
-            source: { type: 'string', description: 'Pine source (indicator conditions).' },
+            source: { type: 'string', maxLength: 100000, description: 'Pine source (indicator conditions).' },
             drawingId: { type: 'string', description: 'Drawing id (drawing conditions).' },
           },
           required: ['kind'],

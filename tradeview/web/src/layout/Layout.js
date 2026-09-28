@@ -2,7 +2,7 @@ import { Emitter } from '../chart/emitter.js';
 import { ChartView, DEFAULT_SYMBOL } from '../chart/ChartView.js';
 import { Toolbar, LAYOUT_IDS } from './Toolbar.js';
 import { DrawingToolbar } from './DrawingToolbar.js';
-import { el, debounce } from '../chart/util.js';
+import { el, debounce, SYMBOL_KEY_RE } from '../chart/util.js';
 
 const COUNTS = { 1: 1, '2h': 2, '2v': 2, 3: 3, 4: 4, 6: 6, 8: 8 };
 const STORAGE_KEY = 'tv.layout.v1';
@@ -125,7 +125,7 @@ export class Layout extends Emitter {
       const saved = this._savedCharts?.[i];
       const tpl = this.active || this.charts[0];
       this._createChart(i, {
-        symbol: saved?.symbol || (tpl && this._sync.syncSymbol ? tpl.symbol : tpl?.symbol) || this.opts.symbol || DEFAULT_SYMBOL,
+        symbol: (SYMBOL_KEY_RE.test(String(saved?.symbol ?? '')) ? saved.symbol : null) || (tpl && this._sync.syncSymbol ? tpl.symbol : tpl?.symbol) || this.opts.symbol || DEFAULT_SYMBOL,
         tf: saved?.tf || tpl?.tf || this.opts.tf || '1h',
         chartType: saved?.chartType || this.opts.chartType || 'candles',
         indicators: saved?.indicators || [],

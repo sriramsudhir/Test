@@ -16,7 +16,7 @@ import { THEME, chartOptions } from './theme.js';
 import { normalizeTf, tfToMs, isSecondsTf, floorTime, nextBarTime, tfLabel, getTimeframe } from './timeframes.js';
 import { heikinAshi, heikinAshiNext, renko, rangeBars } from './transforms.js';
 import { formatPrice, formatCompact, formatPercent, decimalsOf, inferPrecision, formatDateTime } from './format.js';
-import { toMs, toSec, listen, lowerIndex, el, throttle, debounce, unwrapList, downloadDataUrl, clamp } from './util.js';
+import { toMs, toSec, listen, lowerIndex, el, throttle, debounce, unwrapList, downloadDataUrl, clamp, escapeHtml, SYMBOL_KEY_RE } from './util.js';
 import { apiRequest } from './apiHelpers.js';
 import { FootprintSeries, toFootprintItem, FOOTPRINT_DEFAULTS } from './footprint/FootprintSeries.js';
 import { VolumeProfilePrimitive } from './footprint/VolumeProfile.js';
@@ -896,10 +896,10 @@ export class ChartView extends Emitter {
     const catLabel = [prov.name, market].filter(Boolean).join(' ');
     const typeLabel = CHART_TYPES.find((c) => c.id === this.chartType)?.label;
     const parts = [];
-    parts.push(`<span class="tv-lg-sym" data-act="symbol">${this._bareSymbol()}</span>`);
+    parts.push(`<span class="tv-lg-sym" data-act="symbol">${escapeHtml(this._bareSymbol())}</span>`);
     parts.push(`<span class="tv-lg-dot">·</span><span class="tv-lg-tf">${tfLabel(this.tf)}</span>`);
-    if (catLabel) parts.push(`<span class="tv-lg-dot">·</span><span class="tv-lg-ex">${catLabel}</span>`);
-    if (this.chartType !== 'candles') parts.push(`<span class="tv-lg-dot">·</span><span class="tv-lg-ex">${typeLabel}${this._boxInfo ? ` (${this._boxInfo})` : ''}</span>`);
+    if (catLabel) parts.push(`<span class="tv-lg-dot">·</span><span class="tv-lg-ex">${escapeHtml(catLabel)}</span>`);
+    if (this.chartType !== 'candles') parts.push(`<span class="tv-lg-dot">·</span><span class="tv-lg-ex">${escapeHtml(typeLabel)}${this._boxInfo ? ` (${escapeHtml(this._boxInfo)})` : ''}</span>`);
     if (this.replay?.active) parts.push('<span class="tv-lg-badge">REPLAY</span>');
     let ohlc = '';
     if (bar) {
@@ -1097,6 +1097,8 @@ export class ChartView extends Emitter {
   // ================================================================== public API (§12)
   setSymbol(symbol) {
     if (!symbol || symbol === this.symbol) return;
+    // Symbols also arrive from agent chart commands and saved layouts: accept symbol keys only.
+    if (!SYMBOL_KEY_RE.test(String(symbol))) throw new Error(`Invalid symbol: ${String(symbol).slice(0, 60)}`);
     if (this.replay.active || this.replay.selecting) this.replay.stop();
     this.symbol = String(symbol);
     this.precisionFromInfo = false;

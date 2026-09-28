@@ -102,13 +102,52 @@ export class SessionSigner {
   }
 }
 
+/**
+ * Canonical form of a request path for access decisions: query dropped, percent-escapes decoded (repeatedly, so
+ * `/%2561pi` cannot sneak through either), duplicate slashes collapsed, `.`/`..` segments resolved, lower-cased.
+ * Fastify's router decodes escapes such as `/%61pi/alerts` into `/api/alerts` before matching, so the check must
+ * look at the same decoded path (otherwise `/%61pi/...` would reach protected routes without a session).
+ */
+export function canonicalPath(url) {
+  let p = String(url || '').split(/[?#]/)[0];
+  for (let i = 0; i < 4 && /%[0-9a-f]{2}/i.test(p); i++) {
+    try {
+      p = decodeURIComponent(p);
+    } catch {
+      p = p.replace(/%([0-9a-f]{2})/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
+    }
+  }
+  p = p.replace(/\\/g, '/');
+  const out = [];
+  for (const seg of p.split('/')) {
+    if (seg === '' || seg === '.') continue;
+    if (seg === '..') out.pop();
+    else out.push(seg);
+  }
+  return `/${out.join('/')}`.toLowerCase();
+}
+
 /** True when the path needs a session (all /api/* except auth + health, and /ws). */
 export function isProtectedPath(url) {
-  const path = String(url || '').split('?')[0];
+  const path = canonicalPath(url);
   if (path === '/ws' || path.startsWith('/ws/')) return true;
   if (!path.startsWith('/api/') && path !== '/api') return false;
   if (path === '/api/health' || path.startsWith('/api/auth/')) return false;
   return true;
+}
+
+/** Route patterns (as registered) that are reachable without a session. */
+const PUBLIC_ROUTES = new Set(['/api/health', '/api/auth/login', '/api/auth/logout', '/api/auth/me']);
+
+/**
+ * Access decision for a request: protected when either the canonical URL path or the matched route pattern is.
+ * The route check covers every way the router might match a protected route (encodings, future router options).
+ */
+export function requestNeedsSession(req) {
+  if (isProtectedPath(req.url)) return true;
+  const route = req.routeOptions?.url;
+  if (!route || PUBLIC_ROUTES.has(route)) return false;
+  return route === '/ws' || route.startsWith('/ws/') || route === '/api' || route.startsWith('/api/');
 }
 
 /**
@@ -191,7 +230,7 @@ export async function register(app, ctx) {
 
   app.addHook('onRequest', async (req, reply) => {
     if (!auth.enabled || req.method === 'OPTIONS') return;
-    if (!isProtectedPath(req.url)) return;
+    if (!requestNeedsSession(req)) return;
     if (auth.isAuthenticated(req)) return;
     reply.code(401).header('cache-control', 'no-store').send({ error: 'unauthorized', login: '/api/auth/login' });
     return reply;

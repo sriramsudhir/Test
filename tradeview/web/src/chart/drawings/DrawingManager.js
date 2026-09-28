@@ -798,7 +798,8 @@ export class DrawingManager {
     const e = this._propsEls;
     e.name.textContent = getTool(m.tool)?.label || m.tool;
     e.colorBtn.querySelector('.tv-dp-swatch').style.background = m.style.color;
-    e.widthBtn.innerHTML = `<svg width="22" height="16" viewBox="0 0 22 16"><line x1="2" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="${m.style.width || 1}"/></svg><span>${m.style.width || 1}px</span>`;
+    const lw = Math.max(1, Math.min(10, Number(m.style.width) || 1)); // style comes from stored JSON: never raw into HTML
+    e.widthBtn.innerHTML = `<svg width="22" height="16" viewBox="0 0 22 16"><line x1="2" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="${lw}"/></svg><span>${lw}px</span>`;
     const dash = m.style.lineStyle === 'dashed' ? '4 3' : m.style.lineStyle === 'dotted' ? '1.5 3' : '';
     e.styleBtn.innerHTML = `<svg width="22" height="16" viewBox="0 0 22 16"><line x1="2" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="2" stroke-dasharray="${dash}"/></svg>`;
     e.lockBtn.innerHTML = m.locked ? ICON_LOCK : ICON_UNLOCK;

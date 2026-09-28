@@ -14,11 +14,18 @@ const EXPIRY_CHECK_MS = 15000;
 const DRAWING_TTL_MS = 5000;
 const INDICATOR_BARS = 500;
 const EVERY_TIME_COOLDOWN_MS = 1000;
+// Upper bound for the Laya gate (incl. building the market state). A hung or still-downloading model must never
+// block an alert: past the deadline the alert fires with laya.skipped.
+export const LAYA_DEADLINE_MS = 30000;
+// stop() waits at most this long for in-flight fires / notifications (shutdown has a hard 10 s limit).
+const STOP_WAIT_MS = 5000;
+const HOUSEKEEPING_MS = 60 * 60 * 1000;
+export const DEFAULT_MAX_EVENTS = 10000;
 
 export class AlertEngine {
   /**
    * @param {object} ctx  server ctx (§11)
-   * @param {object} [deps] test seams: { runPine, askLaya, now, notify }
+   * @param {object} [deps] test seams: { runPine, askLaya, now, notify, layaDeadlineMs, stopWaitMs }
    */
   constructor(ctx, deps = {}) {
     this.ctx = ctx;
@@ -28,6 +35,8 @@ export class AlertEngine {
     this.notify = deps.notify || notifyAlert;
     this.ownNotifier = !deps.notify;
     this.now = deps.now || (() => Date.now());
+    this.layaDeadlineMs = deps.layaDeadlineMs ?? Number(ctx.config?.layaGateTimeoutMs ?? LAYA_DEADLINE_MS);
+    this.stopWaitMs = deps.stopWaitMs ?? STOP_WAIT_MS;
     /** @type {Map<string, object>} id -> alert (active only) */
     this.alerts = new Map();
     /** @type {Map<string, object>} id -> runtime state */
@@ -58,18 +67,45 @@ export class AlertEngine {
     this.reload();
     this.timer = setInterval(() => this.checkExpiry(), EXPIRY_CHECK_MS);
     this.timer.unref?.();
+    this.housekeeping();
+    this.hkTimer = setInterval(() => this.housekeeping(), HOUSEKEEPING_MS);
+    this.hkTimer.unref?.();
+  }
+
+  /** Bound the fired-event history (an every_time alert can log one event per second). */
+  housekeeping() {
+    const max = Number(this.ctx.config?.alertEventsMax ?? DEFAULT_MAX_EVENTS);
+    if (!(max > 0)) return 0;
+    try {
+      const n = this.ctx.repos?.alertEvents?.trim?.(max) || 0;
+      if (n) this.log.info?.(`alert engine: trimmed ${n} old alert events (keeping ${max})`);
+      return n;
+    } catch (err) {
+      this.log.warn?.({ err: err.message }, 'alert engine: trimming alert events failed');
+      return 0;
+    }
   }
 
   async stop() {
     if (!this.running) return;
     this.running = false;
     clearInterval(this.timer);
+    clearInterval(this.hkTimer);
     const live = this.ctx.live;
     live?.off?.('trades', this._onTrades);
     live?.off?.('kline', this._onKline);
     for (const key of this.held) this._release(key);
     this.held.clear();
-    await Promise.allSettled([...this.pending]);
+    // Bounded: a hung notification or Laya call must not hold up process shutdown.
+    let timer;
+    await Promise.race([
+      Promise.allSettled([...this.pending]),
+      new Promise((resolve) => {
+        timer = setTimeout(resolve, this.stopWaitMs);
+        timer.unref?.();
+      }),
+    ]);
+    clearTimeout(timer);
   }
 
   /** (Re)load all active alerts from the repository. */
@@ -157,6 +193,14 @@ export class AlertEngine {
     let s = this.state.get(id);
     if (!s) {
       s = { prev: undefined, prevT: undefined, prevClose: undefined, lastFiredAt: 0, lastFiredBar: undefined, rejectedBar: undefined, busy: false };
+      // Runtime state is not persisted: seed the trigger gate from the stored alert so a restart (or a reload)
+      // does not fire once_per_bar again in a bar that already fired, or bypass the every_time cooldown.
+      const a = this.alerts.get(id);
+      const last = Number(a?.lastTriggered);
+      if (Number.isFinite(last) && last > 0) {
+        s.lastFiredAt = Math.min(last, this.now());
+        s.lastFiredBar = this._barTime(last, a.tf);
+      }
       this.state.set(id, s);
     }
     return s;
@@ -189,9 +233,13 @@ export class AlertEngine {
 
   // ---- evaluation ----------------------------------------------------------------------------
 
-  onTrades({ symbol, trades } = {}) {
+  onTrades(msg = {}) {
+    const { symbol, trades, prevPrice } = msg;
     if (!this.running || !Array.isArray(trades) || !trades.length) return;
     const now = this.now();
+    // Price before this batch. LiveHub passes it explicitly; its lastPrice() already holds the batch's LAST trade,
+    // which must not be used as the "previous" price of the batch's first trade (false crosses).
+    const hasPrev = 'prevPrice' in msg;
     for (const alert of this.alerts.values()) {
       if (alert.symbol !== symbol) continue;
       if (alert.condition.kind === 'indicator' || alert.trigger === 'once_per_bar_close') continue;
@@ -204,8 +252,8 @@ export class AlertEngine {
         const t = Number(tr.t ?? tr.time ?? now);
         if (!Number.isFinite(cur)) continue;
         if (s.prev === undefined) {
-          // Seed from the hub's last price so the first tick after (re)start can already cross.
-          const lp = this.ctx.live?.lastPrice?.(symbol);
+          // Seed from the price before this batch so a new alert can already cross on its first tick.
+          const lp = hasPrev ? prevPrice : this.ctx.live?.lastPrice?.(symbol);
           if (Number.isFinite(lp) && lp !== cur) {
             s.prev = lp;
             s.prevT = t;
@@ -300,13 +348,22 @@ export class AlertEngine {
         const level = alertLevel(alert, t, drawing);
         const alertForState = alert.condition.kind === 'drawing' ? { ...alert, condition: { ...alert.condition, level } } : alert;
         let res;
+        let deadline;
         try {
-          res = await this.askLaya(this.ctx, {
-            symbol: alert.symbol, tf: alert.tf, question: alert.laya.question,
-            threshold: alert.laya.threshold ?? 0.6, alert: alertForState, price, t,
-          });
+          res = await Promise.race([
+            this.askLaya(this.ctx, {
+              symbol: alert.symbol, tf: alert.tf, question: alert.laya.question,
+              threshold: alert.laya.threshold ?? 0.6, alert: alertForState, price, t,
+            }),
+            new Promise((resolve) => {
+              deadline = setTimeout(() => resolve({ skipped: true, reason: `laya timed out after ${this.layaDeadlineMs} ms` }), this.layaDeadlineMs);
+              deadline.unref?.();
+            }),
+          ]);
         } catch (err) {
           res = { skipped: true, reason: err?.message || String(err) };
+        } finally {
+          clearTimeout(deadline);
         }
         if (res?.skipped || !res) {
           laya = { skipped: true, reason: res?.reason || 'laya unavailable' };
@@ -378,6 +435,8 @@ export class AlertEngine {
     if (alert.status === 'active') this.alerts.set(alert.id, alert);
     else if (refresh) {
       this.alerts.delete(alert.id);
+      this.state.delete(alert.id);
+      this.drawings.delete(alert.id);
       this.sync();
     }
   }
@@ -387,6 +446,7 @@ export class AlertEngine {
     const updated = { ...alert, status: 'expired' };
     this.alerts.delete(alert.id);
     this.state.delete(alert.id);
+    this.drawings.delete(alert.id);
     this._save(updated, false);
     this._broadcast({ type: 'alert_update', alert: updated });
     this.sync();

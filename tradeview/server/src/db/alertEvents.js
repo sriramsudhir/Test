@@ -18,6 +18,8 @@ export function createAlertEventsRepo(db) {
   const selOne = db.prepare(`SELECT id, alert_id, t, json FROM alert_events WHERE id=?`);
   const delForAlert = db.prepare(`DELETE FROM alert_events WHERE alert_id=?`);
   const delAll = db.prepare(`DELETE FROM alert_events`);
+  // Keep the newest `max` events (ids are monotonic). No-op while there are fewer rows.
+  const trimTo = db.prepare(`DELETE FROM alert_events WHERE id <= (SELECT id FROM alert_events ORDER BY id DESC LIMIT 1 OFFSET ?)`);
 
   const repo = {
     /** Persist an event; returns it with its numeric `id`. */
@@ -36,6 +38,12 @@ export function createAlertEventsRepo(db) {
     get(id) {
       const r = selOne.get(id);
       return r ? row2event(r) : null;
+    },
+    /** Delete all but the newest `max` events. Returns rows deleted. */
+    trim(max) {
+      const n = Math.floor(Number(max));
+      if (!(n > 0)) return 0;
+      return trimTo.run(n).changes;
     },
     clear(alertId) {
       return (alertId ? delForAlert.run(alertId) : delAll.run()).changes;
